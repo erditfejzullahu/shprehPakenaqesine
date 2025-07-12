@@ -6,6 +6,7 @@ import api from '@/lib/api'
 import CompanyCard from './CompanyCard'
 import { Companies } from '@/app/generated/prisma'
 import CTAButton from './CTAButton'
+import { FaChevronCircleDown, FaChevronDown } from 'react-icons/fa'
 
 interface CompaniesWithHasMore{
   companies: Companies[],
@@ -21,17 +22,36 @@ const CompanysQuery = () => {
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => 
-      lastPage.hasMore ? allPages.length + 1 : undefined
-  })
+      lastPage.hasMore ? allPages.length + 1 : undefined,
+    retry: false
+  })  
 
   console.log(data);
   
 
   if(isLoading) return <LoadingSpinner />
-  if(isError) return <div className="mx-auto absolute right-0 left-0 -top-6">
-    <h3 className="text-gray-600 font-normal mb-3">Dicka shkoi gabim! Ju lutem provoni perseri.</h3>
+  if(!data) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
+    <div className="flex flex-row gap-1">
+      <div>
+        <h3 className="text-gray-600 font-normal mb-3">Nuk ka te dhena. Nese mendoni qe eshte gabim</h3>
+      </div>
+      <div className="pt-2 rotate-[50deg]">
+      <FaChevronDown size={22} color='#4f46e5'/>
+      </div>
+    </div>
     <CTAButton onClick={() => refetch()} text='Provo perseri'/>
-  </div>
+  </div> 
+  if(isError) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
+    <div className="flex flex-row gap-1">
+      <div>
+        <h3 className="text-gray-600 font-normal mb-3">Dicka shkoi gabim. Provoni perseri!</h3>
+      </div>
+      <div className="pt-2 rotate-[50deg]">
+      <FaChevronDown size={22} color='#4f46e5'/>
+      </div>
+    </div>
+    <CTAButton onClick={() => refetch()} text='Provo perseri'/>
+  </div> 
 
   return (
     <div className={`grid md:grid-cols-2 lg:grid-cols-3 grid-cols-1 gap-4 relative ${!hasNextPage && "-mb-14"}`}>

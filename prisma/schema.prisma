@@ -42,7 +42,7 @@ model Complaint {
   category    Category
   attachments String?
   createdAt   DateTime
-  updatedat   DateTime        @updatedAt
+  updatedAt   DateTime        @updatedAt
   company     Companies       @relation(fields: [companyId], references: [id])
 }
 
