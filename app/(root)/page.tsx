@@ -1,3 +1,4 @@
+import CompanysQuery from '@/components/CompanysQuery'
 import CTAButton from '@/components/CTAButton'
 import FeatureCard from '@/components/FeatureCard'
 import Footer from '@/components/Footer'
@@ -22,6 +23,11 @@ const page = () => {
             <CTAButton text="Raporto Tani" primary />
             <CTAButton text="Meso me shume" />
           </div>
+        </section>
+
+        <section className="w-full max-w-6xl mx-auto py-16 sm:px-6 lg:px-8 text-center border">
+          <h2 className="text-3xl font-bold text-gray-800 mb-12">Kompanite</h2>
+            <CompanysQuery />
         </section>
 
         {/* Features Section */}
