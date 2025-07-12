@@ -6,7 +6,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
         const pageStr = req.nextUrl.searchParams.get('page')
         const page = pageStr ? parseInt(pageStr) : 1;
 
-        const limit = 10;
+        const limit = 9;
         const skip = (page-1) * limit;
 
         const companies = await prisma.companies.findMany({
@@ -19,12 +19,13 @@ export async function GET(req: NextRequest, res: NextResponse) {
             return NextResponse.json({message: "Nuk u gjet asnje Kompani"}, {status: 404})
         }
 
-        const total = await prisma.companies.count();
+        const totalCount = await prisma.companies.count({where: {acceptedRequest: true}});
 
-        return NextResponse.json({
-            companies: companies,
-            hasMore: page * limit < total,
-        })
+        const hasMore = page * limit < totalCount;
+
+        console.log({ companiesCount: companies.length, hasMore });
+
+        return NextResponse.json({ companies, hasMore });
         
     } catch (error) {
         console.error(error)

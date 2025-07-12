@@ -25,7 +25,7 @@ const page = () => {
           </div>
         </section>
 
-        <section className="w-full max-w-6xl mx-auto py-16 sm:px-6 lg:px-8 text-center border">
+        <section className="w-full max-w-6xl mx-auto py-16 pb-20 sm:px-6 lg:px-8 text-center shadow-xl">
           <h2 className="text-3xl font-bold text-gray-800 mb-12">Kompanite</h2>
             <CompanysQuery />
         </section>

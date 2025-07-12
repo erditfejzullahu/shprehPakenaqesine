@@ -24,6 +24,9 @@ const CompanysQuery = () => {
       lastPage.hasMore ? allPages.length + 1 : undefined
   })
 
+  console.log(data);
+  
+
   if(isLoading) return <LoadingSpinner />
   if(isError) return <div className="mx-auto absolute right-0 left-0 -top-6">
     <h3 className="text-gray-600 font-normal mb-3">Dicka shkoi gabim! Ju lutem provoni perseri.</h3>
@@ -36,6 +39,11 @@ const CompanysQuery = () => {
         page.companies.map((company: Companies) => (
           <CompanyCard key={company.id} {...company}/>
         ))
+      )}
+      {hasNextPage && (
+        <div className="mt-1 w-full mx-auto absolute right-0 -bottom-16 left-0">
+          <CTAButton onClick={() => fetchNextPage()} isLoading={isFetchingNextPage} text='Me shume' primary/>
+        </div>
       )}
     </div>
   )
