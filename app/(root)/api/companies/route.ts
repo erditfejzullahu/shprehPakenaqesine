@@ -13,6 +13,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
             skip,
             take: limit
         });
+
         
         if(companies.length === 0){
             return NextResponse.json({message: "Nuk u gjet asnje Kompani"}, {status: 404})

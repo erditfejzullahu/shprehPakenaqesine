@@ -7,9 +7,10 @@ import CompanyCard from './CompanyCard'
 import { Companies } from '@/app/generated/prisma'
 import CTAButton from './CTAButton'
 import { FaChevronCircleDown, FaChevronDown } from 'react-icons/fa'
+import { CompanyInterface } from '@/types/types'
 
 interface CompaniesWithHasMore{
-  companies: Companies[],
+  companies: CompanyInterface[],
   hasMore: boolean
 }
 
@@ -23,11 +24,8 @@ const CompanysQuery = () => {
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => 
       lastPage.hasMore ? allPages.length + 1 : undefined,
-    retry: false
-  })  
-
-  console.log(data);
-  
+    retry: 2
+  })      
 
   if(isLoading) return <LoadingSpinner />
   if(!data) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
@@ -56,7 +54,7 @@ const CompanysQuery = () => {
   return (
     <div className={`grid md:grid-cols-2 lg:grid-cols-3 grid-cols-1 gap-4 relative ${!hasNextPage && "-mb-14"}`}>
       {data?.pages.map((page) => 
-        page.companies.map((company: Companies) => (
+        page.companies.map((company: CompanyInterface) => (
           <CompanyCard key={company.id} {...company}/>
         ))
       )}

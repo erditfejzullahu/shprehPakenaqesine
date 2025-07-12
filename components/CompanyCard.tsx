@@ -1,7 +1,7 @@
 // components/CompanyCard.tsx
 "use client";
 
-import { Companies } from "@/app/generated/prisma";
+import { CompanyInterface } from "@/types/types";
 import Image from "next/image";
 import React from "react";
 
@@ -17,7 +17,19 @@ export default function CompanyCard({
   industry,
   images,
   foundedYear,
-}: Companies) {
+}: CompanyInterface) {
+  
+  const parsedImages = React.useMemo(() => {
+    if (!images) return [];
+    if (Array.isArray(images)) return images;
+    try {
+      const parsed = JSON.parse(images as any);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }, [images]);
+  
   return (
     <div className="bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition">
       <div>
@@ -54,18 +66,25 @@ export default function CompanyCard({
           {industry && <div>🏢 Industria: <span className="text-gray-800">{industry}</span></div>}
           {foundedYear && <div>📅 Founded: {foundedYear}</div>}
         </div>
-        {images && images.length > 0 && (
-          <div className="flex gap-2 mt-4 overflow-x-auto">
-            {Array(images).map((img) => (
-              <img
-                key={img}
-                src={img}
-                alt={name}
-                className="w-20 h-20 object-cover rounded-md"
-              />
-            ))}
+        {parsedImages.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Gallery</h3>
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {parsedImages.map((img, index) => (
+                <div key={index} className="flex-shrink-0">
+                  <Image
+                    src={img}
+                    width={200}
+                    height={100}
+                    alt={`${name} gallery image ${index + 1}`}
+                    className="w-40 h-20 object-cover rounded-md border border-gray-200"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         )}
+
       </div>
     </div>
   );
