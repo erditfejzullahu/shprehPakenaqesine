@@ -1,3 +1,4 @@
+import AnkesatCard from '@/components/AnkesatCard'
 import CompanysQuery from '@/components/CompanysQuery'
 import CTAButton from '@/components/CTAButton'
 import FeatureCard from '@/components/FeatureCard'
@@ -25,14 +26,23 @@ const page = () => {
           </div>
         </section>
 
-        <section className="w-full max-w-6xl mx-auto py-16 pb-20 sm:px-6 lg:px-8 text-center shadow-xl">
-          <h2 className="text-3xl font-bold text-gray-800 mb-12">Kompanite</h2>
+        <section className="w-full max-w-6xl mx-auto py-16 pb-20 sm:px-6 lg:px-8 text-center ">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">Kompanite</h2>
             <CompanysQuery />
         </section>
 
-        {/* Features Section */}
+
         <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-12">Pse ne?</h2>
+          <h2 className='text-3xl font-bold text-gray-800 mb-6'>Ankesat</h2>
+          <div>
+            <AnkesatCard />
+          </div>
+        </section>
+        
+
+        {/* Features Section */}
+        <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center ">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">Pse ne?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard 
               icon="🚀" 

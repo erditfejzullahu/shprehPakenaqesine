@@ -11,22 +11,89 @@ datasource db {
 model Users {
   id        Int      @id @default(autoincrement())
   nickName  String
-  password String
   createdAt DateTime
   updatedAt DateTime @updatedAt
+  password  String
 }
 
 model Companies {
-  id              String  @id @default(uuid())
-  name            String  @unique @db.VarChar(150)
-  description     String?
-  logoUrl         String
-  address         String
-  website         String?
-  email           String?
-  phone           String?
-  images          String?
-  industry        String
-  foundedYear     String?
-  acceptedRequest Boolean @default(false)
+  id          String      @id @default(uuid())
+  name        String      @unique @db.VarChar(150)
+  description String?
+  logoUrl     String
+  address     String
+  website     String?
+  email       String?
+  phone       String?
+  images      String?
+  industry    String
+  foundedYear String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
+  company     Complaint[]
+}
+
+model Complaint {
+  id          String          @id @default(uuid())
+  companyId   String
+  title       String
+  description String
+  status      ComplaintStatus @default(PENDING)
+  category    Category
+  attachments String?
+  createdAt   DateTime
+  updatedat   DateTime        @updatedAt
+  company     Companies       @relation(fields: [companyId], references: [id])
+}
+
+enum Category {
+  WORKPLACE_HARASSMENT
+  WORKPLACE_DISCRIMINATION
+  WORKPLACE_SAFETY
+  WORKPLACE_ABUSE
+  WORKPLACE_THEFT
+  FINANCIAL_MISCONDUCT
+  BRIBERY_CORRUPTION
+  CONFLICT_OF_INTEREST
+  PROCUREMENT_IRREGULARITIES
+  FAVORITISM
+  PUBLIC_SERVICE_FAILURE
+  LAW_ENFORCEMENT_ABUSE
+  JUDICIAL_MISCONDUCT
+  LAND_ADMIN_ISSUES
+  ACADEMIC_MISCONDUCT
+  EDUCATIONAL_ABUSE
+  ADMISSIONS_IRREGULARITIES
+  MEDICAL_MALPRACTICE
+  PATIENT_ABUSE
+  HEALTHCARE_FRAUD
+  DRUG_MISUSE
+  ENVIRONMENTAL_DAMAGE
+  WILDLIFE_CRIME
+  ILLEGAL_CONSTRUCTION
+  FALSE_ADVERTISING
+  PRODUCT_SAFETY
+  PRICE_GOUGING
+  DATA_PRIVACY_VIOLATION
+  CYBERCRIME
+  ONLINE_HARASSMENT
+  CHILD_EXPLOITATION
+  ILLEGAL_CONTENT
+  UNSAFE_BUILDINGS
+  ROAD_SAFETY_ISSUES
+  UTILITY_PROBLEMS
+  HUMAN_TRAFFICKING
+  FORCED_LABOR
+  DOMESTIC_ABUSE
+  MINORITY_RIGHTS_VIOLATION
+  ANIMAL_CRUELTY
+  NOISE_POLLUTION
+  VANDALISM
+  GENERAL_MISCONDUCT
+  OTHER
+}
+
+enum ComplaintStatus {
+  PENDING
+  ACCEPTED
 }
