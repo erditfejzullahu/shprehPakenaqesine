@@ -9,23 +9,24 @@ datasource db {
 }
 
 model Users {
-  id Int @id @default(autoincrement())
-  nickName String
+  id        Int      @id @default(autoincrement())
+  nickName  String
+  password String
   createdAt DateTime
   updatedAt DateTime @updatedAt
 }
 
 model Companies {
-  id String @id() @default(uuid())
-  name String @unique @db.VarChar(150)
-  description String? @db.Text
-  logoUrl String
-  address String
-  website String?
-  email String?
-  phone String?
-  images String?
-  industry String
-  foundedYear String?
+  id              String  @id @default(uuid())
+  name            String  @unique @db.VarChar(150)
+  description     String?
+  logoUrl         String
+  address         String
+  website         String?
+  email           String?
+  phone           String?
+  images          String?
+  industry        String
+  foundedYear     String?
   acceptedRequest Boolean @default(false)
 }
