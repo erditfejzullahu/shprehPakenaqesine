@@ -8,16 +8,16 @@ const Header = () => {
           ShprehPakenaqesine
         </Link>
         <div className="flex gap-8">
-          <Link href="/features" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
+          <Link href="/si-funksjonon" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
             Si funksjonon
           </Link>
-          <Link href="/pricing" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
+          <Link href="/cmimore" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
             Cmimore
           </Link>
-          <Link href="/about" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
+          <Link href="/rreth-nesh" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
             Rreth nesh
           </Link>
-          <Link href="/contact" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
+          <Link href="/na-kontaktoni" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
             Na kontaktoni
           </Link>
         </div>

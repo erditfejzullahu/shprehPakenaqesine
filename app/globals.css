@@ -28,3 +28,9 @@ body {
   color: var(--foreground);
   font-family: var(--font-poppins-sans);
 }
+
+ul {
+  list-style-type: disc;
+  margin-left: 32px;
+  font-weight: 500
+}

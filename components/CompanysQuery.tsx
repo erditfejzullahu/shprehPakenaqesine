@@ -15,7 +15,7 @@ interface CompaniesWithHasMore{
 }
 
 const CompanysQuery = () => {
-  const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch} = useInfiniteQuery({
+  const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch, error} = useInfiniteQuery({
     queryKey: ['companies'],
     queryFn: async ({ pageParam }) => {
       const res = await api.get<CompaniesWithHasMore>(`/api/companies?page=${pageParam}`);
@@ -24,9 +24,10 @@ const CompanysQuery = () => {
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => 
       lastPage.hasMore ? allPages.length + 1 : undefined,
-    retry: 2
+    retry: 2,
+    refetchOnWindowFocus: false
   })      
-
+  
   if(isLoading) return <LoadingSpinner />
   if(!data) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
     <div className="flex flex-row gap-1">

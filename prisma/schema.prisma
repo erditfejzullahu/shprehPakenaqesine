@@ -30,7 +30,7 @@ model Companies {
   foundedYear String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @default(now()) @updatedAt
-  company     Complaint[]
+  complaints  Complaint[]
 }
 
 model Complaint {

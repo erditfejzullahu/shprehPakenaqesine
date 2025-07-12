@@ -1,4 +1,5 @@
 import CompanysQuery from '@/components/CompanysQuery'
+import ComplaintsQuery from '@/components/ComplaintsQuery'
 import CTAButton from '@/components/CTAButton'
 import FeatureCard from '@/components/FeatureCard'
 import Footer from '@/components/Footer'
@@ -8,7 +9,6 @@ import React from 'react'
 const page = () => {
   return (
     <div>
-      <Header />
       <main className="flex-1">
         {/* Hero Section */}
         <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
@@ -31,9 +31,10 @@ const page = () => {
         </section>
 
 
-        <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center">
+        <section className="w-full max-w-6xl mx-auto py-16 pb-8 px-4 sm:px-6 lg:px-8 text-center">
           <h2 className='text-3xl font-bold text-gray-800 mb-6'>Ankesat</h2>
           <div>
+            <ComplaintsQuery />
           </div>
         </section>
 
@@ -60,7 +61,6 @@ const page = () => {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   )
 }

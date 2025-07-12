@@ -17,6 +17,7 @@ export default function CompanyCard({
   industry,
   images,
   foundedYear,
+  complaintsCount
 }: CompanyInterface) {
   
   const parsedImages = React.useMemo(() => {
@@ -31,7 +32,7 @@ export default function CompanyCard({
   }, [images]);
   
   return (
-    <div className="bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition">
+    <div className="bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative">
       <div>
         <Image
           src={logoUrl}
@@ -64,11 +65,11 @@ export default function CompanyCard({
           {email && <div>📧 {email}</div>}
           {phone && <div>📞 {phone}</div>}
           {industry && <div>🏢 Industria: <span className="text-gray-800">{industry}</span></div>}
-          {foundedYear && <div>📅 Founded: {foundedYear}</div>}
+          {foundedYear && <div>📅 E krijuar: {foundedYear}</div>}
         </div>
         {parsedImages.length > 0 && (
           <div className="mt-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Gallery</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Galeria</h3>
             <div className="flex gap-2 overflow-x-auto pb-2">
               {parsedImages.map((img, index) => (
                 <div key={index} className="flex-shrink-0">
@@ -84,7 +85,11 @@ export default function CompanyCard({
             </div>
           </div>
         )}
-
+        {complaintsCount !== 0 && (
+          <div className="absolute bottom-0 right-0 rounded-tl-lg px-2 py-1 flex items-center bg-indigo-600">
+            <span className="text-xs font-normal text-white"><span className="font-bold">{complaintsCount}</span> Ankesa</span>
+          </div>
+        )}
       </div>
     </div>
   );

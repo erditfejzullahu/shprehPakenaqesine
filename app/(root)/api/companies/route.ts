@@ -6,17 +6,26 @@ export async function GET(req: NextRequest, res: NextResponse) {
         const pageStr = req.nextUrl.searchParams.get('page')
         const page = pageStr ? parseInt(pageStr) : 1;
 
-        const limit = 9;
+        const limit = 6;
         const skip = (page-1) * limit;
 
         const companies = await prisma.companies.findMany({
             skip,
-            take: limit
-        });
-
+            take: limit,
+            include: {
+                _count: {
+                    select: {
+                        complaints: true
+                    }
+                }
+            }
+        }).then(results => results.map(company => ({
+            ...company,
+            complaintsCount: company._count.complaints
+        })));        
         
         if(companies.length === 0){
-            return NextResponse.json({message: "Nuk u gjet asnje Kompani"}, {status: 404})
+            return NextResponse.json({message: "No companies found"}, {status: 404})
         }
 
         const totalCount = await prisma.companies.count();
@@ -29,6 +38,6 @@ export async function GET(req: NextRequest, res: NextResponse) {
         
     } catch (error) {
         console.error(error)
-        return NextResponse.json({message: "Dicka shkoi gabim!"}, {status: 500});
+        return NextResponse.json({message: "something went wrong!"}, {status: 500});
     }
 }
