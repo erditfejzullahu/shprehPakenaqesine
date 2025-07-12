@@ -14,8 +14,8 @@ const Header = () => {
           <Link href="/cmimore" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
             Cmimore
           </Link>
-          <Link href="/rreth-nesh" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
-            Rreth nesh
+          <Link href="/verifikimi" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
+            Verifikimi
           </Link>
           <Link href="/na-kontaktoni" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
             Na kontaktoni
