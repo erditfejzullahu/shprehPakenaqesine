@@ -29,7 +29,7 @@ const page = () => {
           <p className="font-light">Për më shumë informacion rreth pagesave, përdoruesit mund të kontaktojnë në: <a href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</a>.</p>
 
           <h2 className="text-xl font-semibold mt-2">Kontakt</h2>
-          <p className="font-light">Pyetje? <Link aria-describedby='contact us' className="text-indigo-600" href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</Link></p>
+          <p className="font-light">Pyetje? <Link aria-description='contact us' className="text-indigo-600" href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</Link></p>
         </div>
       </main>
     </div>

@@ -28,7 +28,7 @@ const page = () => {
           <p>Përdoruesi është përgjegjës për vërtetësinë dhe ligjshmërinë e çdo të dhëne të ngarkuar. Platforma nuk mban përgjegjësi për pasoja ligjore të shkaktuara nga përdoruesi.</p>
 
           <h2 className="text-xl font-semibold mt-2">Kontakt</h2>
-          <p>Për çdo kërkesë për qasje, përmirësim ose fshirje të të dhënave: <Link aria-describedby='contact us' className="text-indigo-600" href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</Link></p>
+          <p>Për çdo kërkesë për qasje, përmirësim ose fshirje të të dhënave: <Link aria-description='contact us' className="text-indigo-600" href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</Link></p>
         </div>
       </main>
     </div>

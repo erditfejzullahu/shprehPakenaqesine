@@ -4,6 +4,7 @@ import CTAButton from '@/components/CTAButton'
 import FeatureCard from '@/components/FeatureCard'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
+import Link from 'next/link'
 import React from 'react'
 
 const page = () => {
@@ -20,8 +21,12 @@ const page = () => {
           </p>
           <p className="text-xs text-gray-400 mx-auto mt-3 max-w-xl">Ketu do shfaqen pakenaqesite e medha apo raportimet e shumta nga indivite te ndryshem per nje punedhenes!</p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <CTAButton text="Raporto Tani" primary />
-            <CTAButton text="Meso me shume" />
+            <Link aria-description='krijo raportimin' href={'/krijo-raportim'}>
+              <CTAButton text="Raporto Tani" classNames='border-2 border-indigo-600' primary />
+            </Link>
+            <Link aria-description='meso me shume' href={'/si-funksjonon'}>
+              <CTAButton text="Meso me shume" />
+            </Link>
           </div>
         </section>
 

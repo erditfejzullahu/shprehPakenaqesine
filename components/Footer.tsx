@@ -4,7 +4,7 @@ const Footer = () => {
     return (
       <footer className="bg-white py-8 px-6 border-t border-gray-200">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <Link href={"/"} aria-describedby="homepage" className="text-gray-600">
+          <Link href={"/"} aria-description="homepage" className="text-gray-600">
             © {new Date().getFullYear()} <span className="text-indigo-600 font-semibold">ShprehePakenaqesine</span>. Te gjitha te drejtat e reservuara.
           </Link>
           <div className="flex gap-6">

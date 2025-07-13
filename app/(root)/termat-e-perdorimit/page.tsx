@@ -29,7 +29,7 @@ const page = () => {
                 <h2 className="text-xl font-semibold mt-2">Zgjidhja e Mosmarrëveshjeve</h2>
                 <p className="font-light">Çdo kontestim në lidhje me këta Terma do të trajtohet sipas ligjeve të Republikës së Kosovës.</p>
 
-                <p className="font-light">Për çdo paqartësi na kontaktoni: <Link className='text-indigo-600' aria-describedby='contact-us' href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</Link></p>
+                <p className="font-light">Për çdo paqartësi na kontaktoni: <Link className='text-indigo-600' aria-description='contact-us' href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</Link></p>
             </div>
         </main>
     </div>

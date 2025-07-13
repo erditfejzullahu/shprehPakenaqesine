@@ -18,7 +18,7 @@ const page = () => {
 
             <h2 className="text-xl font-semibold mt-2">Si Bëhet Pagesa</h2>
             <p className="font-light">Pagesa kryhet online përmes Bankës Kombëtare Tregtare (BKT) dhe <strong>nuk bëhet përmes platformës ShfaqPakenaqesine</strong>.</p>
-            <p className="font-light">Për detaje mbi mënyrën e pagesës dhe informacionin bankar, ju lutemi kontaktoni në adresën tonë të emailit: <Link aria-describedby='contact us' href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</Link>.</p>
+            <p className="font-light">Për detaje mbi mënyrën e pagesës dhe informacionin bankar, ju lutemi kontaktoni në adresën tonë të emailit: <Link aria-description='contact us' href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</Link>.</p>
 
             <h2 className="text-xl font-semibold mt-2">Angazhimi për Trajtim dhe Promovim</h2>
             <p className="font-light">Kur bëni një ankesë me pagesë, <strong>ShfaqPakenaqesine</strong> angazhohet të trajtojë ankesen tuaj më shpejt dhe ta paraqesë disa herë në javë në vende të ndryshme të rrjeteve sociale për t’i dhënë zë shqetësimit tuaj.</p>
@@ -28,7 +28,7 @@ const page = () => {
             <p className="font-light">Kjo është në përputhje me rregullat tona dhe ligjet në fuqi, dhe është pjesë e procesit të verifikimit dhe moderimit.</p>
 
             <h2 className="text-xl font-semibold mt-2">Kontakt</h2>
-            <p className="font-light">Për pyetje ose ndihmë në lidhje me pagesat, ju lutemi na kontaktoni në: <Link aria-describedby='contact us' className='text-indigo-600' href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</Link></p>
+            <p className="font-light">Për pyetje ose ndihmë në lidhje me pagesat, ju lutemi na kontaktoni në: <Link aria-description='contact us' className='text-indigo-600' href="mailto:shfaqpakenaqesine@gmail.com">shfaqpakenaqesine@gmail.com</Link></p>
           </div>
       </main>
     </div>

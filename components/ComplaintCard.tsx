@@ -1,5 +1,6 @@
 import { Complaint } from '@/app/generated/prisma';
 import { ComplaintCardProps } from '@/types/types';
+import Link from 'next/link';
 import React from 'react'
 
 
@@ -7,7 +8,7 @@ import React from 'react'
 const ComplaintCard = ({id, companyId, title, description, status, category, attachments, createdAt, updatedAt, company}: ComplaintCardProps) => {
     
 return (
-    <div className="bg-white shadow-lg p-4 flex flex-col gap-2 w-82 hover:bg-gray-50 transition-all relative">
+    <Link href={`/ankesa/${id}`} aria-description='ankesa' className="bg-white shadow-lg p-4 flex flex-col gap-2 w-82 hover:bg-gray-50 transition-all relative">
         <div className="flex justify-between items-center mt-3">
         <h3 className="text-xl text-left font-medium text-gray-900 line-clamp-1">{title}</h3>
         </div>
@@ -27,7 +28,7 @@ return (
         {attachments && attachments.length > 0 &&  <div className="absolute flex text-left items-center justify-center max-w-[100px] rounded-bl-lg px-2 py-1 right-0 top-0 bg-black/80">
             <span className="text-white  text-xs font-medium line-clamp-1 text-right">{attachments.length} Imazhe</span>
         </div>}
-    </div>
+    </Link>
     );
 }
 

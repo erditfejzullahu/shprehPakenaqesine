@@ -3,6 +3,7 @@
 
 import { CompanyInterface } from "@/types/types";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 export default function CompanyCard({
@@ -32,7 +33,7 @@ export default function CompanyCard({
   }, [images]);
   
   return (
-    <div className="bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative">
+    <Link href={`/kompania/${id}`} aria-description="kompania" className="bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative">
       <div>
         <Image
           src={logoUrl}
@@ -52,14 +53,14 @@ export default function CompanyCard({
           {website && (
             <div>
               🌐{" "}
-              <a
+              <Link
                 href={website}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:underline"
               >
                 {website}
-              </a>
+              </Link>
             </div>
           )}
           {email && <div>📧 {email}</div>}
@@ -91,6 +92,6 @@ export default function CompanyCard({
           </div>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
