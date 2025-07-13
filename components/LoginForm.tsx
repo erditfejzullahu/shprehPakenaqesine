@@ -10,9 +10,14 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { FaInfoCircle } from 'react-icons/fa'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
 import { loginSchema, registerSchema } from '@/lib/schemas/authSchema'
+import {signIn} from "next-auth/react"
+import {toast} from "sonner"
+import { useRouter } from 'next/navigation'
 
 const LoginForm = () => {
+    const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
+  const [errorMessage, setErrorMessage] = useState("")
 
   // Login form
   const { 
@@ -51,13 +56,23 @@ const LoginForm = () => {
   const password = watch("password")
 
   const handleLogin = async (data: z.infer<typeof loginSchema>) => {
-    console.log("Login data:", data);
-    // Add your login logic here
+    const res = await signIn("credentials", {
+        redirect: false,
+        username: data.username,
+        password: data.password  
+    })
+    if(res?.ok){
+        toast.success("Sapo jeni kycur me sukes!")
+        setErrorMessage("")
+        router.replace("/")
+    }else{
+        toast.error("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
+        setErrorMessage("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
+    }
   }
 
   const handleRegister = async (data: z.infer<typeof registerSchema>) => {
-    console.log("Register data:", data);
-    // Add your registration logic here
+    
   }
 
   return (
@@ -98,15 +113,22 @@ const LoginForm = () => {
               type="submit"
               text={`${isLoginSubmitting ? "Duke u kycur..." : "Kycu"}`}
             />
-            <p className="text-sm mt-3 text-right text-gray-600">
-              Nuk keni llogari? 
-              <span 
-                onClick={() => setIsLogin(false)} 
-                className="text-indigo-600 cursor-pointer transition-all ease-in-out hover:font-bold ml-1"
-              >
-                Krijoni Tani!
-              </span>
-            </p>
+            <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
+                {errorMessage && <div>
+                    <p className="text-red-500 text-left text-xs mt-3">{errorMessage}</p>
+                </div>}
+                <div>
+                    <p className="text-sm mt-3 text-gray-600">
+                    Nuk keni llogari? 
+                    <span 
+                        onClick={() => setIsLogin(false)} 
+                        className="text-indigo-600 cursor-pointer transition-all ease-in-out hover:font-bold ml-1"
+                    >
+                        Krijoni Tani!
+                    </span>
+                    </p>
+                </div>
+            </div>
           </div>
         </form>
       ) : (

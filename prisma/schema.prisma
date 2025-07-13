@@ -9,11 +9,16 @@ datasource db {
 }
 
 model Users {
-  id        Int      @id @default(autoincrement())
-  nickName  String
-  createdAt DateTime
-  updatedAt DateTime @updatedAt
-  password  String
+  id             String      @id @default(uuid())
+  createdAt      DateTime
+  fullName String @default("Anonimi")
+  updatedAt      DateTime @updatedAt
+  password       String
+  acceptedUser   Boolean  @default(false)
+  email          String   @unique
+  email_verified Boolean  @default(false)
+  gender         Gender
+  username       String   @unique
 }
 
 model Companies {
@@ -44,6 +49,13 @@ model Complaint {
   createdAt   DateTime
   updatedAt   DateTime        @updatedAt
   company     Companies       @relation(fields: [companyId], references: [id])
+}
+
+enum Gender {
+  MASHKULL
+  FEMER
+  TJETER
+  PA_GJINI
 }
 
 enum Category {

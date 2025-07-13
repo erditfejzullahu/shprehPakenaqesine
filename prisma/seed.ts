@@ -14,12 +14,16 @@ async function main(){
 
     const user = await prisma.users.create({
         data: {
-            nickName: "Anonimi",
+            username: "Anonimi",
             password: hashedPassword,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            gender: "MASHKULL",
+            acceptedUser: true,
+            email: "erditfejzullahu45@gmail.com",
+            email_verified: true
         }
     })
-    console.log(`User ${user.nickName} created...`)
+    console.log(`User ${user.username} created...`)
 
     // Create industries for realistic company data
   const industries = [
