@@ -5,9 +5,10 @@ interface CTAButtonProps {
   primary?: boolean;
   onClick?: () => void;
   isLoading?: boolean;
+  classNames?: string;
 }
 
-const CTAButton: React.FC<CTAButtonProps> = ({ text, primary = false, onClick, isLoading }) => {
+const CTAButton: React.FC<CTAButtonProps> = ({ text, primary = false, onClick, isLoading, classNames }) => {
   const baseClasses = "px-6 py-3 rounded-lg font-semibold transition-all";
   const primaryClasses = "bg-indigo-600 text-white hover:bg-indigo-700";
   const secondaryClasses = "border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50";
@@ -16,7 +17,7 @@ const CTAButton: React.FC<CTAButtonProps> = ({ text, primary = false, onClick, i
     <button
       onClick={onClick}
       disabled={isLoading}
-      className={`${baseClasses} cursor-pointer ${primary ? primaryClasses : secondaryClasses}`}
+      className={`${baseClasses} cursor-pointer ${primary ? primaryClasses : secondaryClasses} ${classNames}`}
     >
       {text}
     </button>
