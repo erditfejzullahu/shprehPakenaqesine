@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { FaUser } from 'react-icons/fa';
 
 const Header = () => {
   return (
@@ -19,6 +20,9 @@ const Header = () => {
           </Link>
           <Link aria-description='na kontaktoni' href="/na-kontaktoni" className="font-medium text-gray-600 hover:text-indigo-600 transition-colors">
             Na kontaktoni
+          </Link>
+          <Link href={'/kycuni'}>
+            <FaUser size={24} color='#4f46e5'/>
           </Link>
         </div>
       </nav>

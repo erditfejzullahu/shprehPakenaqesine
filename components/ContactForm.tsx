@@ -112,7 +112,7 @@ const ContactForm = () => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                <SelectLabel>Fruits</SelectLabel>
+                                <SelectLabel>Zgjidhni mes opsioneve me poshte</SelectLabel>
                                 <SelectItem value='NDIHMË'>NDIHMË</SelectItem>
                                 <SelectItem value='ANKESË'>ANKESË</SelectItem>
                                 <SelectItem value='FSHIRJE'>FSHIRJE</SelectItem>

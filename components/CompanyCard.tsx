@@ -53,14 +53,13 @@ export default function CompanyCard({
           {website && (
             <div>
               🌐{" "}
-              <Link
-                href={website}
-                target="_blank"
+              <button
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:underline"
+                onClick={() => window.open(website, '_blank')}
               >
                 {website}
-              </Link>
+              </button>
             </div>
           )}
           {email && <div>📧 {email}</div>}

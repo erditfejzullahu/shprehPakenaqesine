@@ -49,9 +49,9 @@ const page = () => {
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Pse ne?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard 
-              icon="🚀" 
+              icon="🔒" 
               title="Konfidencionalitet" 
-              description="Raportimet tuaja mbeten gjithmonë të sigurta dhe plotësisht anonime." 
+              description={<>Ankesat tuaja te thjeshta mund te mbeten totalisht anonime. Shikoni <Link className="text-indigo-600" href={"termat-e-perdorimit"}>Termat e Perdorimit</Link></>}
             />
             <FeatureCard 
               icon="✨" 
@@ -59,7 +59,7 @@ const page = () => {
               description="Arrini tek një rrjet i gjerë për të maksimizuar ndikimin e raportimeve tuaja." 
             />
             <FeatureCard 
-              icon="🔒" 
+              icon="🚀" 
               title="Arritje qellimi" 
               description="Ndihmoni në ndërtimin e një ambienti pune më të drejtë dhe transparent." 
             />

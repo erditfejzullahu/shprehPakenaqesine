@@ -3,7 +3,7 @@ import React from 'react';
 interface FeatureCardProps {
   icon: string;
   title: string;
-  description: string;
+  description: any;
 }
 
 const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) => {
