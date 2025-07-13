@@ -46,6 +46,8 @@ model Complaint {
   status      ComplaintStatus @default(PENDING)
   category    Category
   attachments String?
+  audiosAttached String[] @default([])
+  videosAttached String[] @default([])
   createdAt   DateTime
   updatedAt   DateTime        @updatedAt
   company     Companies       @relation(fields: [companyId], references: [id])
