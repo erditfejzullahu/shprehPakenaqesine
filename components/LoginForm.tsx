@@ -73,12 +73,26 @@ const LoginForm = () => {
   }
 
   const handleRegister = async (data: z.infer<typeof registerSchema>) => {
-    const response = await api.post('/api/auth/register', data)
-    if(response.data.success){
-        toast.success("Sapo u regjistruat me sukses, tani do te ridrejtoheni tek profili juaj!")
-    }else{
-        setErrorMessage("Dicka shkoi gabim! Ju lutem provoni perseri")
-        toast.error("Dicka shkoi gabim! Ju lutem provoni perseri")
+    try {
+      const response = await api.post('/api/auth/register', data)
+      if(response.data.success){
+          toast.success("Sapo u regjistruat me sukses, tani do te ridrejtoheni tek profili juaj!")
+          const res = await signIn("credentials", {
+            redirect: false,
+            username: data.username,
+            password: data.password,
+          })
+          if(res?.ok){
+            setErrorMessage("")
+            router.refresh();
+          }else{
+            toast.error("Dicka shkoi gabim ne kycjen tuaj. Provoni manualisht ose na kontaktoni!")
+            setErrorMessage("Dicka shkoi gabim ne kycjen tuaj. Provoni manualisht ose na kontaktoni!")
+          }
+      }
+    } catch (error) {
+      setErrorMessage("Dicka shkoi gabim! Ju lutem provoni perseri")
+      toast.error("Dicka shkoi gabim! Ju lutem provoni perseri")
     }
   }
 
