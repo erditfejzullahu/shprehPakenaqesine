@@ -1,6 +1,6 @@
 "use client"
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from "zod"
 import { Input } from './ui/input'
@@ -13,6 +13,7 @@ import { loginSchema, registerSchema } from '@/lib/schemas/authSchema'
 import {signIn} from "next-auth/react"
 import {toast} from "sonner"
 import { useRouter } from 'next/navigation'
+import api from '@/lib/api'
 
 const LoginForm = () => {
     const router = useRouter()
@@ -64,7 +65,7 @@ const LoginForm = () => {
     if(res?.ok){
         toast.success("Sapo jeni kycur me sukes!")
         setErrorMessage("")
-        router.replace("/")
+        router.refresh()
     }else{
         toast.error("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
         setErrorMessage("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
@@ -72,8 +73,19 @@ const LoginForm = () => {
   }
 
   const handleRegister = async (data: z.infer<typeof registerSchema>) => {
-    
+    const response = await api.post('/api/auth/register', data)
+    if(response.data.success){
+        toast.success("Sapo u regjistruat me sukses, tani do te ridrejtoheni tek profili juaj!")
+    }else{
+        setErrorMessage("Dicka shkoi gabim! Ju lutem provoni perseri")
+        toast.error("Dicka shkoi gabim! Ju lutem provoni perseri")
+    }
   }
+
+  useEffect(() => {
+    setErrorMessage("")
+  }, [isLogin])
+  
 
   return (
     <div className="w-full max-w-6xl mx-auto mt-4 mb-4">
@@ -249,15 +261,22 @@ const LoginForm = () => {
               type="submit"
               text={`${isRegisterSubmitting ? "Duke krijuar llogarine..." : "Krijo llogarine"}`}
             />
-            <p className="text-sm mt-3 text-right text-gray-600">
-              Keni llogari? 
-              <span 
-                onClick={() => setIsLogin(true)} 
-                className="text-indigo-600 cursor-pointer transition-all ease-in-out hover:font-bold ml-1"
-              >
-                Kycuni Tani!
-              </span>
-            </p>
+            <div>
+                {errorMessage && <div>
+                    <p className="text-red-500 text-left text-xs mt-3">{errorMessage}</p>
+                </div>}
+                <div>
+                    <p className="text-sm mt-3 text-right text-gray-600">
+                    Keni llogari? 
+                    <span 
+                        onClick={() => setIsLogin(true)} 
+                        className="text-indigo-600 cursor-pointer transition-all ease-in-out hover:font-bold ml-1"
+                    >
+                        Kycuni Tani!
+                    </span>
+                    </p>
+                </div>
+            </div>
           </div>
         </form>
       )}

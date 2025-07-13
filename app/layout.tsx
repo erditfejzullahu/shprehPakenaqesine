@@ -33,7 +33,7 @@ export default async function RootLayout({
         className={`${poppins.variable} antialiased`}
       >
         <SessionContext session={session}>
-          <Header />
+          <Header session={session}/>
             <QueryProvider>
               {children}
               <Toaster />
