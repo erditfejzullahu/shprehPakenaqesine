@@ -32,7 +32,7 @@ const LoginForm = () => {
   const { 
     register: registerRegister, 
     handleSubmit: handleRegisterSubmit, 
-    formState: { errors: registerErrors, isSubmitting: isRegisterSubmitting },
+    formState: { errors: registerErrors, isSubmitting: isRegisterSubmitting }, watch,
     control,
     setValue
   } = useForm<z.infer<typeof registerSchema>>({
@@ -42,10 +42,13 @@ const LoginForm = () => {
       email: "",
       username: "",
       gender: "PA_GJINI",
-      password: ""
+      password: "",
+      confirmPassword: ""
     },
     mode: "onChange"
   })
+
+  const password = watch("password")
 
   const handleLogin = async (data: z.infer<typeof loginSchema>) => {
     console.log("Login data:", data);
@@ -204,6 +207,19 @@ const LoginForm = () => {
               <p className="text-red-500 text-sm mt-1">{registerErrors.password.message}</p>
             )}
           </div>
+          {password !== "" && <div>
+            <Label htmlFor='confirmPassword' className="mb-1">Konfirmo Fjalekalimin</Label>
+            <Input 
+              id='confirmPassword' 
+              type='password' 
+              {...registerRegister("confirmPassword")} 
+              placeholder='**********'
+            />
+            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni ketu fjalekalimin qe keni shkruar me larte.</p>
+            {registerErrors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">{registerErrors.confirmPassword.message}</p>
+            )}
+          </div>}
           <div className="flex-1">
             <CTAButton 
               primary 
