@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 interface FeatureCardProps {
   icon: string;
@@ -16,4 +16,4 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description }) =
   );
 };
 
-export default FeatureCard;
+export default memo(FeatureCard);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 interface CTAButtonProps {
   text: string;
@@ -26,4 +26,4 @@ const CTAButton: React.FC<CTAButtonProps> = ({ text, primary = false, onClick, i
   );
 };
 
-export default CTAButton;
+export default memo(CTAButton);

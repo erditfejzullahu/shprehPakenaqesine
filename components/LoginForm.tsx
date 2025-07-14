@@ -1,6 +1,6 @@
 "use client"
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from "zod"
 import { Input } from './ui/input'
@@ -27,10 +27,10 @@ const LoginForm = () => {
     formState: { errors: loginErrors, isSubmitting: isLoginSubmitting } 
   } = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
+    defaultValues: useMemo(() => ({
       username: "",
       password: ""
-    },
+    }), []),
     mode: "onChange"
   })
 
@@ -43,20 +43,20 @@ const LoginForm = () => {
     setValue
   } = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
+    defaultValues: useMemo(() => ({
       fullName: "",
       email: "",
       username: "",
       gender: "PA_GJINI",
       password: "",
       confirmPassword: ""
-    },
+    }), []),
     mode: "onChange"
   })
 
   const password = watch("password")
 
-  const handleLogin = async (data: z.infer<typeof loginSchema>) => {
+  const handleLogin = useCallback(async (data: z.infer<typeof loginSchema>) => {
     const res = await signIn("credentials", {
         redirect: false,
         username: data.username,
@@ -70,9 +70,9 @@ const LoginForm = () => {
         toast.error("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
         setErrorMessage("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
     }
-  }
+  }, [])
 
-  const handleRegister = async (data: z.infer<typeof registerSchema>) => {
+  const handleRegister = useCallback(async (data: z.infer<typeof registerSchema>) => {
     try {
       const response = await api.post('/api/auth/register', data)
       if(response.data.success){
@@ -94,7 +94,7 @@ const LoginForm = () => {
       setErrorMessage("Dicka shkoi gabim! Ju lutem provoni perseri")
       toast.error("Dicka shkoi gabim! Ju lutem provoni perseri")
     }
-  }
+  }, [])
 
   useEffect(() => {
     setErrorMessage("")
@@ -298,4 +298,4 @@ const LoginForm = () => {
   )
 }
 
-export default LoginForm
+export default memo(LoginForm)

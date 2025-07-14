@@ -1,7 +1,7 @@
 "use client"
 import { contactFormSchema } from '@/lib/schemas/contactFormSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useRef } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {z} from "zod"
 import { Input } from './ui/input'
@@ -15,21 +15,32 @@ import Image from 'next/image'
 type validationSchema = z.infer<typeof contactFormSchema>
 
 const ContactForm = () => {
+    const abortControllerRef = useRef<AbortController | null>(null)
+
     const inputRef = useRef<HTMLInputElement>(null)
     const {control, handleSubmit, formState: {errors, isSubmitting, isSubmitted}, reset} = useForm<validationSchema>({
         resolver: zodResolver(contactFormSchema),
-        defaultValues: {
+        defaultValues: useMemo(() => ({
             fullName: "",
             email: "",
             subject: "",
             description: "",
             reason: "NDIHMË",
             attachments: []
-        },
+        }), []),
         mode: "onChange"
     }) 
 
-    const handleFileChange = ( e: React.ChangeEvent<HTMLInputElement>, onChange: (value: string[]) => void, existingImages: string[]) => {
+    useEffect(() => {
+      return () => {
+        if(abortControllerRef.current){
+            abortControllerRef.current.abort()
+        }
+      }
+    }, [])
+    
+
+    const handleFileChange = useCallback(( e: React.ChangeEvent<HTMLInputElement>, onChange: (value: string[]) => void, existingImages: string[]) => {
         const files = e.target.files;
         if (!files) return;
 
@@ -47,17 +58,16 @@ const ContactForm = () => {
             };
             reader.readAsDataURL(file);
         });
-    }
+    }, [reset])
 
-    const onSubmit = async (data: validationSchema) => {
+    const onSubmit = useCallback(async (data: validationSchema) => {
         console.log(data);
-        
-    }
+    }, [reset])
     
 
   return (
     <div className="max-w-6xl mx-auto mt-6">
-        <div className="flex flex-col gap-4 mb-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mb-6">
             <div className="flex flex-row gap-2">
                 <div className="flex-1">
                     <Label htmlFor='name' className="mb-1">Emri Juaj</Label>
@@ -78,7 +88,7 @@ const ContactForm = () => {
                         control={control}
                         name="email"
                         render={({field}) => (
-                            <Input type="email" {...field} placeholder='perdoruesi@shembull.com' {...field}/>
+                            <Input id='email' type="email" {...field} placeholder='perdoruesi@shembull.com' {...field}/>
                         )}
                     />
                     {errors.email && (
@@ -107,7 +117,7 @@ const ContactForm = () => {
                         name="reason"
                         render={({field}) => (
                             <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                            <SelectTrigger className="flex-1 w-full cursor-pointer">
+                            <SelectTrigger id='reason' className="flex-1 w-full cursor-pointer">
                                 <SelectValue placeholder="Zgjidh nje arsyje kontakti" />
                             </SelectTrigger>
                             <SelectContent>
@@ -173,7 +183,7 @@ const ContactForm = () => {
                     </div>
 
                     {/* Upload Button */}
-                    <Label>
+                    <Label className="w-fit">
                         <Input
                             ref={inputRef}
                             type="file"
@@ -193,11 +203,11 @@ const ContactForm = () => {
                 )}
             </div>
             <div className="mx-auto w-[200px]">
-                <CTAButton primary text={isSubmitted ? "Duke u derguar" : "Dergo"} classNames="!w-full !flex-1"/>
+                <CTAButton primary type='submit' text={isSubmitted ? "Duke u derguar" : "Dergo"} classNames="!w-full !flex-1"/>
             </div>
-        </div>
+        </form>
     </div>
   )
 }
 
-export default ContactForm
+export default memo(ContactForm)

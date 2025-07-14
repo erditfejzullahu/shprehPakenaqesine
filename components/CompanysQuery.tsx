@@ -1,6 +1,6 @@
 "use client"
 import { useInfiniteQuery } from '@tanstack/react-query'
-import React from 'react'
+import React, { memo } from 'react'
 import { LoadingSpinner } from './LoadingComponents'
 import api from '@/lib/api'
 import CompanyCard from './CompanyCard'
@@ -68,4 +68,4 @@ const CompanysQuery = () => {
   )
 }
 
-export default CompanysQuery
+export default memo(CompanysQuery)

@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import {z} from "zod"
 import { Input } from './ui/input'
@@ -17,23 +17,43 @@ type subscriberType = z.infer<typeof subscriberSchema>;
 const SubscriberForm = () => {
     const {register, handleSubmit, reset, formState: {errors, isSubmitting}} = useForm<subscriberType>({
         resolver: zodResolver(subscriberSchema),
-        defaultValues: {
+        defaultValues: useMemo(() => ({
             email: ""
-        },
+        }), []),
         mode: "onChange"
     })
 
-    const onSubmit = async (data: subscriberType) => {
+    const abortControllerRef = useRef<AbortController | null>(null)
+
+    useEffect(() => {
+      return () => {
+        if(abortControllerRef.current){
+            abortControllerRef.current.abort()
+        }
+      }
+    }, [])
+    
+
+    const onSubmit = useCallback(async (data: subscriberType) => {
+        if(abortControllerRef.current){
+            abortControllerRef.current.abort();
+        }
+
+        abortControllerRef.current = new AbortController()
+
         try {
-            const response = await api.post('/subscribers', data)
+            const response = await api.post('/api/subscribers', data)            
             if(response.data.success){
                 toast.success(response.data.message)
+                reset()
             }
-        } catch (error) {
-            toast.error(error.response.data.message)
+        } catch (error: any) {            
+            toast.error(error.response.data.message || "Dicka shkoi gabim. Ju lutem provoni perseri")
             reset()
+        } finally {
+            abortControllerRef.current = null
         }
-    }
+    }, [reset])
 
   return (
     <div className='max-w-6xl mx-auto flex items-center justify-center shadow-xl p-2 flex-col gap-3 py-8'>
@@ -53,4 +73,4 @@ const SubscriberForm = () => {
   )
 }
 
-export default SubscriberForm
+export default memo(SubscriberForm)

@@ -4,9 +4,9 @@
 import { CompanyInterface } from "@/types/types";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { memo } from "react";
 
-export default function CompanyCard({
+const CompanyCard = ({
   id,
   name,
   description,
@@ -19,7 +19,7 @@ export default function CompanyCard({
   images,
   foundedYear,
   complaintsCount
-}: CompanyInterface) {
+}: CompanyInterface) => {
   
   const parsedImages = React.useMemo(() => {
     if (!images) return [];
@@ -94,3 +94,5 @@ export default function CompanyCard({
     </Link>
   );
 }
+
+export default memo(CompanyCard)

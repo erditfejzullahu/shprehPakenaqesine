@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { memo } from 'react'
 import ComplaintCard from './ComplaintCard'
 import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/api'
@@ -21,10 +21,7 @@ const ComplaintsQuery = () => {
         },
         retry: 2,
         refetchOnWindowFocus: false
-    })
-
-    console.log(data);
-    
+    })    
 
     if(isLoading) return <LoadingSpinner />
     if(!data) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
@@ -71,4 +68,4 @@ const ComplaintsQuery = () => {
   )
 }
 
-export default ComplaintsQuery
+export default memo(ComplaintsQuery)

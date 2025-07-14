@@ -1,7 +1,7 @@
 import { Complaint } from '@/app/generated/prisma';
 import { ComplaintCardProps } from '@/types/types';
 import Link from 'next/link';
-import React from 'react'
+import React, { memo } from 'react'
 
 
 
@@ -32,4 +32,4 @@ return (
     );
 }
 
-export default ComplaintCard
+export default memo(ComplaintCard)
