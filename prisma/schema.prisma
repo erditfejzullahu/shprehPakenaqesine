@@ -34,7 +34,7 @@ model Companies {
   industry    String
   foundedYear String?
   createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now()) @updatedAt
+  updatedAt   DateTime    @updatedAt
   complaints  Complaint[]
 }
 
@@ -51,6 +51,13 @@ model Complaint {
   createdAt   DateTime
   updatedAt   DateTime        @updatedAt
   company     Companies       @relation(fields: [companyId], references: [id])
+}
+
+model Subscribers {
+  id String @id @default(uuid())
+  email String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Gender {

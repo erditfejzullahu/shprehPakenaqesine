@@ -2,8 +2,7 @@ import CompanysQuery from '@/components/CompanysQuery'
 import ComplaintsQuery from '@/components/ComplaintsQuery'
 import CTAButton from '@/components/CTAButton'
 import FeatureCard from '@/components/FeatureCard'
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
+import SubscriberForm from '@/components/SubscriberForm'
 import Link from 'next/link'
 import React from 'react'
 import { FaPlusSquare } from 'react-icons/fa'
@@ -69,6 +68,10 @@ const page = () => {
               description="Ndihmoni në ndërtimin e një ambienti pune më të drejtë dhe transparent." 
             />
           </div>
+        </section>
+
+        <section>
+          <SubscriberForm />
         </section>
       </main>
     </div>
