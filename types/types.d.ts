@@ -11,5 +11,6 @@ export interface CompanyInterface extends Omit<Companies, "images"> {
 
 export interface CompaniesWithHasMore{
     companies: CompanyInterface[],
-    hasMore: boolean
+    hasMore: boolean,
+    filteredOrNotFilteredCount?: number
 }

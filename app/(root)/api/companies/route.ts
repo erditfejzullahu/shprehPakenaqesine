@@ -65,6 +65,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
         
 
         let companies;
+        let filteredOrNotFilteredCount: number = 0;
 
         if(searchParams){            
             companies = await prisma.companies.findMany({
@@ -90,6 +91,17 @@ export async function GET(req: NextRequest, res: NextResponse) {
                 ...company,
                 complaintsCount: company._count.complaints
             })));  
+            filteredOrNotFilteredCount = await prisma.companies.count({
+                where: {
+                    OR: [
+                        {name: {contains: searchParams!, mode: "insensitive"}},
+                        {industry: {contains: searchParams!, mode: "insensitive"}},
+                        {description: {contains: searchParams!, mode: "insensitive"}},
+                        {address: {contains: searchParams!, mode: "insensitive"}}
+                    ]
+                },
+                orderBy,
+            })
         }else{
             companies = await prisma.companies.findMany({
                 orderBy,
@@ -106,19 +118,20 @@ export async function GET(req: NextRequest, res: NextResponse) {
                 ...company,
                 complaintsCount: company._count.complaints
             })));  
+            filteredOrNotFilteredCount = await prisma.companies.count()
         }
 
               
-        
-        if(companies.length === 0){
-            return NextResponse.json({message: "No companies found"}, {status: 404})
+        if(!searchParams){
+            if(companies.length === 0){
+                return NextResponse.json({message: "No companies found"}, {status: 404})
+            }
         }
 
         const totalCount = await prisma.companies.count();
 
         const hasMore = page * limit < totalCount;
-
-        return NextResponse.json({ companies, hasMore });
+        return NextResponse.json({companies, hasMore, filteredOrNotFilteredCount})
         
     } catch (error) {
         console.error(error)

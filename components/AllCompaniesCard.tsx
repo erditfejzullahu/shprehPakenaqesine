@@ -25,14 +25,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { LoadingSpinner } from "./LoadingComponents";
-import { FaChevronDown } from "react-icons/fa";
+import { FaArrowRight, FaChevronDown } from "react-icons/fa";
 import CTAButton from "./CTAButton";
 import debounce from "lodash/debounce"
+import Link from "next/link";
 
 
 const CompaniesPage = () => {
     
-    const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch} = useInfiniteQuery({
+    const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch, isRefetching} = useInfiniteQuery({
         queryKey: ['companies'],
         queryFn: async ({pageParam}) => {
             const res = await api.get<CompaniesWithHasMore>(`/api/companies?page=${pageParam}&limit=9&search=${encodeURIComponent(searchTerm)}&sortBy=${sortBy}`)
@@ -41,9 +42,12 @@ const CompaniesPage = () => {
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) =>
             lastPage.hasMore ? allPages.length + 1 : undefined,
-        retry: 2,
+        retry: false,
         refetchOnWindowFocus: false 
     })
+
+    console.log(data);
+    
 
     const debouncedSearch = useMemo(() => (
         debounce(() => {
@@ -66,8 +70,8 @@ const CompaniesPage = () => {
     }, [searchTerm])
   
 
-    if(isLoading) return <LoadingSpinner />
-    if(!data) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
+    if(isLoading || isRefetching) return <div className="py-8"><LoadingSpinner /></div>
+    if(!data) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6 my-8">
         <div className="flex flex-row gap-1">
           <div>
             <h3 className="text-gray-600 font-normal mb-3">Nuk ka te dhena. Nese mendoni qe eshte gabim</h3>
@@ -91,14 +95,15 @@ const CompaniesPage = () => {
       </div> 
 
     const companies = data?.pages.flatMap((page) => page.companies) || []
-
+    const totalCount = data?.pages[0]?.filteredOrNotFilteredCount || 0;
+    
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col gap-6">
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Kompanitë</h1>
+            <Link className="text-indigo-600 font-semibold hover:text-xl transition-all ease-in-out flex flex-row gap-1 text-lg w-fit" href={'/shto-kompani'}>Shtoni Kompani <FaArrowRight className="rotate-[-35deg]"/></Link>
             <p className="text-muted-foreground">
               Lista e të gjitha kompanive në platformën tonë
             </p>
@@ -166,9 +171,9 @@ const CompaniesPage = () => {
         </div>
 
         {/* Results Count */}
-        {/* <div className="text-sm text-muted-foreground">
-          {filteredCompanies?.length} kompani{filteredCompanies?.length !== 1 ? " të" : ""} gjetura
-        </div> */}
+        <div className="text-sm text-muted-foreground">
+        {totalCount} kompani{totalCount !== 1 ? " të gjetura" : " e gjetur"}
+        </div>
 
         {/* Companies List */}
         {viewMode === "grid" ? (
