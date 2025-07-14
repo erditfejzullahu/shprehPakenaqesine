@@ -9,22 +9,30 @@ datasource db {
 }
 
 model Users {
-  id             String      @id @default(uuid())
-  createdAt      DateTime
-  fullName String @default("Anonimi")
-  imageUrl String @default("https://media.istockphoto.com/id/1223671392/vector/default-profile-picture-avatar-photo-placeholder-vector-illustration.jpg?s=612x612&w=0&k=20&c=s0aTdmT5aU6b8ot7VKm11DeID6NctRCpB755rA1BIP0=")
-  updatedAt      DateTime @updatedAt
-  password       String
-  acceptedUser   Boolean  @default(false)
-  email          String   @unique
-  email_verified Boolean  @default(false)
-  gender         Gender
-  username       String   @unique
-  complaints Complaint[]
-  reputation Int @default(0)
-  anonimity Boolean @default(false)
-  contributions Contributions[]
-  complaintUpVotes UpVotesForComplaints[]
+  id               String             @id @default(uuid())
+  createdAt        DateTime
+  updatedAt        DateTime           @updatedAt
+  password         String
+  acceptedUser     Boolean            @default(false)
+  email            String             @unique
+  email_verified   Boolean            @default(false)
+  gender           Gender
+  username         String             @unique
+  fullName         String             @default("Anonimi")
+  anonimity        Boolean            @default(false)
+  reputation       Int                @default(0)
+  complaints       Complaint[]
+  complaintUpVotes ComplaintUpVotes[]
+  contributions    Contributions[]
+}
+
+model Contributions {
+  complaintId String
+  userId      String
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+  user        Users     @relation(fields: [userId], references: [id])
+
+  @@id([complaintId, userId])
 }
 
 model Companies {
@@ -44,57 +52,48 @@ model Companies {
   complaints  Complaint[]
 }
 
-model Contributions {
+model ComplaintUpVotes {
+  userId      String
   complaintId String
-  complaint Complaint @relation(fields: [complaintId], references: [id])
-  userId String
-  user Users @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@id([complaintId, userId])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+  user        Users     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, complaintId])
 }
 
-model UpVotesForComplaints {
-  complaintId String
-  complaint Complaint @relation(fields: [complaintId], references: [id])
-  userId String
-  user Users @relation(fields: [userId], references: [id])
+model Complaint {
+  id              String             @id @default(uuid())
+  companyId       String
+  title           String
+  description     String
+  status          ComplaintStatus    @default(PENDING)
+  category        Category
+  attachments     String?
+  createdAt       DateTime
+  updatedAt       DateTime           @updatedAt
+  audiosAttached  String[]           @default([])
+  videosAttached  String[]           @default([])
+  resolvedStatus  ResolvedStatus     @default(PENDING)
+  upVotes         Int                @default(0)
+  userId          String
+  company         Companies          @relation(fields: [companyId], references: [id])
+  user            Users              @relation(fields: [userId], references: [id])
+  complaintUpVote ComplaintUpVotes[]
+  contributions   Contributions[]
+}
+
+model Subscribers {
+  id        String   @id @default(uuid())
+  email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  @@unique([complaintId, userId])
 }
 
 enum ResolvedStatus {
   PENDING
   RESOLVED
-}
-
-model Complaint {
-  id          String          @id @default(uuid())
-  companyId   String
-  title       String
-  description String
-  status      ComplaintStatus @default(PENDING)
-  resolvedStatus ResolvedStatus @default(PENDING)
-  category    Category
-  userId String
-  user Users @relation(fields: [userId], references: [id])
-  attachments String?
-  audiosAttached String[] @default([])
-  videosAttached String[] @default([])
-  createdAt   DateTime
-  updatedAt   DateTime        @updatedAt
-  company     Companies       @relation(fields: [companyId], references: [id])
-  upVotes Int @default(0)
-  contributions Contributions[]
-  upVotesComplaints UpVotesForComplaints[]
-}
-
-model Subscribers {
-  id String @id @default(uuid())
-  email String @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 enum Gender {
@@ -105,71 +104,50 @@ enum Gender {
 }
 
 enum Category {
-  // Punë dhe vend pune  
-  NGACIMI_NE_VENDIN_E_PUNES  
-  DISKRIMIMI_NE_VENDIN_E_PUNES  
-  SIGURIA_NE_VENDIN_E_PUNES  
-  ABUZIMI_NE_VENDIN_E_PUNES  
-  VEDIA_E_PASURISE_NE_VENDIN_E_PUNES  
-
-  // Korrupsion dhe finançe  
-  KEQPERDORIMI_FINANCIAR  
-  RYSHFETI_KORRUPSIONI  
-  KONFLIKTI_I_INTERESAVE  
-  CENIME_NE_PROKURIM  
-  FAVORIZIMI  
-
-  // Shërbime publike  
-  DESHTIMI_I_SHERBIMEVE_PUBLIKE  
-  ABUZIMI_NE_APARATIN_E_RENDIT  
-  KEQPERDORIMI_I_DETYRAVE_GJYQESORE  
-  PROBLEME_NE_ADMINISTRIMIN_E_TOKEN  
-
-  // Arsim  
-  KEQPERDORIMI_AKADEMIK  
-  ABUZIMI_NE_ARSIM  
-  CENIME_NE_PROCESIN_E_PRANIMEVE  
-
-  // Shëndetësi  
-  GABIM_MJEKESOR  
-  ABUZIMI_NDAJ_PACIENTEVE  
-  MASHTRIME_NE_KUJDESIN_SHENDETESOR  
-  KEQPERDORIMI_I_BILEVE  
-
-  // Mjedis  
-  DEMTIMI_I_AMBIENTIT  
-  KRIMET_NDAJ_JETESES_SEGERVE  
-  NDERTIMI_I_PALIGJSHEM  
-
-  // Konsumatorët  
-  REKLAMIM_I_RREJSHEM  
-  SIGURIA_E_PRODUKTEVE  
-  SHITJE_ME_CMIME_TEPER_TE_LARTA  
-  SHKELJE_E_PRIVATESISE_SE_TE_DHENAVE  
-
-  // Digjitale  
-  KRIMET_KIBERNETIKE  
-  NGACIMI_ONLINE  
-  EKSPLOATIMI_I_FEMIJEVE  
-  PERMBATJE_E_PALIGJSHME  
-
-  // Infrastrukturë  
-  NDERTESA_TE_PASIGURTA  
-  PROBLEME_ME_SIGURINE_RRUGORE  
-  PROBLEME_ME_SHERBIMET_KOMMUNALE  
-
-  // Të drejtat e njeriut  
-  TRAFIKIMI_I_QENIEVE_NJEREZORE  
-  PUNE_E_DETYRUAR  
-  DHUNA_NE_FAMILJE  
-  SHKELJE_E_TE_DREJTAVE_TE_PAKICAVE  
-
-  // Të tjera  
-  MIZORIA_NDAJ_KAFSHEVE  
-  NDOTJA_ZANORE  
-  VANDALIZEM  
-  KEQPERDORIM_I_PERGJITHSHEM  
-  TJETER  
+  NGACIMI_NE_VENDIN_E_PUNES
+  DISKRIMIMI_NE_VENDIN_E_PUNES
+  SIGURIA_NE_VENDIN_E_PUNES
+  ABUZIMI_NE_VENDIN_E_PUNES
+  VEDIA_E_PASURISE_NE_VENDIN_E_PUNES
+  KEQPERDORIMI_FINANCIAR
+  RYSHFETI_KORRUPSIONI
+  KONFLIKTI_I_INTERESAVE
+  CENIME_NE_PROKURIM
+  FAVORIZIMI
+  DESHTIMI_I_SHERBIMEVE_PUBLIKE
+  ABUZIMI_NE_APARATIN_E_RENDIT
+  KEQPERDORIMI_I_DETYRAVE_GJYQESORE
+  PROBLEME_NE_ADMINISTRIMIN_E_TOKEN
+  KEQPERDORIMI_AKADEMIK
+  ABUZIMI_NE_ARSIM
+  CENIME_NE_PROCESIN_E_PRANIMEVE
+  GABIM_MJEKESOR
+  ABUZIMI_NDAJ_PACIENTEVE
+  MASHTRIME_NE_KUJDESIN_SHENDETESOR
+  KEQPERDORIMI_I_BILEVE
+  DEMTIMI_I_AMBIENTIT
+  KRIMET_NDAJ_JETESES_SEGERVE
+  NDERTIMI_I_PALIGJSHEM
+  REKLAMIM_I_RREJSHEM
+  SIGURIA_E_PRODUKTEVE
+  SHITJE_ME_CMIME_TEPER_TE_LARTA
+  SHKELJE_E_PRIVATESISE_SE_TE_DHENAVE
+  KRIMET_KIBERNETIKE
+  NGACIMI_ONLINE
+  EKSPLOATIMI_I_FEMIJEVE
+  PERMBATJE_E_PALIGJSHME
+  NDERTESA_TE_PASIGURTA
+  PROBLEME_ME_SIGURINE_RRUGORE
+  PROBLEME_ME_SHERBIMET_KOMMUNALE
+  TRAFIKIMI_I_QENIEVE_NJEREZORE
+  PUNE_E_DETYRUAR
+  DHUNA_NE_FAMILJE
+  SHKELJE_E_TE_DREJTAVE_TE_PAKICAVE
+  MIZORIA_NDAJ_KAFSHEVE
+  NDOTJA_ZANORE
+  VANDALIZEM
+  KEQPERDORIM_I_PERGJITHSHEM
+  TJETER
 }
 
 enum ComplaintStatus {

@@ -1,7 +1,7 @@
 import {faker} from "@faker-js/faker"
 import * as bcrypt from "bcrypt"
 import prisma from "../lib/prisma";
-import { Category, ComplaintStatus } from "../app/generated/prisma";
+import { Category, ComplaintStatus, ResolvedStatus } from "../app/generated/prisma";
 
 async function main(){
     console.log('starting seed');
@@ -20,7 +20,9 @@ async function main(){
             gender: "MASHKULL",
             acceptedUser: true,
             email: "erditfejzullahu45@gmail.com",
-            email_verified: true
+            email_verified: true,
+            reputation: 0,
+            anonimity: false
         }
     })
     console.log(`User ${user.username} created...`)
@@ -85,6 +87,7 @@ async function main(){
   // Get all enum values
   const categories = Object.values(Category);
   const statuses = Object.values(ComplaintStatus);
+  const resolvedStatuses = Object.values(ResolvedStatus)
 
   // Create 200 complaints spread across companies
   const complaints = [];
@@ -111,6 +114,8 @@ async function main(){
           from: randomDate, 
           to: new Date() 
         }),
+        resolvedStatus:  resolvedStatuses[Math.floor(Math.random() * resolvedStatuses.length)],
+        userId: user.id
       }
     });
     complaints.push(complaint);
