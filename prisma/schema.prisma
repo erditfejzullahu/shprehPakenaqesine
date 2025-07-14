@@ -64,12 +64,18 @@ model UpVotesForComplaints {
   @@unique([complaintId, userId])
 }
 
+enum ResolvedStatus {
+  PENDING
+  RESOLVED
+}
+
 model Complaint {
   id          String          @id @default(uuid())
   companyId   String
   title       String
   description String
   status      ComplaintStatus @default(PENDING)
+  resolvedStatus ResolvedStatus @default(PENDING)
   category    Category
   userId String
   user Users @relation(fields: [userId], references: [id])

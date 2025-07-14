@@ -1,6 +1,9 @@
 "use client"
 import { useState } from 'react';
 import Head from 'next/head';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import CTAButton from '@/components/CTAButton';
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('myComplaints');
@@ -28,23 +31,17 @@ const ProfilePage = () => {
 
   return (
     <>
-      <Head>
-        <title>{user.name} | Community Complaints Profile</title>
-        <meta name="description" content={`${user.name}'s profile on the community complaints platform`} />
-      </Head>
-
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <div className="bg-white shadow-sm">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-          </div>
+        <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">Profili</h1>
+            <p className='text-gray-600 text-center'>Ketu mund te gjeni te gjitha ankesat/raportimet, kontribimet apo te dhena tuaja personale</p>
         </div>
 
         {/* Profile Content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-xl">
           {/* Profile Card */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+          <div className="bg-white shadow-md overflow-hidden mb-8">
             <div className="p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                 <div className="relative">
@@ -93,19 +90,19 @@ const ProfilePage = () => {
             <nav className="-mb-px flex space-x-8">
               <button
                 onClick={() => setActiveTab('myComplaints')}
-                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'myComplaints' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                className={`whitespace-nowrap cursor-pointer py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'myComplaints' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
               >
                 My Complaints
               </button>
               <button
                 onClick={() => setActiveTab('contributions')}
-                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'contributions' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                className={`whitespace-nowrap py-4 cursor-pointer px-1 border-b-2 font-medium text-sm ${activeTab === 'contributions' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
               >
                 Community Contributions
               </button>
               <button
                 onClick={() => setActiveTab('settings')}
-                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'settings' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                className={`whitespace-nowrap py-4 cursor-pointer px-1 border-b-2 font-medium text-sm ${activeTab === 'settings' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
               >
                 Settings
               </button>
@@ -113,12 +110,12 @@ const ProfilePage = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-white shadow-md overflow-hidden">
             {activeTab === 'myComplaints' && (
               <div className="divide-y divide-gray-200">
                 {complaints.length > 0 ? (
                   complaints.map((complaint) => (
-                    <div key={complaint.id} className="p-6 hover:bg-gray-50 transition-colors duration-150">
+                    <div key={complaint.id} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="text-lg font-medium text-gray-900">{complaint.title}</h3>
@@ -145,7 +142,7 @@ const ProfilePage = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="p-8 text-center">
+                  <div className="p-8 text-center cursor-pointer">
                     <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -162,7 +159,7 @@ const ProfilePage = () => {
             )}
 
             {activeTab === 'contributions' && (
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-gray-200 cursor-pointer">
                 {contributions.length > 0 ? (
                   contributions.map((contribution) => (
                     <div key={contribution.id} className="p-6 hover:bg-gray-50 transition-colors duration-150">
@@ -199,36 +196,35 @@ const ProfilePage = () => {
                 <h3 className="text-lg font-medium text-gray-900">Account Settings</h3>
                 <div className="mt-6 space-y-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                      Name
-                    </label>
-                    <input
+                    <Label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                      Emri
+                    </Label>
+                    <Input
                       type="text"
                       id="name"
                       defaultValue={user.name}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      className="shadow-md"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                    <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
                       Email
-                    </label>
-                    <input
+                    </Label>
+                    <Input
                       type="email"
                       id="email"
                       defaultValue={user.email}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      className="shadow-md"
                     />
                   </div>
 
-                  <div className="pt-4">
-                    <button
+                  <div className="pt-2">
+                    <CTAButton
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                      Save Changes
-                    </button>
+                      primary
+                      text='Ruaj ndryshimet'
+                    />
                   </div>
                 </div>
               </div>
