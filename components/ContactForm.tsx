@@ -188,6 +188,9 @@ const ContactForm = () => {
                     </div>
                 )}
                 />
+                {errors.attachments && (
+                    <p className="text-red-500 text-sm mt-1">{errors.attachments.message}</p>
+                )}
             </div>
             <div className="mx-auto w-[200px]">
                 <CTAButton primary text={isSubmitted ? "Duke u derguar" : "Dergo"} classNames="!w-full !flex-1"/>

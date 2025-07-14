@@ -49,7 +49,8 @@ const CreateComplaintForm = () => {
       attachments: [],
       audiosAttached: [],
       videosAttached: []
-    }), [])
+    }), []),
+    mode: "onChange"
   })
 
   const onSubmit = useCallback(async (data: ComplaintsType) => {
@@ -159,9 +160,12 @@ const CreateComplaintForm = () => {
           control={control}
           name="title"
           render={({field}) => (
-            <Input id='title' placeholder='Nje titull terheqes per krijimin e ankeses/raportimit...' className="placeholder:text-center text-center"/>
+            <Input id='title' {...field} placeholder='Nje titull terheqes per krijimin e ankeses/raportimit...' className="placeholder:text-center text-center"/>
           )}
         />
+        {errors.title && (
+          <p className="text-red-500 text-sm mt-1 text-center">{errors.title.message}</p>
+        )}
       </div>
       <div className='flex flex-row items-center justify-between gap-4'>
         <div className="flex-1">
@@ -193,6 +197,9 @@ const CreateComplaintForm = () => {
               </Select>
             )}
           />
+          {errors.companyId && (
+            <p className="text-red-500 text-sm mt-1">{errors.companyId.message}</p>
+          )}
         </div>
         <div className="flex-1">
           <Label className='mb-1' htmlFor='category'>Kategoria e ankeses</Label>
@@ -222,6 +229,9 @@ const CreateComplaintForm = () => {
               </Select>
             )}
           />
+          {errors.category && (
+            <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>
+          )}
         </div>
       </div>
 
@@ -234,6 +244,9 @@ const CreateComplaintForm = () => {
             <Textarea id='description' {...field} placeholder='Pershkruani ankesen ne menyrat dhe ne detajet me te mira te mundshme...' rows={10}/>
           )}
         />
+        {errors.description && (
+          <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+        )}
       </div>
           
       
@@ -298,6 +311,9 @@ const CreateComplaintForm = () => {
             </div>
           )}
         />
+        {errors.attachments && (
+          <p className="text-red-500 text-sm mt-1 text-center">{errors.attachments.message}</p>
+        )}
       </div>
       <div className="flex flex-row items-center justify-between gap-4">
         <div className='flex-1'>
@@ -344,6 +360,9 @@ const CreateComplaintForm = () => {
               </div>
             )}
           />
+          {errors.audiosAttached && (
+            <p className="text-red-500 text-sm mt-1">{errors.audiosAttached.message}</p>
+          )}
         </div>
         <div className="flex-1">
           <Controller 
@@ -389,6 +408,9 @@ const CreateComplaintForm = () => {
               </div>
             )}
           />
+          {errors.videosAttached && (
+            <p className="text-red-500 text-sm mt-1">{errors.videosAttached.message}</p>
+          )}
         </div>
       </div>
       <div className="flex-1">
