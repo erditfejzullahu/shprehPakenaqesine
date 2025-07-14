@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { Toaster } from "sonner";
 import SessionContext from "@/providers/SessionContext";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const poppins = Poppins({
   variable: "--font-poppins-sans",
@@ -26,7 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
   return (
     <html lang="en">
       <body

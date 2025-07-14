@@ -12,6 +12,7 @@ model Users {
   id             String      @id @default(uuid())
   createdAt      DateTime
   fullName String @default("Anonimi")
+  imageUrl String @default("https://media.istockphoto.com/id/1223671392/vector/default-profile-picture-avatar-photo-placeholder-vector-illustration.jpg?s=612x612&w=0&k=20&c=s0aTdmT5aU6b8ot7VKm11DeID6NctRCpB755rA1BIP0=")
   updatedAt      DateTime @updatedAt
   password       String
   acceptedUser   Boolean  @default(false)
@@ -19,6 +20,11 @@ model Users {
   email_verified Boolean  @default(false)
   gender         Gender
   username       String   @unique
+  complaints Complaint[]
+  reputation Int @default(0)
+  anonimity Boolean @default(false)
+  contributions Contributions[]
+  complaintUpVotes UpVotesForComplaints[]
 }
 
 model Companies {
@@ -38,6 +44,26 @@ model Companies {
   complaints  Complaint[]
 }
 
+model Contributions {
+  complaintId String
+  complaint Complaint @relation(fields: [complaintId], references: [id])
+  userId String
+  user Users @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@id([complaintId, userId])
+}
+
+model UpVotesForComplaints {
+  complaintId String
+  complaint Complaint @relation(fields: [complaintId], references: [id])
+  userId String
+  user Users @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([complaintId, userId])
+}
+
 model Complaint {
   id          String          @id @default(uuid())
   companyId   String
@@ -45,12 +71,17 @@ model Complaint {
   description String
   status      ComplaintStatus @default(PENDING)
   category    Category
+  userId String
+  user Users @relation(fields: [userId], references: [id])
   attachments String?
   audiosAttached String[] @default([])
   videosAttached String[] @default([])
   createdAt   DateTime
   updatedAt   DateTime        @updatedAt
   company     Companies       @relation(fields: [companyId], references: [id])
+  upVotes Int @default(0)
+  contributions Contributions[]
+  upVotesComplaints UpVotesForComplaints[]
 }
 
 model Subscribers {
