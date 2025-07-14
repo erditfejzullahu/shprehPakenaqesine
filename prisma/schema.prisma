@@ -55,7 +55,7 @@ model Complaint {
 
 model Subscribers {
   id String @id @default(uuid())
-  email String
+  email String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

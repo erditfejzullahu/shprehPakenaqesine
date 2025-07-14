@@ -3,16 +3,40 @@ import { registerSchema } from "@/lib/schemas/authSchema";
 import { NextRequest, NextResponse } from "next/server";
 import {z} from "zod"
 import * as bcrypt from "bcrypt"
+import DOMPurify from 'isomorphic-dompurify' // Client+server side sanitization
+import validator from "validator"
 
 type CreateUserDto = z.infer<typeof registerSchema>;
+
+const sanitizeName = (name: string): string => {
+    if (!name) return '';
+    
+    return DOMPurify.sanitize(
+      validator.escape(
+        name.trim()
+          .replace(/</g, '＜')  // Replace angle brackets
+          .replace(/>/g, '＞')
+          .replace(/\s+/g, ' ')  // Collapse multiple spaces
+          // Keep apostrophes and hyphens for names like O'Connor or Jean-Luc
+      )
+    );
+  };
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
     try {
         const body = await req.json() as CreateUserDto
-        console.log(body, " body")
-        const validatedData = registerSchema.parse(body)
-        console.log(validatedData)
-        
+
+        const sanitizedBody = {
+            username: DOMPurify.sanitize(validator.escape(body.username?.trim() || "")),
+            email: DOMPurify.sanitize(validator.normalizeEmail(body.email?.trim() || "") || ""),
+            password: body.password,
+            confirmPassword: body.confirmPassword,
+            fullName: sanitizeName(body.fullName || ""),
+            gender: body.gender
+        }
+
+        const validatedData = registerSchema.parse(sanitizedBody)
+
         const existingUser = await prisma.users.findFirst({
             where: {
                 OR: [

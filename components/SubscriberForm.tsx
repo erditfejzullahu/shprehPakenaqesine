@@ -6,10 +6,11 @@ import { Input } from './ui/input'
 import { Label } from './ui/label'
 import CTAButton from './CTAButton'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { subscriberSchema } from '@/lib/schemas/createSubscriptionSchema'
+import api from '@/lib/api'
+import { toast } from 'sonner'
 
-const subscriberSchema = z.object({
-    email: z.email("Ju lutem shkruani nje email valid.")
-})
+
 
 type subscriberType = z.infer<typeof subscriberSchema>;
 
@@ -23,7 +24,15 @@ const SubscriberForm = () => {
     })
 
     const onSubmit = async (data: subscriberType) => {
-        console.log(data)
+        try {
+            const response = await api.post('/subscribers', data)
+            if(response.data.success){
+                toast.success(response.data.message)
+            }
+        } catch (error) {
+            toast.error(error.response.data.message)
+            reset()
+        }
     }
 
   return (
