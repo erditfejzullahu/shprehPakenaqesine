@@ -5,14 +5,14 @@ import FeatureCard from '@/components/FeatureCard'
 import SubscriberForm from '@/components/SubscriberForm'
 import Link from 'next/link'
 import React from 'react'
-import { FaPlusSquare } from 'react-icons/fa'
+import { FaArrowRight, FaChevronDown, FaPlusSquare } from 'react-icons/fa'
 
 const page = () => {
   return (
     <div>
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center shadow-xl relative">
+        <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
             Shpreh pakenaqesine <span className="text-indigo-600">TENDE</span>
           </h1>
@@ -28,20 +28,26 @@ const page = () => {
               <CTAButton text="Meso me shume" />
             </Link>
           </div>
-          <Link href={"/shto-kompani"} className="bottom-0 absolute rounded-tl-lg px-4 right-0 flex flex-row items-center gap-2 shadow-xl p-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+          <Link href={"/shto-kompani"} className="bottom-0 absolute rounded-tl-lg px-4 right-0 flex flex-row items-center gap-2 shadow-xl border-t p-2 bg-gray-50 hover:bg-gray-200 transition-colors">
           Shto kompani
           <FaPlusSquare size={24} color='#4f46e5'/>
           </Link>
         </section>
 
         <section className="w-full max-w-6xl mx-auto py-16 pb-20 sm:px-6 lg:px-8 text-center ">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">Kompanite</h2>
+          <div className="flex flex-row items-end gap-2 mb-2 justify-between">
+            <h2 className="text-3xl font-bold text-gray-800 border-b-2 w-fit border-indigo-600">Kompanite</h2>
+            <Link aria-description='all companies' href={'/kompanite'} className="text-indigo-600 group hover:font-semibold transition-all font-medium flex flex-row items-end">Te gjithe kompanite <FaChevronDown className='group-hover:size-5 rotate-[40deg]' /></Link>
+          </div>
             <CompanysQuery />
         </section>
 
 
         <section className="w-full max-w-6xl mx-auto py-16 pb-8 px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className='text-3xl font-bold text-gray-800 mb-6'>Ankesat</h2>
+          <div className="flex flex-row items-end gap-2 mb-3 justify-between">
+            <h2 className="text-3xl font-bold text-gray-800 border-b-2 w-fit border-indigo-600">Ankesat</h2>
+            <Link href={'/ankesat'} aria-description='all complaints' className="text-indigo-600 group hover:font-semibold transition-all font-medium flex flex-row items-end">Te gjithe ankesat <FaChevronDown className='group-hover:size-5 rotate-[40deg]' /></Link>
+          </div>
           <div>
             <ComplaintsQuery />
           </div>

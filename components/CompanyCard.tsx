@@ -33,7 +33,7 @@ const CompanyCard = ({
   }, [images]);
   
   return (
-    <Link href={`/kompania/${id}`} aria-description="kompania" className="bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative">
+    <Link href={`/kompanite/${id}`} aria-description="kompania" className="bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative">
       <div>
         <Image
           src={logoUrl}

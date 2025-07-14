@@ -33,13 +33,13 @@ const ProfilePage = () => {
     <>
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
+        <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">Profili</h1>
             <p className='text-gray-600 text-center'>Ketu mund te gjeni te gjitha ankesat/raportimet, kontribimet apo te dhena tuaja personale</p>
         </div>
 
         {/* Profile Content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-xl">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-lg">
           {/* Profile Card */}
           <div className="bg-white shadow-md overflow-hidden mb-8">
             <div className="p-6 sm:p-8">

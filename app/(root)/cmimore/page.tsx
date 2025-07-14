@@ -5,7 +5,7 @@ const page = () => {
   return (
     <div>
       <main className="flex-1">
-          <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
+          <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">Udhëzime për Pagesë</h1>
           </div>
           <div className="max-w-6xl mx-auto py-6">

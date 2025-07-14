@@ -155,7 +155,7 @@ const CreateComplaintForm = () => {
 
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-6xl mx-auto flex flex-col gap-4 my-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-6xl mx-auto flex flex-col gap-4 my-4 shadow-lg p-4">
       <div className='max-w-lg mx-auto w-full'>
         <Label htmlFor='title' className="mb-1 flex items-center justify-center">Titulli i ankeses/raportimit</Label>
         <Controller 

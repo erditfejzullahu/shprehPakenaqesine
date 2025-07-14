@@ -8,7 +8,7 @@ import React, { memo } from 'react'
 const ComplaintCard = ({id, companyId, title, description, status, category, attachments, createdAt, updatedAt, company}: ComplaintCardProps) => {
     
 return (
-    <Link href={`/ankesa/${id}`} aria-description='ankesa' className="bg-white shadow-lg p-4 flex flex-col gap-2 w-82 hover:bg-gray-50 transition-all relative">
+    <Link href={`/ankesat/${id}`} aria-description='ankesa' className="bg-white shadow-lg p-4 flex flex-col gap-2 w-82 hover:bg-gray-50 transition-all relative">
         <div className="flex justify-between items-center mt-3">
         <h3 className="text-xl text-left font-medium text-gray-900 line-clamp-1">{title}</h3>
         </div>
