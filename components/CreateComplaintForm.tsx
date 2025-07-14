@@ -416,7 +416,7 @@ const CreateComplaintForm = () => {
         </div>
       </div>
       <div className="flex-1">
-          <CTAButton text='Apliko per ankesen/raportimin' classNames="flex-1 w-full mt-2" primary/>
+          <CTAButton type='submit' isLoading={isSubmitting} text='Apliko per ankesen/raportimin' classNames="flex-1 w-full mt-2" primary/>
       </div>
     </form>
   )
