@@ -100,44 +100,37 @@ const ComplaintDetails = () => {
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white shadow-sm">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
             <button 
               onClick={() => router.back()}
-              className="flex items-center text-indigo-600 hover:text-indigo-800 mb-2"
+              className="flex items-center text-indigo-600 hover:text-indigo-800 mb-2 shadow-lg p-2"
             >
               <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              Back to complaints
+              Kthehu tek ankesat/raportimet
             </button>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{complaintData.title}</h1>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-lg">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left Column - Complaint Content */}
             <div className="lg:w-2/3">
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+              <div className="bg-white shadow-lg overflow-hidden mb-6">
                 <div className="p-6 sm:p-8">
                   {/* Status Badges */}
                   <div className="flex gap-3 mb-6">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      complaintData.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                      complaintData.status === 'ACCEPTED' ? 'bg-green-100 text-green-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {complaintData.status}
-                    </span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    <span className={`px-3 py-1  shadow-sm text-xs font-medium ${
                       complaintData.resolvedStatus === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
                       complaintData.resolvedStatus === 'RESOLVED' ? 'bg-green-100 text-green-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
                       {complaintData.resolvedStatus}
                     </span>
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <span className="px-3 py-1  text-xs shadow-sm font-medium bg-blue-100 text-blue-800">
                       {getCategoryLabel(complaintData.category)}
                     </span>
                   </div>
@@ -152,11 +145,11 @@ const ComplaintDetails = () => {
                     complaintData.audiosAttached?.length > 0 || 
                     complaintData.videosAttached?.length > 0) && (
                     <div className="mb-8">
-                      <h3 className="text-lg font-medium text-gray-900 mb-3">Attachments</h3>
+                      <h3 className="text-lg font-medium text-gray-900 mb-3">Bashkngjitjet/provat</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         {/* Documents */}
                         {complaintData.attachments?.map((file, index) => (
-                          <div key={`doc-${index}`} className="border rounded-lg p-3 flex items-center">
+                          <div key={`doc-${index}`} className="shadow-md p-3 flex items-center">
                             <svg className="w-8 h-8 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
                             </svg>
@@ -169,7 +162,7 @@ const ComplaintDetails = () => {
 
                         {/* Videos */}
                         {complaintData.videosAttached?.map((file, index) => (
-                          <div key={`video-${index}`} className="border rounded-lg p-3 flex items-center">
+                          <div key={`video-${index}`} className="shadow-md p-3 flex items-center">
                             <svg className="w-8 h-8 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
                             </svg>
@@ -182,7 +175,7 @@ const ComplaintDetails = () => {
 
                         {/* Audios */}
                         {complaintData.audiosAttached?.map((file, index) => (
-                          <div key={`audio-${index}`} className="border rounded-lg p-3 flex items-center">
+                          <div key={`audio-${index}`} className="shadow-md p-3 flex items-center">
                             <svg className="w-8 h-8 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clipRule="evenodd" />
                             </svg>
@@ -198,9 +191,9 @@ const ComplaintDetails = () => {
 
                   {/* Dates */}
                   <div className="text-sm text-gray-500">
-                    <p>Posted on: {formatDate(complaintData.createdAt)}</p>
+                    <p>Postuar me: {formatDate(complaintData.createdAt)}</p>
                     {complaintData.updatedAt !== complaintData.createdAt && (
-                      <p>Last updated: {formatDate(complaintData.updatedAt)}</p>
+                      <p>Rifreskuar me: {formatDate(complaintData.updatedAt)}</p>
                     )}
                   </div>
                 </div>
@@ -232,14 +225,14 @@ const ComplaintDetails = () => {
 
               {/* Tab Content */}
               {activeTab === 'details' && (
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden p-6">
+                <div className="bg-white shadow-lg overflow-hidden p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Additional Details</h3>
                   <p className="text-gray-600">No additional details provided.</p>
                 </div>
               )}
 
               {activeTab === 'contributions' && (
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="bg-white  shadow-lg overflow-hidden">
                   {complaintData.contributions?.length > 0 ? (
                     <div className="divide-y divide-gray-200">
                       {complaintData.contributions.map((contribution, index) => (
@@ -281,7 +274,7 @@ const ComplaintDetails = () => {
               )}
 
               {activeTab === 'discussion' && (
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden p-6">
+                <div className="bg-white shadow-lg overflow-hidden p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Discussion</h3>
                   <p className="text-gray-600">Discussion feature coming soon.</p>
                 </div>
@@ -291,7 +284,7 @@ const ComplaintDetails = () => {
             {/* Right Column - Sidebar */}
             <div className="lg:w-1/3 space-y-6">
               {/* Company Card */}
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="bg-white shadow-lg overflow-hidden">
                 <div className="p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Company Information</h3>
                   <div className="flex items-center gap-4 mb-4">
@@ -312,7 +305,7 @@ const ComplaintDetails = () => {
                       rel="noopener noreferrer"
                       className="inline-flex items-center text-indigo-600 hover:text-indigo-800 text-sm"
                     >
-                      Visit website
+                      Vizito faqen
                       <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                       </svg>
@@ -322,7 +315,7 @@ const ComplaintDetails = () => {
               </div>
 
               {/* Author Card */}
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="bg-white shadow-lg overflow-hidden">
                 <div className="p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Complaint Author</h3>
                   <div className="flex items-center gap-4">
@@ -352,7 +345,7 @@ const ComplaintDetails = () => {
               </div>
 
               {/* Actions Card */}
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="bg-white shadow-lg overflow-hidden">
                 <div className="p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Actions</h3>
                   <button

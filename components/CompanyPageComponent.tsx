@@ -82,7 +82,7 @@ const CompanyPage = () => {
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white shadow-sm">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
             <button 
               onClick={() => router.back()}
               className="flex items-center text-indigo-600 hover:text-indigo-800 mb-2"
@@ -90,7 +90,7 @@ const CompanyPage = () => {
               <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              Back
+              Kthehu tek kompanite
             </button>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <img 
@@ -107,12 +107,12 @@ const CompanyPage = () => {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-lg">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left Column - Company Info */}
             <div className="lg:w-1/3 space-y-6">
               {/* Company Details Card */}
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="bg-white shadow-md overflow-hidden">
                 <div className="p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Company Details</h3>
                   <div className="space-y-4">
@@ -176,12 +176,12 @@ const CompanyPage = () => {
 
               {/* Company Images */}
               {companyData.images?.length > 0 && (
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="bg-white shadow-md overflow-hidden">
                   <div className="p-6">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
                     <div className="grid grid-cols-2 gap-3">
                       {companyData.images.map((image, index) => (
-                        <div key={index} className="aspect-square bg-gray-100 rounded-md overflow-hidden">
+                        <div key={index} className="aspect-square bg-gray-100 shadow-md overflow-hidden">
                           <img 
                             src={image} 
                             alt={`Company image ${index + 1}`}
@@ -223,7 +223,7 @@ const CompanyPage = () => {
 
               {/* Tab Content */}
               {activeTab === 'overview' && (
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden p-6">
+                <div className="bg-white shadow-md overflow-hidden p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">About {companyData.name}</h3>
                   {companyData.description ? (
                     <p className="text-gray-700">{companyData.description}</p>
@@ -234,23 +234,23 @@ const CompanyPage = () => {
                   <div className="mt-8">
                     <h4 className="text-md font-medium text-gray-900 mb-3">Quick Stats</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="bg-gray-50 rounded-lg p-4 text-center">
+                      <div className="bg-gray-50 shadow-md p-4 text-center">
                         <p className="text-2xl font-bold text-indigo-600">{companyData.complaints.length}</p>
                         <p className="text-sm text-gray-500">Total Complaints</p>
                       </div>
-                      <div className="bg-gray-50 rounded-lg p-4 text-center">
+                      <div className="bg-gray-50 shadow-md p-4 text-center">
                         <p className="text-2xl font-bold text-indigo-600">
                           {companyData.complaints.filter(c => c.status === 'ACCEPTED').length}
                         </p>
                         <p className="text-sm text-gray-500">Verified Complaints</p>
                       </div>
-                      <div className="bg-gray-50 rounded-lg p-4 text-center">
+                      <div className="bg-gray-50 shadow-md p-4 text-center">
                         <p className="text-2xl font-bold text-indigo-600">
                           {Math.round(companyData.complaints.length / 12 * 10) / 10}
                         </p>
                         <p className="text-sm text-gray-500">Complaints per Month</p>
                       </div>
-                      <div className="bg-gray-50 rounded-lg p-4 text-center">
+                      <div className="bg-gray-50 shadow-md p-4 text-center">
                         <p className="text-2xl font-bold text-indigo-600">
                           {companyData.complaints.reduce((sum, c) => sum + c.upVotes, 0)}
                         </p>
@@ -262,7 +262,7 @@ const CompanyPage = () => {
               )}
 
               {activeTab === 'complaints' && (
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="bg-white shadow-md overflow-hidden">
                   {/* Sort Options */}
                   <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                     <h3 className="text-lg font-medium text-gray-900">Complaints</h3>
@@ -272,7 +272,7 @@ const CompanyPage = () => {
                         id="sort"
                         value={sortOption}
                         onChange={(e) => setSortOption(e.target.value)}
-                        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+                        className="border-gray-300 shadow-sm px-2 focus:border-indigo-500 focus:ring-indigo-500 text-sm"
                       >
                         <option value="newest">Newest</option>
                         <option value="oldest">Oldest</option>
@@ -341,11 +341,11 @@ const CompanyPage = () => {
               )}
 
               {activeTab === 'statistics' && (
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden p-6">
+                <div className="bg-white shadow-md overflow-hidden p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Complaint Statistics</h3>
                   <p className="text-gray-600">Statistics feature coming soon.</p>
                   {/* Placeholder for charts/graphs */}
-                  <div className="mt-6 h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                  <div className="mt-6 h-64 bg-gray-100 shadow-sm flex items-center justify-center text-gray-400">
                     Complaint trends and analytics will be displayed here
                   </div>
                 </div>
