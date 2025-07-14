@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { MdError } from "react-icons/md";
@@ -44,13 +45,11 @@ export default function Error({ error, reset }: ErrorProps) {
           >
             Provoni përsëri
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => router.push("/")}
-            className="w-full sm:w-auto"
+          <Link href={"/"}
+            className="w-full sm:w-auto bg-indigo-600 p-1 px-2 rounded-lg flex items-center justify-center text-white font-medium text-sm"
           >
             Kthehu në faqen kryesore
-          </Button>
+          </Link>
         </div>
       </div>
     </div>

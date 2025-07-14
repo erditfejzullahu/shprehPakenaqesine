@@ -8,3 +8,8 @@ export interface CompanyInterface extends Omit<Companies, "images"> {
     images?: string[]
     complaintsCount: number;
 }
+
+export interface CompaniesWithHasMore{
+    companies: CompanyInterface[],
+    hasMore: boolean
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { CompanyInterface } from "@/types/types";
+import { CompaniesWithHasMore, CompanyInterface } from "@/types/types";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -21,46 +21,76 @@ import {
 } from "@/components/ui/table";
 import CompanyCard from "@/components/CompanyCard";
 import { Grid3x3, List } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { LoadingSpinner } from "./LoadingComponents";
+import { FaChevronDown } from "react-icons/fa";
+import CTAButton from "./CTAButton";
+import debounce from "lodash/debounce"
 
-const CompaniesPage = ({ companies }: { companies: CompanyInterface[] }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("name-asc");
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
-  // Filter and sort companies
-  const filteredCompanies = companies
-    .filter((company) => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        company.name.toLowerCase().includes(searchLower) ||
-        company.industry?.toLowerCase().includes(searchLower) ||
-        company.description?.toLowerCase().includes(searchLower) ||
-        company.address?.toLowerCase().includes(searchLower)
-      );
+const CompaniesPage = () => {
+    
+    const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch} = useInfiniteQuery({
+        queryKey: ['companies'],
+        queryFn: async ({pageParam}) => {
+            const res = await api.get<CompaniesWithHasMore>(`/api/companies?page=${pageParam}&limit=9&search=${encodeURIComponent(searchTerm)}&sortBy=${sortBy}`)
+            return res.data;
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) =>
+            lastPage.hasMore ? allPages.length + 1 : undefined,
+        retry: 2,
+        refetchOnWindowFocus: false 
     })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "name-asc":
-          return a.name.localeCompare(b.name);
-        case "name-desc":
-          return b.name.localeCompare(a.name);
-        case "complaints-asc":
-          return (a.complaintsCount || 0) - (b.complaintsCount || 0);
-        case "complaints-desc":
-          return (b.complaintsCount || 0) - (a.complaintsCount || 0);
-        case "industry-asc":
-          return (a.industry || "").localeCompare(b.industry || "");
-        case "industry-desc":
-          return (b.industry || "").localeCompare(a.industry || "");
-        case "founded-asc":
-          return (a.foundedYear || "").localeCompare(b.foundedYear || "");
-        case "founded-desc":
-          return (b.foundedYear || "").localeCompare(a.foundedYear || "");
-        default:
-          return 0;
-      }
-    });
+
+    const debouncedSearch = useMemo(() => (
+        debounce(() => {
+            refetch()
+        }, 500)
+    ), [])
+
+    
+    
+    const [searchTerm, setSearchTerm] = useState("");
+    const [sortBy, setSortBy] = useState("name-asc");
+    const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+    
+    useEffect(() => {
+        refetch()
+    }, [sortBy])
+    
+    useEffect(() => {
+        debouncedSearch()
+    }, [searchTerm])
+  
+
+    if(isLoading) return <LoadingSpinner />
+    if(!data) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
+        <div className="flex flex-row gap-1">
+          <div>
+            <h3 className="text-gray-600 font-normal mb-3">Nuk ka te dhena. Nese mendoni qe eshte gabim</h3>
+          </div>
+          <div className="pt-2 rotate-[50deg]">
+          <FaChevronDown size={22} color='#4f46e5'/>
+          </div>
+        </div>
+        <CTAButton onClick={() => refetch()} text='Provo perseri'/>
+      </div> 
+      if(isError) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
+        <div className="flex flex-row gap-1">
+          <div>
+            <h3 className="text-gray-600 font-normal mb-3">Dicka shkoi gabim. Provoni perseri!</h3>
+          </div>
+          <div className="pt-2 rotate-[50deg]">
+          <FaChevronDown size={22} color='#4f46e5'/>
+          </div>
+        </div>
+        <CTAButton onClick={() => refetch()} text='Provo perseri'/>
+      </div> 
+
+    const companies = data?.pages.flatMap((page) => page.companies) || []
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -136,16 +166,16 @@ const CompaniesPage = ({ companies }: { companies: CompanyInterface[] }) => {
         </div>
 
         {/* Results Count */}
-        <div className="text-sm text-muted-foreground">
-          {filteredCompanies.length} kompani{filteredCompanies.length !== 1 ? " të" : ""} gjetura
-        </div>
+        {/* <div className="text-sm text-muted-foreground">
+          {filteredCompanies?.length} kompani{filteredCompanies?.length !== 1 ? " të" : ""} gjetura
+        </div> */}
 
         {/* Companies List */}
         {viewMode === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCompanies.map((company) => (
+            {companies.map((company) => 
               <CompanyCard key={company.id} {...company} />
-            ))}
+            )}
           </div>
         ) : (
           <div className="rounded-md border">
@@ -160,7 +190,7 @@ const CompaniesPage = ({ companies }: { companies: CompanyInterface[] }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCompanies.map((company) => (
+                {companies.map((company) => (
                   <TableRow key={company.id} className="hover:bg-gray-50 cursor-pointer">
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
@@ -201,13 +231,14 @@ const CompaniesPage = ({ companies }: { companies: CompanyInterface[] }) => {
         )}
 
         {/* Empty State */}
-        {filteredCompanies.length === 0 && (
+        {companies.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 gap-4">
             <div className="text-muted-foreground text-center">
               <p className="text-lg">Nuk u gjet asnjë kompani</p>
               <p className="text-sm">Provoni të modifikoni kërkimin tuaj</p>
             </div>
             <Button
+            className="cursor-pointer"
               variant="outline"
               onClick={() => {
                 setSearchTerm("");
@@ -219,6 +250,11 @@ const CompaniesPage = ({ companies }: { companies: CompanyInterface[] }) => {
           </div>
         )}
       </div>
+        {hasNextPage && (
+            <div className="mt-8 mx-auto flex items-center justify-between ">
+            <CTAButton onClick={() => fetchNextPage()} classNames="mx-auto" isLoading={isFetchingNextPage} text='Me shume' primary/>
+            </div>
+        )}
     </div>
   );
 };

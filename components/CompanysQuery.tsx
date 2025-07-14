@@ -7,12 +7,9 @@ import CompanyCard from './CompanyCard'
 import { Companies } from '@/app/generated/prisma'
 import CTAButton from './CTAButton'
 import { FaChevronCircleDown, FaChevronDown } from 'react-icons/fa'
-import { CompanyInterface } from '@/types/types'
+import { CompaniesWithHasMore, CompanyInterface } from '@/types/types'
 
-interface CompaniesWithHasMore{
-  companies: CompanyInterface[],
-  hasMore: boolean
-}
+
 
 const CompanysQuery = () => {
   const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch, error} = useInfiniteQuery({
