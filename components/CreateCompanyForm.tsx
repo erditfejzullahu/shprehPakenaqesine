@@ -98,7 +98,7 @@ const CreateCompanyForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-6xl mx-auto my-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-6xl mx-auto my-6">
         <div className="flex flex-col gap-4">
           {/* Company Name */}
           <div className="max-w-xl mx-auto w-full">

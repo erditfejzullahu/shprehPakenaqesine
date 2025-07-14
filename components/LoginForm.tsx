@@ -12,13 +12,16 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { loginSchema, registerSchema } from '@/lib/schemas/authSchema'
 import {signIn} from "next-auth/react"
 import {toast} from "sonner"
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import api from '@/lib/api'
 
 const LoginForm = () => {
     const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
   const [errorMessage, setErrorMessage] = useState("")
+
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('from')
 
   // Login form
   const { 
@@ -65,7 +68,11 @@ const LoginForm = () => {
     if(res?.ok){
         toast.success("Sapo jeni kycur me sukes!")
         setErrorMessage("")
-        router.refresh()
+        if(redirectTo){
+          router.replace(redirectTo)
+        }else{
+          router.refresh()
+        }
     }else{
         toast.error("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
         setErrorMessage("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
