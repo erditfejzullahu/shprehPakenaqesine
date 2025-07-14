@@ -1,7 +1,7 @@
 "use client"
 import { createComplaintsSchema } from '@/lib/schemas/createComplaintsSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {z} from "zod"
 import { Label } from './ui/label'
@@ -34,6 +34,8 @@ const CreateComplaintForm = () => {
       const res = await api.get<Companies[]>(`/api/companiesAllComplaintsForm`);
       return res.data;
     },
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5
   })
 
   console.log(data);
@@ -58,7 +60,7 @@ const CreateComplaintForm = () => {
   }, [])
 
   
-  const handleFileChange = (
+  const handleFileChange = useCallback((
     event: React.ChangeEvent<HTMLInputElement>,
     fieldOnChange: (value: string[]) => void
   ) => {
@@ -88,9 +90,9 @@ const CreateComplaintForm = () => {
 
       reader.readAsDataURL(file);
     });
-  };
+  }, []);
 
-  const handleMediaChange = (
+  const handleMediaChange = useCallback((
     event: React.ChangeEvent<HTMLInputElement>,
     fieldOnChange: (value: string[]) => void,
     setPreviews: React.Dispatch<React.SetStateAction<string[]>>,
@@ -129,9 +131,9 @@ const CreateComplaintForm = () => {
 
       reader.readAsDataURL(file);
     });
-  };
+  }, []);
 
-  const removeMedia = (
+  const removeMedia = useCallback((
     index: number,
     fieldOnChange: (value: string[]) => void,
     setPreviews: React.Dispatch<React.SetStateAction<string[]>>,
@@ -140,16 +142,16 @@ const CreateComplaintForm = () => {
     const updatedPreviews = currentPreviews.filter((_, i) => i !== index);
     setPreviews(updatedPreviews);
     fieldOnChange(updatedPreviews);
-  };
+  }, [audioPreviews, videoPreviews]);
 
-  const removeImage = (
+  const removeImage = useCallback((
     index: number,
     fieldOnChange: (value: string[]) => void
   ) => {
     const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
     setImagePreviews(updatedPreviews);
     fieldOnChange(updatedPreviews);
-  };
+  }, [imagePreviews]);
 
 
   return (
@@ -420,4 +422,4 @@ const CreateComplaintForm = () => {
   )
 }
 
-export default CreateComplaintForm
+export default memo(CreateComplaintForm)
