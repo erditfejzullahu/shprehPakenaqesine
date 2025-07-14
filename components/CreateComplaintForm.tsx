@@ -29,7 +29,7 @@ const CreateComplaintForm = () => {
   const videoAttachmentsRef = useRef<HTMLInputElement>(null)
 
   const {data, isLoading, isError, refetch} = useQuery({
-    queryKey: ['companies'],
+    queryKey: ['companiesForm'],
     queryFn: async () => {
       const res = await api.get<Companies[]>(`/api/companiesAllComplaintsForm`);
       return res.data;

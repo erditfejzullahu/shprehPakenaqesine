@@ -6,13 +6,14 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import Link from 'next/link'
 import React from 'react'
+import { FaPlusSquare } from 'react-icons/fa'
 
 const page = () => {
   return (
     <div>
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
+        <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center shadow-xl relative">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
             Shpreh pakenaqesine <span className="text-indigo-600">TENDE</span>
           </h1>
@@ -28,6 +29,10 @@ const page = () => {
               <CTAButton text="Meso me shume" />
             </Link>
           </div>
+          <Link href={"/shto-kompani"} className="bottom-0 absolute rounded-tl-lg px-4 right-0 flex flex-row items-center gap-2 shadow-xl p-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+          Shto kompani
+          <FaPlusSquare size={24} color='#4f46e5'/>
+          </Link>
         </section>
 
         <section className="w-full max-w-6xl mx-auto py-16 pb-20 sm:px-6 lg:px-8 text-center ">
