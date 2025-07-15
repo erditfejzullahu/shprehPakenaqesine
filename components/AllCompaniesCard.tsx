@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table";
 import CompanyCard from "@/components/CompanyCard";
 import { Grid3x3, List } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { LoadingSpinner } from "./LoadingComponents";
@@ -31,7 +31,11 @@ import debounce from "lodash/debounce"
 import Link from "next/link";
 
 
-const CompaniesPage = () => {
+const AllCompaniesCard = () => {
+    useEffect(() => {
+      console.log("redeed");
+      
+    },)
     
     const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch, isRefetching} = useInfiniteQuery({
         queryKey: ['companies'],
@@ -44,10 +48,7 @@ const CompaniesPage = () => {
             lastPage.hasMore ? allPages.length + 1 : undefined,
         retry: false,
         refetchOnWindowFocus: false 
-    })
-
-    console.log(data);
-    
+    })    
 
     const debouncedSearch = useMemo(() => (
         debounce(() => {
@@ -58,15 +59,19 @@ const CompaniesPage = () => {
     
     
     const [searchTerm, setSearchTerm] = useState("");
-    const [sortBy, setSortBy] = useState("name-asc");
+    const [sortBy, setSortBy] = useState("");
     const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
     
     useEffect(() => {
-        refetch()
+        if(sortBy){
+            refetch()
+        }
     }, [sortBy])
     
     useEffect(() => {
-        debouncedSearch()
+        if(searchTerm){            
+            debouncedSearch()
+        }
     }, [searchTerm])
   
 
@@ -264,4 +269,4 @@ const CompaniesPage = () => {
   );
 };
 
-export default CompaniesPage;
+export default memo(AllCompaniesCard);

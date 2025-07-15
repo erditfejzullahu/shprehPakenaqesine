@@ -61,76 +61,42 @@ export async function GET(req: NextRequest, res: NextResponse) {
             orderBy.push({ name: "asc" });
         }
 
-        console.log(orderBy);
-        
+        const where: any = {};
+        if(searchParams){
+            where.OR = [
+                {name: {contains: searchParams!, mode: "insensitive"}},
+                {industry: {contains: searchParams!, mode: "insensitive"}},
+                {description: {contains: searchParams!, mode: "insensitive"}},
+                {address: {contains: searchParams!, mode: "insensitive"}}
+            ]
+        }        
 
-        let companies;
-        let filteredOrNotFilteredCount: number = 0;
 
-        if(searchParams){            
-            companies = await prisma.companies.findMany({
-                where: {
-                    OR: [
-                        {name: {contains: searchParams!, mode: "insensitive"}},
-                        {industry: {contains: searchParams!, mode: "insensitive"}},
-                        {description: {contains: searchParams!, mode: "insensitive"}},
-                        {address: {contains: searchParams!, mode: "insensitive"}}
-                    ]
-                },
-                orderBy,
-                skip,
-                take: limit,
-                include: {
-                    _count: {
-                        select: {
-                            complaints: true
-                        }
+        const companies = await prisma.companies.findMany({
+            where,
+            orderBy,
+            skip,
+            take: limit,
+            include: {
+                _count: {
+                    select: {
+                        complaints: true
                     }
                 }
-            }).then(results => results.map(company => ({
-                ...company,
-                complaintsCount: company._count.complaints
-            })));  
-            filteredOrNotFilteredCount = await prisma.companies.count({
-                where: {
-                    OR: [
-                        {name: {contains: searchParams!, mode: "insensitive"}},
-                        {industry: {contains: searchParams!, mode: "insensitive"}},
-                        {description: {contains: searchParams!, mode: "insensitive"}},
-                        {address: {contains: searchParams!, mode: "insensitive"}}
-                    ]
-                },
-                orderBy,
-            })
-        }else{
-            companies = await prisma.companies.findMany({
-                orderBy,
-                skip,
-                take: limit,
-                include: {
-                    _count: {
-                        select: {
-                            complaints: true
-                        }
-                    }
-                }
-            }).then(results => results.map(company => ({
-                ...company,
-                complaintsCount: company._count.complaints
-            })));  
-            filteredOrNotFilteredCount = await prisma.companies.count()
-        }
+            }
+        }).then(results => results.map(company => ({
+            ...company,
+            complaintsCount: company._count.complaints
+        })));  
+        const filteredOrNotFilteredCount = await prisma.companies.count({where})
 
-              
         if(!searchParams){
             if(companies.length === 0){
                 return NextResponse.json({message: "No companies found"}, {status: 404})
             }
         }
 
-        const totalCount = await prisma.companies.count();
-
-        const hasMore = page * limit < totalCount;
+        const hasMore = page * limit < filteredOrNotFilteredCount;
         return NextResponse.json({companies, hasMore, filteredOrNotFilteredCount})
         
     } catch (error) {
