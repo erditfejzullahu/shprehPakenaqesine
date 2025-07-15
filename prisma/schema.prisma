@@ -13,6 +13,7 @@ model Users {
   createdAt        DateTime
   updatedAt        DateTime           @updatedAt
   password         String
+  userProfileImage String             @default("https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541")
   acceptedUser     Boolean            @default(false)
   email            String             @unique
   email_verified   Boolean            @default(false)

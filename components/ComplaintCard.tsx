@@ -66,7 +66,7 @@ const ComplaintCard = ({
       {user.anonimity ? (
         <div className="text-sm text-gray-500">Postuar nga: Anonim</div>
       ) : (
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500" onClick={() => router.push(`/profili/${user.id}`)}>
           Postuar nga: <span className="text-gray-700">{user.fullName}</span>
         </div>
       )}

@@ -20,8 +20,25 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.users.findFirst({
+        const user = await prisma.users.findUnique({
           where: { username: credentials.username },
+          select: {
+            id: true,
+            username: true,
+            fullName: true,
+            email: true,
+            password: true,
+            createdAt: true,
+            gender: true,
+            _count: {
+              select: {
+                complaints: true,
+                contributions: true
+              }
+            },
+            reputation: true,
+            userProfileImage: true
+          }
         });
 
         if (!user || !user.password) {
@@ -40,6 +57,11 @@ export const authOptions: NextAuthOptions = {
           fullName: user.fullName,
           gender: user.gender,
           email: user.email,
+          createdAt: user.createdAt,
+          complaints: user._count.complaints,
+          contributions: user._count.contributions,
+          reputation: user.reputation,
+          userProfileImage: user.userProfileImage
         };
       },
     }),
@@ -55,6 +77,12 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.gender = user.gender;
         token.fullName = user.fullName;
+        token.username = user.username;
+        token.createdAt = user.createdAt;
+        token.complaints = user.complaints;
+        token.contributions = user.contributions;
+        token.reputation = user.reputation;
+        token.userProfileImage = user.userProfileImage;
       }
       return token;
     },
@@ -65,6 +93,12 @@ export const authOptions: NextAuthOptions = {
         fullName: token.fullName,
         email: token.email,
         gender: token.gender,
+        username: token.username,
+        createdAt: token.createdAt,
+        complaints: token.complaints,
+        contributions: token.contributions,
+        reputation: token.reputation,
+        userProfileImage: token.userProfileImage
       };
       return session;
     },

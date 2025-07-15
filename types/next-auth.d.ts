@@ -7,6 +7,12 @@ declare module "next-auth" {
         fullName: string;
         email: string;
         gender: Gender;
+        username: string;
+        createdAt: Date;
+        complaints: number;
+        contributions: number;
+        reputation: number;
+        userProfileImage: string;
     }
 
     interface Session {
@@ -20,5 +26,11 @@ declare module "next-auth/jwt" {
         fullName: string;
         email: string;
         gender: Gender;
+        username: string;
+        createdAt: Date;
+        complaints: number;
+        contributions: number;
+        reputation: number;
+        userProfileImage: string;
     }
 }
