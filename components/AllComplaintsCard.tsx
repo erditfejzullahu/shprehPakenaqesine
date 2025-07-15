@@ -33,8 +33,15 @@ import { ComplaintsWithHasMore } from "@/types/types";
 import { Category } from "@/app/generated/prisma";
 
 const AllComplaintsCard = () => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [sortBy, setSortBy] = useState("");
+    const [statusFilter, setStatusFilter] = useState("ALL");
+    const [categoryFilter, setCategoryFilter] = useState("ALL");
+    const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+    const [inputValue, setInputValue] = useState("")
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch, isRefetching } = useInfiniteQuery({
-    queryKey: ['allComplaints'],
+    queryKey: ['allComplaints', searchTerm, sortBy, statusFilter, categoryFilter],
     queryFn: async ({ pageParam }) => {
       const res = await api.get<ComplaintsWithHasMore>(
         `/api/allComplaints?page=${pageParam}&limit=9&search=${encodeURIComponent(searchTerm)}&sortBy=${sortBy}&status=${statusFilter}&category=${categoryFilter}`
@@ -49,28 +56,10 @@ const AllComplaintsCard = () => {
   });
 
   const debouncedSearch = useMemo(() => (
-    debounce(() => {
-      refetch();
+    debounce((val: string) => {
+      setSearchTerm(val);
     }, 500)
   ), []);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [categoryFilter, setCategoryFilter] = useState("ALL");
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
-
-  useEffect(() => {
-    if (sortBy || statusFilter || categoryFilter) {
-      refetch();
-    }
-  }, [sortBy, statusFilter, categoryFilter]);
-
-  useEffect(() => {
-    if (searchTerm) {
-      debouncedSearch();
-    }
-  }, [searchTerm]);
 
   const complaints = data?.pages.flatMap((page) => page.complaints) || [];
   const totalCount = data?.pages[0]?.filteredOrNotFilteredCount || 0;
@@ -121,8 +110,8 @@ const AllComplaintsCard = () => {
           <div className="flex-1 max-w-[700px]">
             <Input
               placeholder="Kërko ankesa..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={inputValue}
+              onChange={(e) => {debouncedSearch(e.target.value); setInputValue(e.target.value)}}
               className="sm:col-span-2"
             />
           </div>
@@ -222,6 +211,7 @@ const AllComplaintsCard = () => {
             </div>
             <CTAButton 
               onClick={() => {
+                setInputValue("")
                 setSearchTerm("");
                 setSortBy("newest");
                 setStatusFilter("ALL");

@@ -31,8 +31,14 @@ import debounce from "lodash/debounce"
 import Link from "next/link";
 
 const AllCompaniesCard = () => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [sortBy, setSortBy] = useState("");
+    const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+
+    const [inputValue, setInputValue] = useState("")
+
     const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch, isRefetching} = useInfiniteQuery({
-        queryKey: ['companies'],
+        queryKey: ['companies', searchTerm, sortBy],
         queryFn: async ({pageParam}) => {
             const res = await api.get<CompaniesWithHasMore>(`/api/companies?page=${pageParam}&limit=9&search=${encodeURIComponent(searchTerm)}&sortBy=${sortBy}`)
             return res.data;
@@ -45,26 +51,10 @@ const AllCompaniesCard = () => {
     })    
 
     const debouncedSearch = useMemo(() => (
-        debounce(() => {
-            refetch()
+        debounce((val: string) => {
+            setSearchTerm(val)
         }, 500)
     ), [])
-
-    const [searchTerm, setSearchTerm] = useState("");
-    const [sortBy, setSortBy] = useState("");
-    const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
-    
-    useEffect(() => {
-        if(sortBy){
-            refetch()
-        }
-    }, [sortBy])
-    
-    useEffect(() => {
-        if(searchTerm){            
-            debouncedSearch()
-        }
-    }, [searchTerm])
 
     const companies = data?.pages.flatMap((page) => page.companies) || []
     const totalCount = data?.pages[0]?.filteredOrNotFilteredCount || 0;
@@ -104,8 +94,8 @@ const AllCompaniesCard = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                     <Input
                         placeholder="Kërko kompani..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        value={inputValue}
+                        onChange={(e) => {setInputValue(e.target.value); debouncedSearch(e.target.value)}}
                         className="flex-1"
                     />
                     
@@ -178,6 +168,7 @@ const AllCompaniesCard = () => {
                         <CTAButton 
                             onClick={() => {
                                 setSearchTerm("");
+                                setInputValue("")
                                 setSortBy("");
                                 refetch();
                             }} 
