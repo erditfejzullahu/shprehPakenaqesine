@@ -91,7 +91,7 @@ const AllComplaintsCard = () => {
     </div>
   );
   if (isError) return (
-    <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
+    <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6 my-8">
       <div className="flex flex-row gap-1">
         <div>
           <h3 className="text-gray-600 font-normal mb-3">Dicka shkoi gabim. Provoni perseri!</h3>
