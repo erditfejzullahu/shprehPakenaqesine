@@ -47,32 +47,34 @@ export const GET = async (req: NextRequest) => {
                 break;
         }
 
-        const where: any = {};
+        const and: any[] = []
 
-        if (category) {
-            if(category !== "ALL"){
-                where.category = category;
-            }
+        if (category && category !== "ALL") {
+            and.push({ category })
         }
 
-        if (status) {
-            if(status !== "ALL"){
-                where.resolvedStatus = status;
-            }
+        if (status && status !== "ALL") {
+            and.push({resolvedStatus: status})
         }
 
-        if (searchParams) {
-            where.OR = [
-                {status: "ACCEPTED"},
-                { title: { contains: searchParams, mode: "insensitive" } },
-                { description: { contains: searchParams, mode: "insensitive" } },
-                { company: { name: { contains: searchParams, mode: "insensitive" } } },
-            ];
-        }else{
-            where.status = "ACCEPTED"
+        if(searchParams){
+            and.push({
+                OR: [
+                    { title: { contains: searchParams, mode: "insensitive" } },
+                    { description: { contains: searchParams, mode: "insensitive" } },
+                    { company: { is: { name: { contains: searchParams, mode: "insensitive" } } } }
+                ]
+            })
         }
+          
+        and.push({status: "ACCEPTED"})
+        const where = and.length > 0 ? {AND: and} : {}
 
         const complaints = await prisma.complaint.findMany({
+            where,
+            orderBy,
+            skip,
+            take: limit,
             include: {
                 company: {
                     select: {
@@ -87,11 +89,7 @@ export const GET = async (req: NextRequest) => {
                         fullName: true
                     }
                 }
-            },
-            where,
-            orderBy,
-            skip,
-            take: limit,
+            }
         })
 
         const complaintsSafe = complaints.map((complaint) => {

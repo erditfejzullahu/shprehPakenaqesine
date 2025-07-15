@@ -32,10 +32,9 @@ import { Badge } from "@/components/ui/badge";
 import { ComplaintsWithHasMore } from "@/types/types";
 import { Category } from "@/app/generated/prisma";
 
-
 const AllComplaintsCard = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch, isRefetching } = useInfiniteQuery({
-    queryKey: ['complaints'],
+    queryKey: ['allComplaints'],
     queryFn: async ({ pageParam }) => {
       const res = await api.get<ComplaintsWithHasMore>(
         `/api/allComplaints?page=${pageParam}&limit=9&search=${encodeURIComponent(searchTerm)}&sortBy=${sortBy}&status=${statusFilter}&category=${categoryFilter}`
@@ -48,9 +47,6 @@ const AllComplaintsCard = () => {
     retry: false,
     refetchOnWindowFocus: false
   });
-
-  console.log(data, ' asdd');
-  
 
   const debouncedSearch = useMemo(() => (
     debounce(() => {
@@ -75,34 +71,6 @@ const AllComplaintsCard = () => {
       debouncedSearch();
     }
   }, [searchTerm]);
-
-  if (isLoading || isRefetching) return <div className="py-8"><LoadingSpinner /></div>;
-  if (!data) return (
-    <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6 my-8">
-      <div className="flex flex-row gap-1">
-        <div>
-          <h3 className="text-gray-600 font-normal mb-3">Nuk ka te dhena. Nese mendoni qe eshte gabim</h3>
-        </div>
-        <div className="pt-2 rotate-[50deg]">
-          <FaChevronDown size={22} color='#4f46e5' />
-        </div>
-      </div>
-      <CTAButton onClick={() => refetch()} text='Provo perseri' />
-    </div>
-  );
-  if (isError) return (
-    <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6 my-8">
-      <div className="flex flex-row gap-1">
-        <div>
-          <h3 className="text-gray-600 font-normal mb-3">Dicka shkoi gabim. Provoni perseri!</h3>
-        </div>
-        <div className="pt-2 rotate-[50deg]">
-          <FaChevronDown size={22} color='#4f46e5' />
-        </div>
-      </div>
-      <CTAButton onClick={() => refetch()} text='Provo perseri' />
-    </div>
-  );
 
   const complaints = data?.pages.flatMap((page) => page.complaints) || [];
   const totalCount = data?.pages[0]?.filteredOrNotFilteredCount || 0;
@@ -148,48 +116,48 @@ const AllComplaintsCard = () => {
           </Tabs>
         </div>
 
-        {/* Search and Filter Controls */}
+        {/* Search and Filter Controls - Always visible */}
         <div className="flex flex-row flex-wrap justify-between">
-            <div className="flex-1 max-w-[700px]">
-                <Input
-                    placeholder="Kërko ankesa..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="sm:col-span-2"
-                />
+          <div className="flex-1 max-w-[700px]">
+            <Input
+              placeholder="Kërko ankesa..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="sm:col-span-2"
+            />
+          </div>
+          <div className="flex flex-row items-center gap-4">
+            <div>
+              <Select defaultValue="ALL" value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filtro sipas statusit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={"ALL"}>Të gjitha</SelectItem>
+                  <SelectItem value="PENDING">Në pritje</SelectItem>
+                  <SelectItem value="RESOLVED">Zgjidhur</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <div className="flex flex-row items-center gap-4">
-                <div>
-                <Select defaultValue="ALL" value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger>
-                    <SelectValue placeholder="Filtro sipas statusit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                    <SelectItem value={"ALL"}>Të gjitha</SelectItem>
-                    <SelectItem value="PENDING">Në pritje</SelectItem>
-                    <SelectItem value="RESOLVED">Zgjidhur</SelectItem>
-                    </SelectContent>
-                </Select>
-                </div>
-                <div>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                    <SelectTrigger>
-                    <SelectValue placeholder="Filtro sipas kategorisë" />
-                    </SelectTrigger>
-                    <SelectContent>
-                    <SelectItem value="ALL">Të gjitha</SelectItem>
-                    {Object.keys(Category).map((cat) => (
-                        <SelectItem key={cat} value={cat}>
-                        {getCategoryLabel(cat)}
-                        </SelectItem>
-                    ))}
-                    </SelectContent>
-                </Select>
-                </div>
+            <div>
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filtro sipas kategorisë" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">Të gjitha</SelectItem>
+                  {Object.keys(Category).map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {getCategoryLabel(cat)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+          </div>
         </div>
 
-        {/* Sort Controls */}
+        {/* Sort Controls - Always visible */}
         <div className="flex flex-col sm:flex-row gap-4">
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-[180px]">
@@ -219,101 +187,133 @@ const AllComplaintsCard = () => {
           </Button>
         </div>
 
-        {/* Results Count */}
-        <div className="text-sm text-muted-foreground">
-          {totalCount} ankesa{totalCount !== 1 ? " të gjetura" : " e gjetur"}
-        </div>
-
-        {/* Complaints List */}
-        {viewMode === "grid" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {complaints.map((complaint) => (
-              <ComplaintCard key={complaint.id} {...complaint} />
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Titulli</TableHead>
-                  <TableHead>Kompania</TableHead>
-                  <TableHead>Kategoria</TableHead>
-                  <TableHead>Statusi</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead className="text-right">Vota</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {complaints.map((complaint) => (
-                  <TableRow key={complaint.id} className="hover:bg-gray-50 cursor-pointer">
-                    <TableCell className="font-medium">
-                      <Link href={`/ankesat/${complaint.id}`} className="hover:underline">
-                        {complaint.title}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link href={`/kompanite/${complaint.company.id}`} className="hover:underline">
-                        {complaint.company.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {getCategoryLabel(complaint.category)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={complaint.status === 'ACCEPTED' ? "default" : complaint.resolvedStatus === 'RESOLVED' ? "secondary" : 'outline'}
-                      >
-                        {complaint.resolvedStatus === 'RESOLVED' ? 'Zgjidhur' : 
-                         complaint.status === 'ACCEPTED' ? 'Pranuar' : 'Në pritje'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{new Date(complaint.createdAt).toLocaleDateString("sq-AL", {day: "2-digit", month: "short", year: "2-digit"})}</TableCell>
-                    <TableCell className="text-right">
-                      {complaint.upVotes}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+        {/* Loading State */}
+        {(isLoading || isRefetching) && (
+          <div className="py-8 flex justify-center">
+            <LoadingSpinner />
           </div>
         )}
 
-        {/* Empty State */}
-        {complaints.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 gap-4">
-            <div className="text-muted-foreground text-center">
-              <p className="text-lg">Nuk u gjet asnjë ankesë</p>
-              <p className="text-sm">Provoni të modifikoni filtrat tuaj</p>
+        {/* Error State */}
+        {isError && !isLoading && (
+          <div className="mx-auto flex flex-col items-center right-0 left-0 my-8">
+            <div className="flex flex-row gap-1">
+              <div>
+                <h3 className="text-gray-600 font-normal mb-3">Dicka shkoi gabim. Provoni perseri!</h3>
+              </div>
+              <div className="pt-2 rotate-[50deg]">
+                <FaChevronDown size={22} color='#4f46e5'/>
+              </div>
             </div>
-            <Button
-              className="cursor-pointer"
-              variant="outline"
+            <CTAButton onClick={() => refetch()} text='Provo perseri'/>
+          </div>
+        )}
+
+        {/* Empty Data State */}
+        {!isLoading && !isError && complaints.length === 0 && (
+          <div className="mx-auto flex flex-col items-center right-0 left-0 my-8">
+            <div className="flex flex-row gap-1">
+              <div>
+                <h3 className="text-gray-600 font-normal mb-3">Nuk u gjet asnjë ankesë</h3>
+              </div>
+              <div className="pt-2 rotate-[50deg]">
+                <FaChevronDown size={22} color='#4f46e5'/>
+              </div>
+            </div>
+            <CTAButton 
               onClick={() => {
                 setSearchTerm("");
                 setSortBy("newest");
-                setStatusFilter("");
-                setCategoryFilter("");
-              }}
-            >
-              Filtro të gjitha ankesat
-            </Button>
+                setStatusFilter("ALL");
+                setCategoryFilter("ALL");
+                refetch();
+              }} 
+              text='Filtro të gjitha ankesat'
+            />
           </div>
         )}
+
+        {/* Results Count - Only shown when we have data */}
+        {!isLoading && !isError && complaints.length > 0 && (
+          <div className="text-sm text-muted-foreground">
+            {totalCount} ankesa{totalCount !== 1 ? " të gjetura" : " e gjetur"}
+          </div>
+        )}
+
+        {/* Complaints List - Only shown when we have data */}
+        {!isLoading && !isError && complaints.length > 0 && (
+          <>
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {complaints.map((complaint) => (
+                  <ComplaintCard key={complaint.id} {...complaint} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Titulli</TableHead>
+                      <TableHead>Kompania</TableHead>
+                      <TableHead>Kategoria</TableHead>
+                      <TableHead>Statusi</TableHead>
+                      <TableHead>Data</TableHead>
+                      <TableHead className="text-right">Vota</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {complaints.map((complaint) => (
+                      <TableRow key={complaint.id} className="hover:bg-gray-50 cursor-pointer">
+                        <TableCell className="font-medium">
+                          <Link href={`/ankesat/${complaint.id}`} className="hover:underline">
+                            {complaint.title}
+                          </Link>
+                        </TableCell>
+                        <TableCell>
+                          <Link href={`/kompanite/${complaint.company.id}`} className="hover:underline">
+                            {complaint.company.name}
+                          </Link>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {getCategoryLabel(complaint.category)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={complaint.status === 'ACCEPTED' ? "default" : complaint.resolvedStatus === 'RESOLVED' ? "secondary" : 'outline'}
+                          >
+                            {complaint.resolvedStatus === 'RESOLVED' ? 'Zgjidhur' : 
+                              complaint.status === 'ACCEPTED' ? 'Pranuar' : 'Në pritje'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{new Date(complaint.createdAt).toLocaleDateString("sq-AL", {day: "2-digit", month: "short", year: "2-digit"})}</TableCell>
+                        <TableCell className="text-right">
+                          {complaint.upVotes}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+
+            {/* Load More Button */}
+            {hasNextPage && (
+              <div className="mt-8 mx-auto flex items-center justify-between">
+                <CTAButton
+                  onClick={() => fetchNextPage()}
+                  classNames="mx-auto"
+                  isLoading={isFetchingNextPage}
+                  text='Me shume'
+                  primary
+                />
+              </div>
+            )}
+          </>
+        )}
       </div>
-      {hasNextPage && (
-        <div className="mt-8 mx-auto flex items-center justify-between">
-          <CTAButton
-            onClick={() => fetchNextPage()}
-            classNames="mx-auto"
-            isLoading={isFetchingNextPage}
-            text='Me shume'
-            primary
-          />
-        </div>
-      )}
     </div>
   );
 };
