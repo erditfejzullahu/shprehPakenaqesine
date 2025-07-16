@@ -2,51 +2,52 @@
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import { useState } from 'react';
+import { CompanyPerIdInterface } from '@/types/types';
 
-const CompanyPage = () => {
+const CompanyPage = ({companyData}: {companyData: CompanyPerIdInterface}) => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [sortOption, setSortOption] = useState('newest');
 
-  // Mock data - replace with real data from your API
-  const mockCompany = {
-    id: '1',
-    name: 'TechCorp',
-    description: 'A leading technology company specializing in software development and cloud solutions.',
-    logoUrl: '/techcorp-logo.png',
-    address: '123 Tech Street, San Francisco, CA 94107',
-    website: 'https://techcorp.example.com',
-    email: 'info@techcorp.example.com',
-    phone: '+1 (555) 123-4567',
-    images: ['office1.jpg', 'office2.jpg', 'team.jpg'],
-    industry: 'Technology',
-    foundedYear: '2010',
-    createdAt: '2020-05-15T14:32:00Z',
-    updatedAt: '2023-05-20T09:15:00Z',
-    complaints: [
-      {
-        id: '1',
-        title: 'Unpaid overtime',
-        description: 'Employees required to work unpaid overtime regularly.',
-        status: 'ACCEPTED',
-        category: 'ABUZIMI_NE_VENDIN_E_PUNES',
-        upVotes: 24,
-        createdAt: '2023-05-15T14:32:00Z'
-      },
-      {
-        id: '2',
-        title: 'Gender discrimination',
-        description: 'Unequal pay and promotion opportunities for female employees.',
-        status: 'PENDING',
-        category: 'DISKRIMIMI_NE_VENDIN_E_PUNES',
-        upVotes: 56,
-        createdAt: '2023-07-22T09:15:00Z'
-      }
-    ]
-  };
+  // // Mock data - replace with real data from your API
+  // const mockCompany = {
+  //   id: '1',
+  //   name: 'TechCorp',
+  //   description: 'A leading technology company specializing in software development and cloud solutions.',
+  //   logoUrl: '/techcorp-logo.png',
+  //   address: '123 Tech Street, San Francisco, CA 94107',
+  //   website: 'https://techcorp.example.com',
+  //   email: 'info@techcorp.example.com',
+  //   phone: '+1 (555) 123-4567',
+  //   images: ['office1.jpg', 'office2.jpg', 'team.jpg'],
+  //   industry: 'Technology',
+  //   foundedYear: '2010',
+  //   createdAt: '2020-05-15T14:32:00Z',
+  //   updatedAt: '2023-05-20T09:15:00Z',
+  //   complaints: [
+  //     {
+  //       id: '1',
+  //       title: 'Unpaid overtime',
+  //       description: 'Employees required to work unpaid overtime regularly.',
+  //       status: 'ACCEPTED',
+  //       category: 'ABUZIMI_NE_VENDIN_E_PUNES',
+  //       upVotes: 24,
+  //       createdAt: '2023-05-15T14:32:00Z'
+  //     },
+  //     {
+  //       id: '2',
+  //       title: 'Gender discrimination',
+  //       description: 'Unequal pay and promotion opportunities for female employees.',
+  //       status: 'PENDING',
+  //       category: 'DISKRIMIMI_NE_VENDIN_E_PUNES',
+  //       upVotes: 56,
+  //       createdAt: '2023-07-22T09:15:00Z'
+  //     }
+  //   ]
+  // };
 
-  // Use this in production instead of mock data
-  const companyData = mockCompany;
+  // // Use this in production instead of mock data
+  // const companyData = mockCompany;
 
   const formatDate = (dateString: string) => {
     const options: any = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -62,7 +63,7 @@ const CompanyPage = () => {
     return words.join(' ');
   };
 
-  const sortedComplaints = [...companyData.complaints].sort((a, b) => {
+  const sortedComplaints = [...companyData.company.complaints].sort((a, b) => {
     if (sortOption === 'newest') {
       return new Date(b.createdAt).getMilliseconds() - new Date(a.createdAt).getMilliseconds();
     } else if (sortOption === 'oldest') {
@@ -74,129 +75,7 @@ const CompanyPage = () => {
 
   return (
     <>
-      <Head>
-        <title>{companyData.name} | Community Complaints</title>
-        <meta name="description" content={`Company profile: ${companyData.name}`} />
-      </Head>
-
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="bg-white shadow-sm">
-          <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
-            <button 
-              onClick={() => router.back()}
-              className="flex items-center text-indigo-600 hover:text-indigo-800 mb-2"
-            >
-              <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Kthehu tek kompanite
-            </button>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <img 
-                src={companyData.logoUrl} 
-                alt={`${companyData.name} logo`} 
-                className="w-16 h-16 rounded-md object-contain border border-gray-200"
-              />
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{companyData.name}</h1>
-                <p className="text-gray-600">{companyData.industry}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-lg">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left Column - Company Info */}
-            <div className="lg:w-1/3 space-y-6">
-              {/* Company Details Card */}
-              <div className="bg-white shadow-md overflow-hidden">
-                <div className="p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Company Details</h3>
-                  <div className="space-y-4">
-                    {companyData.description && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-500">Description</h4>
-                        <p className="mt-1 text-sm text-gray-900">{companyData.description}</p>
-                      </div>
-                    )}
-
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Founded</h4>
-                      <p className="mt-1 text-sm text-gray-900">{companyData.foundedYear || 'Unknown'}</p>
-                    </div>
-
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Address</h4>
-                      <p className="mt-1 text-sm text-gray-900">{companyData.address}</p>
-                    </div>
-
-                    {companyData.website && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-500">Website</h4>
-                        <a 
-                          href={companyData.website} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="mt-1 text-sm text-indigo-600 hover:text-indigo-800"
-                        >
-                          {companyData.website}
-                        </a>
-                      </div>
-                    )}
-
-                    {companyData.email && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-500">Email</h4>
-                        <a 
-                          href={`mailto:${companyData.email}`}
-                          className="mt-1 text-sm text-indigo-600 hover:text-indigo-800"
-                        >
-                          {companyData.email}
-                        </a>
-                      </div>
-                    )}
-
-                    {companyData.phone && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-500">Phone</h4>
-                        <a 
-                          href={`tel:${companyData.phone}`}
-                          className="mt-1 text-sm text-indigo-600 hover:text-indigo-800"
-                        >
-                          {companyData.phone}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Company Images */}
-              {companyData.images?.length > 0 && (
-                <div className="bg-white shadow-md overflow-hidden">
-                  <div className="p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {companyData.images.map((image, index) => (
-                        <div key={index} className="aspect-square bg-gray-100 shadow-md overflow-hidden">
-                          <img 
-                            src={image} 
-                            alt={`Company image ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Right Column - Complaints */}
-            <div className="lg:w-2/3">
+      <div className="lg:w-2/3">
               {/* Tabs */}
               <div className="border-b border-gray-200 mb-6">
                 <nav className="-mb-px flex space-x-8">
@@ -204,19 +83,13 @@ const CompanyPage = () => {
                     onClick={() => setActiveTab('overview')}
                     className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'overview' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
                   >
-                    Overview
+                    Vështrim i përgjithshëm
                   </button>
                   <button
                     onClick={() => setActiveTab('complaints')}
                     className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'complaints' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
                   >
-                    Complaints ({companyData.complaints.length})
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('statistics')}
-                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'statistics' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-                  >
-                    Statistics
+                    Ankesat/Raportimet ({companyData.company.complaints.length})
                   </button>
                 </nav>
               </div>
@@ -224,37 +97,37 @@ const CompanyPage = () => {
               {/* Tab Content */}
               {activeTab === 'overview' && (
                 <div className="bg-white shadow-md overflow-hidden p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">About {companyData.name}</h3>
-                  {companyData.description ? (
-                    <p className="text-gray-700">{companyData.description}</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">About {companyData.company.name}</h3>
+                  {companyData.company.description ? (
+                    <p className="text-gray-700">{companyData.company.description}</p>
                   ) : (
-                    <p className="text-gray-500">No additional information available.</p>
+                    <p className="text-gray-500">Nuk ka informacion shtesë në dispozicion.</p>
                   )}
 
                   <div className="mt-8">
-                    <h4 className="text-md font-medium text-gray-900 mb-3">Quick Stats</h4>
+                    <h4 className="text-md font-medium text-gray-900 mb-3">Statistika te shpejta</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-gray-50 shadow-md p-4 text-center">
-                        <p className="text-2xl font-bold text-indigo-600">{companyData.complaints.length}</p>
-                        <p className="text-sm text-gray-500">Total Complaints</p>
+                        <p className="text-2xl font-bold text-indigo-600">{companyData.company.complaints.length}</p>
+                        <p className="text-sm text-gray-500">Te gjitha ankesat</p>
                       </div>
                       <div className="bg-gray-50 shadow-md p-4 text-center">
                         <p className="text-2xl font-bold text-indigo-600">
-                          {companyData.complaints.filter(c => c.status === 'ACCEPTED').length}
+                          {companyData.company.complaints.filter(c => c.status === 'ACCEPTED').length}
                         </p>
-                        <p className="text-sm text-gray-500">Verified Complaints</p>
+                        <p className="text-sm text-gray-500">Ankesat e verifikuara</p>
                       </div>
                       <div className="bg-gray-50 shadow-md p-4 text-center">
                         <p className="text-2xl font-bold text-indigo-600">
-                          {Math.round(companyData.complaints.length / 12 * 10) / 10}
+                          {companyData.complaintsPerMonth}
                         </p>
-                        <p className="text-sm text-gray-500">Complaints per Month</p>
+                        <p className="text-sm text-gray-500">Ankesa per muaj</p>
                       </div>
                       <div className="bg-gray-50 shadow-md p-4 text-center">
                         <p className="text-2xl font-bold text-indigo-600">
-                          {companyData.complaints.reduce((sum, c) => sum + c.upVotes, 0)}
+                          {companyData.company.complaints.reduce((sum, c) => sum + c.upVotes, 0)}
                         </p>
-                        <p className="text-sm text-gray-500">Total Upvotes</p>
+                        <p className="text-sm text-gray-500">Te gjitha votat</p>
                       </div>
                     </div>
                   </div>
@@ -265,18 +138,18 @@ const CompanyPage = () => {
                 <div className="bg-white shadow-md overflow-hidden">
                   {/* Sort Options */}
                   <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <h3 className="text-lg font-medium text-gray-900">Complaints</h3>
+                    <h3 className="text-lg font-medium text-gray-900">Ankesat/Raportimet</h3>
                     <div className="flex items-center">
-                      <label htmlFor="sort" className="mr-2 text-sm text-gray-500">Sort by:</label>
+                      <label htmlFor="sort" className="mr-2 text-sm text-gray-500">Rendit sipas:</label>
                       <select
                         id="sort"
                         value={sortOption}
                         onChange={(e) => setSortOption(e.target.value)}
                         className="border-gray-300 shadow-sm px-2 focus:border-indigo-500 focus:ring-indigo-500 text-sm"
                       >
-                        <option value="newest">Newest</option>
-                        <option value="oldest">Oldest</option>
-                        <option value="popular">Most Upvotes</option>
+                        <option value="newest">Me te rejat</option>
+                        <option value="oldest">Me te vjetrat</option>
+                        <option value="popular">Me se shumti vota</option>
                       </select>
                     </div>
                   </div>
@@ -315,7 +188,7 @@ const CompanyPage = () => {
                             </div>
                           </div>
                           <p className="mt-3 text-sm text-gray-500">
-                            Filed on {formatDate(complaint.createdAt)}
+                          Paraqitur më {new Date(complaint.createdAt).toLocaleDateString('sq-AL', {day: "2-digit", month: "short", year: "numeric"})}
                           </p>
                         </div>
                       ))}
@@ -339,21 +212,7 @@ const CompanyPage = () => {
                   )}
                 </div>
               )}
-
-              {activeTab === 'statistics' && (
-                <div className="bg-white shadow-md overflow-hidden p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Complaint Statistics</h3>
-                  <p className="text-gray-600">Statistics feature coming soon.</p>
-                  {/* Placeholder for charts/graphs */}
-                  <div className="mt-6 h-64 bg-gray-100 shadow-sm flex items-center justify-center text-gray-400">
-                    Complaint trends and analytics will be displayed here
-                  </div>
-                </div>
-              )}
             </div>
-          </div>
-        </div>
-      </div>
     </>
   );
 };

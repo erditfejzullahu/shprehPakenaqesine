@@ -78,7 +78,7 @@ const AllComplaintsCard = () => {
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <Link className="text-indigo-600 font-semibold hover:text-xl transition-all ease-in-out flex flex-row gap-1 text-lg w-fit" href={'/shto-ankese'}>
+            <Link className="text-indigo-600 font-semibold hover:text-xl transition-all ease-in-out flex flex-row gap-1 text-lg w-fit" href={'/krijo-raportim'}>
               Shtoni Ankesë <FaArrowRight className="rotate-[-35deg]" />
             </Link>
             <p className="text-muted-foreground">

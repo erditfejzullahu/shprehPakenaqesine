@@ -40,9 +40,20 @@ export interface MyProfileContributions{
 }
 
 export interface MyProfileComplaintsContributions{
-    success: boolean,
+    success: boolean;
     details: {
         complaints: MyProfileComplaints[] | null,
         contributions: MyProfileContributions[] | null
     } | null
+}
+
+export interface CompanyPerIdWithComplaint extends Omit<Companies, "images">{
+    images?: string
+    complaints: Complaint[]
+}
+
+export interface CompanyPerIdInterface {
+    success: boolean;
+    company: CompanyPerIdWithComplaint;
+    complaintsPerMonth: number;
 }

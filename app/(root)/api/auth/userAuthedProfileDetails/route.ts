@@ -5,8 +5,9 @@ import { NextResponse } from "next/server";
 
 export const GET = async () => {
     try {
-        console.log("sosht?");
+        // console.log("sosht?");
         const session = await getServerSession(authOptions);
+        
         if(!session){
             
             return NextResponse.json({success: false, message: "Nuk jeni te autorizuar per kete veprim!"}, {status: 401})
@@ -43,7 +44,6 @@ export const GET = async () => {
                 }
             }
         })
-        console.log(userDetails, ' details');
 
         if(!userDetails){
             return NextResponse.json({success: false, message: "Nuk u gjet ndonje detaj!"}, {status: 404})

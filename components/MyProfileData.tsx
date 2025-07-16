@@ -1,5 +1,5 @@
 "use client"
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import CTAButton from '@/components/CTAButton';
@@ -26,16 +26,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { updateProfileSchema } from '@/lib/schemas/updateProfileDetails';
+import { Checkbox } from './ui/checkbox';
+import {z} from "zod"
+import { Upload, X } from 'lucide-react';
+import { Button } from './ui/button';
+import Image from 'next/image';
 
 const ITEMS_PER_PAGE = 5;
+type ValidationSchema = z.infer<typeof updateProfileSchema>
+type ActiveTab = "myComplaints" | "contributions" | "settings"
 
 const MyProfileData = ({session}: {session: Session}) => {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('myComplaints');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('myComplaints');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [votesSort, setVotesSort] = useState<'most' | 'least'>('most');
+  const [changePassword, setChangePassword] = useState(false)
+  const [imageProfilePreview, setImageProfilePreview] = useState<string | null>(null)
 
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ['userProfileDetails', session.user.id],
@@ -45,10 +57,45 @@ const MyProfileData = ({session}: {session: Session}) => {
     }
   })
 
+  const {control, reset, watch, handleSubmit, formState: {errors, isSubmitting}, setValue} = useForm<ValidationSchema>({
+    resolver: zodResolver(updateProfileSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      gender: "MASHKULL",
+      username: "",
+      userProfileImage: "",
+      password: "",
+      confirmPassword: ""
+    },
+    mode: "onChange"
+  })
+
+  const password = watch("password");
+
+  useEffect(() => {
+    if(session){
+      reset({
+        fullName: session.user.fullName,
+        email: session.user.email,
+        gender: session.user.gender,
+        username: session.user.username,
+        userProfileImage: session.user.userProfileImage,
+        password: "",
+        confirmPassword: ""
+      })
+    }
+  }, [session])
+  
+
+  const onSubmit = useCallback(async (data: ValidationSchema) => {
+    console.log(data);
+  }, [reset])
+
   const contributions = data?.details?.contributions || [];
   const complaints = data?.details?.complaints || [];
 
-  const handleTabChange = useCallback((val: string) => {
+  const handleTabChange = useCallback((val: ActiveTab) => {
     setActiveTab(val);
     setCurrentPage(1); // Reset to first page when changing tabs
     setSearchTerm(''); // Reset search term when changing tabs
@@ -129,6 +176,24 @@ const MyProfileData = ({session}: {session: Session}) => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
+  const removeLogo = () => {
+    setImageProfilePreview(null);
+    setValue("userProfileImage", "");
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const base64 = event.target?.result as string;
+          setImageProfilePreview(base64);
+          setValue("userProfileImage", base64);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
 
   const renderPagination = (totalPages: number) => {
     if (totalPages <= 1) return null;
@@ -282,7 +347,7 @@ const MyProfileData = ({session}: {session: Session}) => {
             ) : currentComplaints.length > 0 ? (
               <>
                 {currentComplaints.map((complaint) => (
-                  <div key={complaint.id} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
+                  <div onClick={() => router.push(`/ankesat/${complaint.id}`)} key={complaint.id} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">{complaint.title}</h3>
@@ -384,7 +449,7 @@ const MyProfileData = ({session}: {session: Session}) => {
             ) : currentContributions.length > 0 ? (
               <>
                 {currentContributions.map((contribution) => (
-                  <div key={contribution.complaintId} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
+                  <div onClick={() => router.push(`/ankesat/${contribution.complaintId}`)} key={contribution.complaintId} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">{contribution.complaintTitle}</h3>
@@ -429,39 +494,208 @@ const MyProfileData = ({session}: {session: Session}) => {
         {activeTab === 'settings' && (
           <div className="p-6">
             <h3 className="text-lg font-medium text-gray-900">Detajet e llogarise</h3>
-            <div className="mt-6 space-y-6">
-              <div>
-                <Label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  Emri
-                </Label>
-                <Input
-                  type="text"
-                  id="name"
-                  defaultValue={session.user.fullName}
-                  className="shadow-md"
-                />
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+              <div className=' flex flex-row justify-between gap-2'>
+                <div className='flex-1'>
+                  <Label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+                    Emri i plote
+                  </Label>
+                  <Controller 
+                    control={control}
+                    name="fullName"
+                    render={({field}) => (
+                      <Input
+                        type="text"
+                        id="fullName"
+                        defaultValue={session.user.fullName}
+                        {...field}
+                        className="shadow-sm"
+                      />
+                    )}
+                  />
+                  {errors.fullName && (
+                    <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
+                  )}
+                </div>
+
+                <div className='flex-1'>
+                  <Label htmlFor="gender" className="block text-sm font-medium text-gray-700">
+                    Gjinia
+                  </Label>
+                  <Controller 
+                    control={control}
+                    name="gender"
+                    render={({field}) => (
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger className="w-full shadow-sm">
+                          <SelectValue placeholder="Zgjidhni gjinine" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="MASHKULL">Mashkull</SelectItem>
+                            <SelectItem value="FEMER">Femer</SelectItem>
+                            <SelectItem value="TJETER">Tjeter</SelectItem>
+                            <SelectItem value='PA_GJINI'>Nuk dua ta them</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.gender && (
+                    <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>
+                  )}
+                </div>
               </div>
 
+              <div className='flex flex-row justify-between gap-2'>
+                <div className='flex-1'>
+                  <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                    Email
+                  </Label>
+                  <Controller 
+                    control={control}
+                    name="email"
+                    render={({field}) => (
+                      <Input
+                        type="email"
+                        id="email"
+                        {...field}
+                        defaultValue={session.user.email}
+                        className="shadow-sm"
+                      />
+                    )}
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                  )}
+                </div>
+                <div className='flex-1'>
+                  <Label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                    Emri i perdoruesit(Nofka)
+                  </Label>
+                  <Controller 
+                    control={control}
+                    name="username"
+                    render={({field}) => (
+                      <Input
+                        type="username"
+                        id="username"
+                        {...field}
+                        defaultValue={session.user.username}
+                        className="shadow-sm"
+                      />
+                    )}
+                  />
+                  {errors.username && (
+                    <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Checkbox id="changePassword" onCheckedChange={(checked) => setChangePassword(checked as boolean)} checked={changePassword}/>
+                <Label htmlFor="changePassword">Ndrysho fjalekalimin</Label>
+              </div>
+
+              {changePassword && <div className='flex flex-row justify-between gap-2'>
+                <div className={`${!password ? "flex-[0.5]" : "flex-1"}`}>
+                  <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    Fjalekalimi
+                  </Label>
+                  <Controller 
+                    control={control}
+                    name="password"
+                    render={({field}) => (
+                      <Input
+                        type="password"
+                        id="email"
+                        {...field}
+                        placeholder='*******'
+                        className="shadow-sm"
+                      />
+                    )}
+                  />
+                  {errors.password && (
+                    <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                  )}
+                </div>
+                {password && <div className='flex-1'>
+                  <Label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                    Konfirmo Fjalekalimin
+                  </Label>
+                  <Controller 
+                    control={control}
+                    name="confirmPassword"
+                    render={({field}) => (
+                      <Input
+                        type="password"
+                        id="confirmPassword"
+                        {...field}
+                        value={field.value || ""}
+                        placeholder='*******'
+                        className="shadow-sm"
+                      />
+                    )}
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
+                  )}
+                </div>}
+              </div>}
+
               <div>
-                <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email
-                </Label>
-                <Input
-                  type="email"
-                  id="email"
-                  defaultValue={session.user.email}
-                  className="shadow-md"
+                <Controller 
+                  control={control}
+                  name="userProfileImage"
+                  render={({field}) => (
+                    <div className="space-y-2">
+                    {imageProfilePreview ? (
+                      <div className="relative group w-fit">
+                        <Image 
+                          width={200}
+                          height={200}
+                          src={imageProfilePreview} 
+                          alt="Logo preview" 
+                          className="h-32 w-32 object-contain border rounded-md"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute cursor-pointer -right-2 -top-2 rounded-full bg-destructive/90 hover:bg-destructive text-white"
+                          onClick={removeLogo}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                          <p className="text-sm text-muted-foreground">
+                            Klikoni për të ngarkuar foton e profilit
+                          </p>
+                        </div>
+                        <Input 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/*"
+                          onChange={handleLogoUpload}
+                        />
+                      </Label>
+                    )}
+                  </div>
+                  )}
                 />
               </div>
 
               <div className="pt-2">
                 <CTAButton
-                  type="button"
+                  onClick={handleSubmit(onSubmit)}
+                  type="submit"
                   primary
                   text='Ruaj ndryshimet'
                 />
               </div>
-            </div>
+            </form>
           </div>
         )}
       </div>

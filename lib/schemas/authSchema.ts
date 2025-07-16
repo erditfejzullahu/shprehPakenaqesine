@@ -11,6 +11,9 @@ export const registerSchema = z.object({
   email: z.email("Ju lutem shkruani një email valid"),
   username: z.string().min(3, "Emri i përdoruesit duhet të përmbajë të paktën 3 karaktere"),
   gender: z.enum(["MASHKULL", "FEMER", "TJETER", "PA_GJINI"]),
+  userProfileImage: z.string().regex(/^data:image\/(png|jpeg|jpg|gif);base64,/, {
+    message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG ose GIF)"
+  }).optional(),
   password: z.string()
   .min(8, { message: 'Fjalëkalimi duhet të ketë të paktën 8 karaktere' })
   .refine(
