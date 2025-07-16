@@ -1,13 +1,11 @@
-import CompanyPage from '@/components/CompanyPageComponent';
+import CompanyPage from '@/components/CompanyPage';
 import api from '@/lib/api';
 import { CompanyPerIdInterface } from '@/types/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
 
-const page = async ({params}: {params: Promise<{id: string}>}) => {  
-  console.log((await params).id, ' aeieiei');
-  
+const page = async ({params}: {params: Promise<{id: string}>}) => {    
     const {id} = await params;
     const response = await api.get<CompanyPerIdInterface>(`/api/company/${id}`)
     const data = response.data;

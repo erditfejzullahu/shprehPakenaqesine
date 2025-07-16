@@ -1,4 +1,4 @@
-import { Companies, Complaint, ResolvedStatus, Users } from "@/app/generated/prisma";
+import { Companies, Complaint, Contributions, ResolvedStatus, Users } from "@/app/generated/prisma";
 
 export interface ComplaintCardProps extends Omit<Complaint, "attachments"> {
     attachments?: string[]
@@ -56,4 +56,32 @@ export interface CompanyPerIdInterface {
     success: boolean;
     company: CompanyPerIdWithComplaint;
     complaintsPerMonth: number;
+}
+
+export interface ComplaintPageContributions {
+    user: {
+        userProfileImage: string;
+        username: string;
+        fullName: string;
+        reputation: string;
+    } | null
+}
+
+export interface ComplaintPerIdWithCompany extends Complaint {
+    company: Companies;
+    user: {
+        userProfileImage: string;
+        username: string;
+        fullName: string;
+        reputation: string;
+        complaints: string;
+    } | null;
+    contributions: ComplaintPageContributions[];
+    hasVoted: boolean;
+}
+
+
+export interface ComplantPerIdInterface {
+    success: boolean;
+    complaint: ComplaintPerIdWithCompany;
 }
