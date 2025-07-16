@@ -11,6 +11,17 @@ export const POST = async (req: NextRequest) => {
     
     try {
         const body = await req.json();
+        const checkExisting = await prisma.complaintUpVotes.findUnique({
+            where: {
+                userId_complaintId: {
+                    userId: session.user.id,
+                    complaintId: body.complaintId
+                }
+            }
+        })
+        if(checkExisting){
+            return NextResponse.json({success: false, message: "Ju vecse keni votuar per kete ankese/raportim"}, {status: 400})
+        }
         await prisma.complaintUpVotes.create({
             data: {
                 complaintId: body.complaintId,
