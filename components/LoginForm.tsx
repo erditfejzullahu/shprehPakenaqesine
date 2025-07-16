@@ -68,11 +68,7 @@ const LoginForm = () => {
     if(res?.ok){
         toast.success("Sapo jeni kycur me sukes!")
         setErrorMessage("")
-        if(redirectTo){
-          router.replace(redirectTo)
-        }else{
-          router.refresh()
-        }
+        router.replace(redirectTo || "/profili")
     }else{
         toast.error("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
         setErrorMessage("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
@@ -91,7 +87,7 @@ const LoginForm = () => {
           })
           if(res?.ok){
             setErrorMessage("")
-            router.refresh();
+            router.replace('/profili');
           }else{
             toast.error("Dicka shkoi gabim ne kycjen tuaj. Provoni manualisht ose na kontaktoni!")
             setErrorMessage("Dicka shkoi gabim ne kycjen tuaj. Provoni manualisht ose na kontaktoni!")

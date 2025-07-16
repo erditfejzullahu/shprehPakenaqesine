@@ -1,17 +1,16 @@
-import { authOptions } from "@/lib/auth"
 import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server";
+import { auth } from "../../../../../auth";
 
 export const GET = async () => {
     try {
-        // console.log("sosht?");
-        const session = await getServerSession(authOptions);
+
+        const session = await auth();
         
         if(!session){
-            
             return NextResponse.json({success: false, message: "Nuk jeni te autorizuar per kete veprim!"}, {status: 401})
         }
+        
         const userDetails = await prisma.users.findUnique({
             where: {id: session.user.id},
             select: {
@@ -72,6 +71,7 @@ export const GET = async () => {
         return NextResponse.json({success: true, details}, {status: 200})
 
     } catch (error) {
-        
+        console.error(error)
+        return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server. Ju lutem provoni perseri"}, {status: 404})
     }
 }

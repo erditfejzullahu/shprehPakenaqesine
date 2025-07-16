@@ -32,7 +32,7 @@ const Header = ({session}: {session: Session | null}) => {
             <LogOut/>
             </div>
           ) : (
-            <Link href={'kycuni'}>
+            <Link href={'/kycuni'}>
               <FaUser size={24} color='#4f46e5'/>
             </Link>
           )}

@@ -1,10 +1,12 @@
 "use client"
+import api from '@/lib/api'
 import { ComplantPerIdInterface } from '@/types/types'
 import { Session } from 'next-auth'
 import React, { useState } from 'react'
+import { toast } from 'sonner'
 
 const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: ComplantPerIdInterface, session: Session | null}) => {
-
+    
     const [isUpvoting, setIsUpvoting] = useState(false)
     const [upvoteCount, setUpvoteCount] = useState(0)
     const [hasUpvoted, setHasUpvoted] = useState(complaintsData.complaint.hasVoted)
@@ -15,18 +17,15 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
         
         setIsUpvoting(true);
         try {
-          // In a real app, you'd call your API endpoint here
-          // await fetch(`/api/complaints/${complaintData.id}/upvote`, {
-          //   method: 'POST'
-          // });
-          
-          // Simulate API call
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
+          const response = await api.post(`/api/complaintVotes/`, {complaintId: complaintsData.complaint.id, userId: session.user.id})
+          if(response.data.success){
+            toast.success(response.data.message)
+          }
           setUpvoteCount(prev => prev + 1);
           setHasUpvoted(true);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to upvote:', error);
+          toast.error(error.response.data.message)
         } finally {
           setIsUpvoting(false);
         }

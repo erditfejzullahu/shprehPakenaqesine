@@ -1,16 +1,39 @@
-import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-
+import { auth } from "@/auth";
 export const GET = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params;
+    
     try {
-        const session = await getServerSession(authOptions);
-
+        const session = await auth();
+        if(!session){
+            console.log("no session");
+            
+            return NextResponse.json({message: "Not authorized"}, {status: 500})
+        }
+        let hasVoted = false;
+        if(!session){
+            hasVoted = false;
+        }else{
+            const vote = await prisma.complaintUpVotes.findUnique({
+                where: {
+                    userId_complaintId: {
+                        userId: session.user.id,
+                        complaintId: id
+                    }
+                }
+            })
+            console.log(vote, ' votaaaaa');
+            hasVoted = !!vote;
+            console.log(hasVoted, ' hasVoted');
+            
+        }
+        console.log(session, ' aoskdaoskdoaskdoasdk');
+        
         const complaintQuery = await prisma.complaint.findUnique({
             where: {id},
             select: {
+                id: true,
                 title: true,
                 description: true,
                 createdAt: true,
@@ -64,20 +87,10 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
             return NextResponse.json({success: false, message: "Nuk u gjet asnje ankese/raportim"}, {status: 404})
         }
 
-        let hasVoted = false;
-        if(session?.user?.id){
-            const vote = await prisma.complaintUpVotes.findUnique({
-                where: {
-                    userId_complaintId: {
-                        userId: session.user.id,
-                        complaintId: id
-                    }
-                }
-            })
-            hasVoted = !!vote;
-        }
+        
 
         const complaint = {
+            id: complaintQuery.id,
             title: complaintQuery.title,
             description: complaintQuery.description,
             createdAt: complaintQuery.createdAt,

@@ -52,7 +52,7 @@ const ComplaintsQuery = () => {
         slidesPerView={'auto'}
         spaceBetween={16}
         grabCursor={true}
-        // modules={[Autoplay]}
+        modules={[Autoplay]}
         autoplay={{
             delay: 2500,
             disableOnInteraction: true,

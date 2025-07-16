@@ -1,7 +1,15 @@
+import { auth } from '@/auth'
 import LoginForm from '@/components/LoginForm'
+import { redirect } from 'next/navigation';
 import React from 'react'
 
 const page = async () => {
+  const session = await auth();
+  console.log(session);
+  if(session){
+    redirect('/profili')
+  }
+  
   return (
     <div>
         <section className="flex-1">

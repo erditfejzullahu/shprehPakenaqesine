@@ -1,11 +1,10 @@
 import React from 'react'
-import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation';
 import MyProfileData from '@/components/MyProfileData';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/auth';
 
 const page = async () => {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     console.log(session);
     
     if(!session){

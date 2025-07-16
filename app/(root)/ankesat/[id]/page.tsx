@@ -1,18 +1,27 @@
 import ComplaintActionsCard from '@/components/ComplaintActionsCard';
 import ComplaintsPageTabs from '@/components/ComplaintsPageTabs';
-import api from '@/lib/api';
-import { authOptions } from '@/lib/auth';
 import { ComplantPerIdInterface } from '@/types/types';
-import { getServerSession } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
+import { auth } from '../../../../auth';
 
 const page = async ({params}: {params: Promise<{id: string}>}) => {
-  const session = await getServerSession(authOptions)
+    const session = await auth()  
     const {id} = await params;
-    const response = await api.get<ComplantPerIdInterface>(`/api/complaint/${id}`)
-    const data = response.data;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/complaint/${id}`, {
+      method: "GET",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    if(!response.ok){
+      throw new Error("Dicka shkoi gabim. Ju lutem provoni perseri!")
+    }
+    
+    const data: ComplantPerIdInterface = await response.json();
 
     const attachments: string[] = data.complaint.attachments ? JSON.parse(data.complaint.attachments) : []
 

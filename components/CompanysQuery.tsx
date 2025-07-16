@@ -4,9 +4,8 @@ import React, { memo } from 'react'
 import { LoadingSpinner } from './LoadingComponents'
 import api from '@/lib/api'
 import CompanyCard from './CompanyCard'
-import { Companies } from '@/app/generated/prisma'
 import CTAButton from './CTAButton'
-import { FaChevronCircleDown, FaChevronDown } from 'react-icons/fa'
+import { FaChevronDown } from 'react-icons/fa'
 import { CompaniesWithHasMore, CompanyInterface } from '@/types/types'
 
 
