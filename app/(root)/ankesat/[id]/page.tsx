@@ -5,16 +5,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
 import { auth } from '../../../../auth';
+import { cookies } from 'next/headers';
 
 const page = async ({params}: {params: Promise<{id: string}>}) => {
     const session = await auth()  
     const {id} = await params;
-
+    const Cookie = await cookies().toString()
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/complaint/${id}`, {
       method: "GET",
       credentials: "same-origin",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Cookie
       }
     })
     if(!response.ok){
