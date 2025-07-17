@@ -17,33 +17,8 @@ import { ReportsCategory } from '@/app/generated/prisma'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
-
-const contributionsSchema = z.object({
-  attachments: z.array(z.string().regex(/^data:image\/(png|jpeg|jpg|gif);base64,/, {
-    message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG ose GIF)"
-  })).optional(),
-  audiosAttached: z.array(z.string().regex(/^data:audio\/(mp3|wav|ogg);base64,/, {
-      message: "Audiot e bashkëngjitura duhet të jenë në formatin base64 (MP3, WAV ose OGG)"
-  })).optional(),
-  videosAttached: z.array(z.string().regex(/^data:video\/(mp4|webm|ogg);base64,/, {
-      message: "Videot e bashkëngjitura duhet të jenë në formatin base64 (MP4, WebM ose OGG)"
-  })).optional(),
-})
-
-const reportsSchema = z.object({
-  title: z.string().min(6, "Duhen te pakten 6 karaktere"),
-  description: z.string().min(20, "Duhen te pakten 20 karaktere"),
-  attachments: z.array(z.string().regex(/^data:image\/(png|jpeg|jpg|gif);base64,/, {
-    message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG ose GIF)"
-  })).optional(),
-  audiosAttached: z.array(z.string().regex(/^data:audio\/(mp3|wav|ogg);base64,/, {
-      message: "Audiot e bashkëngjitura duhet të jenë në formatin base64 (MP3, WAV ose OGG)"
-  })).optional(),
-  videosAttached: z.array(z.string().regex(/^data:video\/(mp4|webm|ogg);base64,/, {
-      message: "Videot e bashkëngjitura duhet të jenë në formatin base64 (MP4, WebM ose OGG)"
-  })).optional(),
-  category: z.enum(ReportsCategory),
-})
+import { contributionsSchema } from '@/lib/schemas/contributionsSchema'
+import { reportsSchema } from '@/lib/schemas/reportsSchema'
 
 type ValidationSchema = z.infer<typeof contributionsSchema>;
 type ReportsValidationSchema = z.infer<typeof reportsSchema>;
@@ -313,7 +288,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                                 id='attachments'
                                 type="file" 
                                 className="hidden" 
-                                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+                                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
                                 multiple
                                 onChange={(e) => handleAttachmentUploads(e, "attachments")}
                               />

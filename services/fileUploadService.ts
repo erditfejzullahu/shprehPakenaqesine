@@ -44,6 +44,16 @@ class FileUploadService {
         'video/x-msvideo'
     ])
 
+    private readonly validDocumentTypes: Set<string> = new Set([
+      'application/pdf',
+      'application/msword',  // .doc
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  // .docx
+      'application/vnd.ms-excel',  // .xls
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',  // .xlsx
+      'application/vnd.ms-powerpoint',  // .ppt
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation'  // .pptx
+  ]);
+
     private readonly maxFileSize: number = 50 * 1024 * 1024; // 50 mb
 
     private parseBase64(base64Data: string): { mimeType: string; data: Buffer } {
@@ -72,8 +82,9 @@ class FileUploadService {
     
           const isValidImage = this.validImageTypes.has(mimeType);
           const isValidVideo = this.validVideoTypes.has(mimeType);
+          const isValidDoc = this.validDocumentTypes.has(mimeType);
           
-          if (!isValidImage && !isValidVideo) {
+          if (!isValidImage && !isValidVideo && !isValidDoc) {
             return { valid: false, error: 'Unsupported file type' };
           }
     

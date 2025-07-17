@@ -140,7 +140,7 @@ const CreateCompanyForm = () => {
             name="logoAttachment"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Logo e Kompanisë</FormLabel>
+                <FormLabel htmlFor='logoAttachment'>Logo e Kompanisë</FormLabel>
                 <FormControl>
                   <div className="space-y-2">
                     {logoPreview ? (
@@ -171,6 +171,7 @@ const CreateCompanyForm = () => {
                           </p>
                         </div>
                         <input 
+                          id='logoAttachment'
                           type="file" 
                           className="hidden" 
                           accept="image/*"
@@ -245,7 +246,7 @@ const CreateCompanyForm = () => {
             name="imageAttachments"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Imazhe të Kompanisë</FormLabel>
+                <FormLabel htmlFor='imagesComp'>Imazhe të Kompanisë</FormLabel>
                 <FormControl>
                   <div className="space-y-4">
                     <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
@@ -256,6 +257,7 @@ const CreateCompanyForm = () => {
                         </p>
                       </div>
                       <input 
+                        id='imagesComp'
                         type="file" 
                         className="hidden" 
                         accept="image/*"

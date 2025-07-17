@@ -6,17 +6,19 @@ import Link from 'next/link';
 import React from 'react'
 import { auth } from '../../../../auth';
 import { cookies } from 'next/headers';
+import { ImageIcon } from 'lucide-react';
+import { FaImage } from 'react-icons/fa';
 
 const page = async ({params}: {params: Promise<{id: string}>}) => {
     const session = await auth()  
     const {id} = await params;
-    const Cookie = await cookies().toString()
+    const cookieStore = (await cookies()).toString();
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/complaint/${id}`, {
       method: "GET",
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
-        Cookie
+        Cookie: cookieStore
       }
     })
     if(!response.ok){
@@ -88,15 +90,25 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         {/* Documents */}
                         {data.complaint.attachments.map((file, index) => (
-                          <div key={`doc-${index}`} className="shadow-md p-3 flex items-center">
-                            <svg className="w-8 h-8 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-                            </svg>
+                          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}${file}`} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100">
+                            {file.includes('application/pdf') || 
+                            file.includes('application/msword') || 
+                            file.includes('vnd.openxmlformats-officedocument.wordprocessingml.document') || 
+                            file.includes('vnd.ms-excel') || 
+                            file.includes('vnd.openxmlformats-officedocument.spreadsheetml.sheet') || 
+                            file.includes('vnd.ms-powerpoint') || 
+                            file.includes('vnd.openxmlformats-officedocument.presentationml.presentation') ? (
+                              <svg className="w-8 h-8 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <FaImage className='text-gray-400 w-8 h-8 mr-2'/>
+                            )}
                             <div className="truncate">
                               <p className="text-sm font-medium text-gray-900 truncate">Imazhe/Dokumente</p>
                               <p className="text-xs text-gray-500">Klikoni per hapje</p>
                             </div>
-                          </div>
+                          </Link>
                         ))}
 
                         {/* Videos */}

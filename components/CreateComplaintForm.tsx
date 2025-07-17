@@ -1,7 +1,7 @@
 "use client"
 import { createComplaintsSchema } from '@/lib/schemas/createComplaintsSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {z} from "zod"
 import { Label } from './ui/label'
@@ -10,25 +10,31 @@ import { Category, Companies } from '@/app/generated/prisma'
 import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/api'
 import { Input } from './ui/input'
-import { FileUp, Image, AudioLines, Video } from 'lucide-react'
+import { FileUp, Image as ImageLucide, AudioLines, Video, Check, Upload } from 'lucide-react'
 import { Textarea } from './ui/textarea'
 import CTAButton from './CTAButton'
 import { ImagePlus, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { Checkbox } from './ui/checkbox'
+import { Button } from './ui/button'
+import Image from 'next/image'
+// import Image from 'next/image'
 
 type ComplaintsType = z.infer<typeof createComplaintsSchema> 
 
 const CreateComplaintForm = () => {
   const router = useRouter();
-  const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [attachmentPreviews, setAttachmentPreviews] = useState<string[]>([])
   const [audioPreviews, setAudioPreviews] = useState<string[]>([]);
   const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
 
+  
   const imageAttachmentsRef = useRef<HTMLInputElement>(null)
   const audioAttachmentsRef = useRef<HTMLInputElement>(null)
   const videoAttachmentsRef = useRef<HTMLInputElement>(null)
-
+  
+  const [comunalComplaint, setComunalComplaint] = useState(false)
   const [videoProgress, setVideoProgress] = useState<number | null>(null)
   const [attachmentProgress, setAttachmentProgress] = useState<number | null>(null)
   const [audioProgress, setAudioProgress] = useState<number | null>(null)
@@ -43,7 +49,7 @@ const CreateComplaintForm = () => {
     staleTime: 1000 * 60 * 5
   })  
 
-  const {control, handleSubmit, reset, formState: {errors, isSubmitting}} = useForm<ComplaintsType>({
+  const {control, handleSubmit, setValue, reset, formState: {errors, isSubmitting}} = useForm<ComplaintsType>({
     resolver: zodResolver(createComplaintsSchema),
     defaultValues: useMemo(() => ({
       companyId: "",
@@ -57,7 +63,16 @@ const CreateComplaintForm = () => {
     mode: "onChange"
   })
 
+  useEffect(() => {
+    if(comunalComplaint){
+      setValue("companyId", "")
+    }
+  }, [comunalComplaint])
+  
+
   const onSubmit = useCallback(async (data: ComplaintsType) => {
+    console.log(data);
+    
     try {
       const response = await api.post(`/api/createComplaint`, {
         companyId: data.companyId,
@@ -70,12 +85,14 @@ const CreateComplaintForm = () => {
       })
       if(response.data.success){
         toast.success('Ju sapo keni krijuar ankese/raportim me sukses!')
+      }
+      if(response.data.url){
         router.push(`/ankesat/${response.data.url}`)
       }
     } catch (error: any) {
-      toast.error(error.response.data.message)
+      toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni perseri.")
     }
-  }, [])
+  }, [reset])
 
   
   const handleFileChange = useCallback((
@@ -109,8 +126,8 @@ const CreateComplaintForm = () => {
         
         if (filesRead === files.length) {
           clearInterval(interval);
-          const updatedPreviews = [...imagePreviews, ...newPreviews];
-          setImagePreviews(updatedPreviews);
+          const updatedPreviews = [...attachmentPreviews, ...newPreviews];
+          setAttachmentPreviews(updatedPreviews);
           fieldOnChange(updatedPreviews);
           setAttachmentProgress(null)
         }
@@ -202,10 +219,10 @@ const CreateComplaintForm = () => {
     index: number,
     fieldOnChange: (value: string[]) => void
   ) => {
-    const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
-    setImagePreviews(updatedPreviews);
+    const updatedPreviews = attachmentPreviews.filter((_, i) => i !== index);
+    setAttachmentPreviews(updatedPreviews);
     fieldOnChange(updatedPreviews);
-  }, [imagePreviews]);
+  }, [attachmentPreviews]);
 
 
   return (
@@ -225,13 +242,26 @@ const CreateComplaintForm = () => {
       </div>
       <div className='flex flex-row items-center justify-between gap-4'>
         <div className="flex-1">
-          <Label className='mb-1' htmlFor='companyId'>Kompania</Label>
+          <div className='flex mb-1 flex-row items-center justify-between gap-2'>
+            <div className='flex flex-row items-center gap-1'>
+              <Label htmlFor='companyId'>Kompania</Label>
+              {comunalComplaint ? (
+                <X size={16} color='red'/>
+              ) : (
+                <Check size={16} color='green'/>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Checkbox id="changePassword" onCheckedChange={(checked) => setComunalComplaint(checked as boolean)} checked={comunalComplaint}/>
+              <Label htmlFor="changePassword">Ankese Komunale?</Label>
+            </div>
+          </div>
           <Controller 
             control={control}
             name='companyId'
             render={({field}) => (
               <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-              <SelectTrigger id='companyId' className="flex-1 w-full cursor-pointer">
+              <SelectTrigger disabled={comunalComplaint} id='companyId' className="flex-1 w-full cursor-pointer">
                   <SelectValue placeholder="Zgjidh nje kompani" />
               </SelectTrigger>
               <SelectContent>
@@ -312,38 +342,20 @@ const CreateComplaintForm = () => {
           control={control}
           name="attachments"
           render={({ field: { onChange } }) => (
-            <div className="flex items-center flex-col">
-              <div className='flex flex-row items-center gap-2'>
-              <Input
-                ref={imageAttachmentsRef}
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={(e) => handleFileChange(e, onChange)}
-                style={{ display: 'none' }}
-                id="attachments"
-              />
-                <CTAButton type="button" onClick={() => imageAttachmentsRef.current?.click()} text='Ngarko Imazhe'/>
-                <ImagePlus className='h-8 w-8'/>
-              </div>
-              {typeof attachmentProgress === "number" && attachmentProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
-                <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${attachmentProgress}%`}} />
-              </div>}
-              {imagePreviews.length > 0 && <div className='shadow-xl p-4 mt-2' style={{ 
+              <div className="space-y-2">
+              {attachmentPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
                 display: 'flex', 
                 flexWrap: 'wrap', 
                 gap: '10px', 
               }}>
-                {imagePreviews.map((preview, index) => (
+                {attachmentPreviews.map((preview, index) => (
                   <div key={index} style={{ position: 'relative' }}>
-                    <img 
+                    <Image
                       src={preview} 
                       alt={`preview ${index}`} 
-                      style={{ 
-                        width: '100px', 
-                        height: '100px', 
-                        objectFit: 'cover' 
-                      }}
+                      width={100}
+                      height={100}
+                      className='h-44 w-full'
                     />
                     <button 
                       type="button"
@@ -365,7 +377,27 @@ const CreateComplaintForm = () => {
                       <X size={14}/>
                     </button>
                   </div>
-                ))}
+                  ))}
+                </div>) : (
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      Klikoni për të ngarkuar Imazhe/Dokumente
+                    </p>
+                  </div>
+                  <Input 
+                    id='attachments'
+                    type="file"
+                    multiple 
+                    className="hidden" 
+                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                    onChange={(e) => handleFileChange(e, onChange)}
+                  />
+                </label>
+              )}
+              {typeof attachmentProgress === "number" && attachmentProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
+                <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${attachmentProgress}%`}} />
               </div>}
             </div>
           )}
@@ -376,48 +408,66 @@ const CreateComplaintForm = () => {
       </div>
       <div className="flex flex-row items-center justify-between gap-4">
         <div className='flex-1'>
+          <Label htmlFor='audioInput' className='mb-1'>Ngarkoni Audio/Inqizime</Label>
           <Controller 
             control={control}
             name="audiosAttached"
             render={({ field: { onChange } }) => (
-              <div className="shadow-lg rounded-lg p-4 pb-2">
-                <Input
-                  ref={audioAttachmentsRef}
-                  type="file"
-                  multiple
-                  accept="audio/*"
-                  onChange={(e) => 
-                    handleMediaChange(e, onChange, setAudioPreviews, audioPreviews, 'audio')
-                  }
-                  className="hidden"
-                  id="audio-upload"
-                />
-                <Label 
-                  htmlFor="audio-upload"
-                  className="mb-2"
-                >
-                  Ngarko Audio/Zerim
-                </Label>
-                <CTAButton text='Ngarko Audio' onClick={() => audioAttachmentsRef.current?.click()}/>
+              <div className="space-y-2">
+                {audioPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: '10px', 
+                }}>
+                  {audioPreviews.map((preview, index) => (
+                    <div key={index} style={{ position: 'relative' }}>
+                      <audio
+                        src={preview} 
+                        controls
+                        className='w-full h-44'
+                      />
+                      <button 
+                        type="button"
+                        className='flex items-center justify-center'
+                        onClick={() => removeMedia(index, onChange, setAudioPreviews, audioPreviews)}
+                        style={{ 
+                          position: 'absolute', 
+                          top: -6, 
+                          right: -6,
+                          background: 'red',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '20px',
+                          height: '20px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <X size={14}/>
+                      </button>
+                    </div>
+                    ))}
+                  </div>) : (
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        Klikoni për të ngarkuar Audio/Inqizime
+                      </p>
+                    </div>
+                    <Input 
+                      id='audioInput'
+                      type="file"
+                      multiple 
+                      className="hidden" 
+                      accept="audio/*"
+                      onChange={(e) => handleMediaChange(e, onChange, setAudioPreviews, audioPreviews, 'audio')}
+                    />
+                  </label>
+                )}
                 {typeof audioProgress === "number" && audioProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
                   <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${audioProgress}%`}} />
                 </div>}
-                <div className="mt-4 space-y-2">
-                  {audioPreviews.map((preview, index) => (
-                    <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded">
-                      <audio controls src={preview} className="w-full" />
-                      <button
-                        type="button"
-                        onClick={() => 
-                          removeMedia(index, onChange, setAudioPreviews, audioPreviews)
-                        }
-                        className="ml-2 text-red-500 hover:text-red-700"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
               </div>
             )}
           />
@@ -426,49 +476,69 @@ const CreateComplaintForm = () => {
           )}
         </div>
         <div className="flex-1">
+          <Label htmlFor='videoInput' className='mb-1'>Ngarkoni Video/Inqizime</Label>
           <Controller 
             control={control}
             name="videosAttached"
             render={({ field: { onChange } }) => (
-              <div className="shadow-lg rounded-lg p-4 pb-2">
-                <Input
-                  ref={videoAttachmentsRef}
-                  type="file"
-                  multiple
-                  accept="video/*"
-                  onChange={(e) => 
-                    handleMediaChange(e, onChange, setVideoPreviews, videoPreviews, 'video')
-                  }
-                  className="hidden"
-                  id="video-upload"
-                />
-                <Label 
-                  htmlFor="video-upload"
-                  className="mb-2"
-                >
-                  Ngarko Video/Inxhiqime
-                </Label>
-                <CTAButton text='Ngarko Video' onClick={() => videoAttachmentsRef.current?.click()}/>
+              <>
+              <div className="space-y-2">
+                {videoPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: '10px', 
+                }}>
+                  {videoPreviews.map((preview, index) => (
+                    <div key={index} style={{ position: 'relative' }}>
+                      <video
+                        src={preview} 
+                        controls
+                        className='w-full h-44'
+                      />
+                      <button 
+                        type="button"
+                        className='flex items-center justify-center'
+                        onClick={() => removeMedia(index, onChange, setVideoPreviews, videoPreviews)}
+                        style={{ 
+                          position: 'absolute', 
+                          top: -6, 
+                          right: -6,
+                          background: 'red',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '20px',
+                          height: '20px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <X size={14}/>
+                      </button>
+                    </div>
+                    ))}
+                  </div>) : (
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        Klikoni për të ngarkuar Video/Inqizime
+                      </p>
+                    </div>
+                    <Input 
+                      id='videoInput'
+                      type="file"
+                      multiple 
+                      className="hidden" 
+                      accept="video/*"
+                      onChange={(e) => handleMediaChange(e, onChange, setVideoPreviews, videoPreviews, 'video')}
+                    />
+                  </label>
+                )}
                 {typeof videoProgress === "number" && videoProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
                   <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${videoProgress}%`}} />
                 </div>}
-                <div className="mt-4 space-y-4">
-                  {videoPreviews.map((preview, index) => (
-                    <div key={index} className="relative">
-                      <video controls className="w-full rounded" src={preview} />
-                      <button
-                        type="button"
-                        onClick={() => 
-                          removeMedia(index, onChange, setVideoPreviews, videoPreviews)
-                        }
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
               </div>
+              </>
             )}
           />
           {errors.videosAttached && (
@@ -477,7 +547,7 @@ const CreateComplaintForm = () => {
         </div>
       </div>
       <div className="flex-1">
-          <CTAButton type='submit' isLoading={isSubmitting} text='Apliko per ankesen/raportimin' classNames="flex-1 w-full mt-2" primary/>
+          <CTAButton type='submit' isLoading={isSubmitting} text={isSubmitting ? "Duke aplikuar..." : "Apliko per ankesen/raportimin"} classNames="flex-1 w-full mt-2" primary/>
       </div>
     </form>
   )
