@@ -1,5 +1,5 @@
 "use client"
-import { useCallback, useState, useMemo, useEffect } from 'react';
+import { useCallback, useState, useMemo, useEffect, memo } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import CTAButton from '@/components/CTAButton';
@@ -195,7 +195,7 @@ const MyProfileData = ({session}: {session: Session}) => {
       }
     };
 
-  const renderPagination = (totalPages: number) => {
+    const renderPagination = useCallback((totalPages: number) => {
     if (totalPages <= 1) return null;
 
     const pages = [];
@@ -246,17 +246,19 @@ const MyProfileData = ({session}: {session: Session}) => {
 
     return (
       <Pagination style={{listStyle: "none"}}>
-        <PaginationContent style={{listStyle: "none"}}>
+        <PaginationContent style={{listStyle: "none", cursor: "pointer"}}>
           <PaginationItem>
             <PaginationPrevious 
+              className='cursor-pointer'
               onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
               // disabled={currentPage === 1}
               
             />
           </PaginationItem>
-          {pages}
+            {pages}
           <PaginationItem>
-            <PaginationNext 
+            <PaginationNext
+              className='cursor-pointer' 
               onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
               // disabled={currentPage === totalPages}
             />
@@ -264,7 +266,7 @@ const MyProfileData = ({session}: {session: Session}) => {
         </PaginationContent>
       </Pagination>
     );
-  };
+  }, [currentPage]);
 
   if(!session){
     return null;
@@ -323,8 +325,8 @@ const MyProfileData = ({session}: {session: Session}) => {
                     <SelectValue placeholder="Rendit sipas votes" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="most">Më shumë votes</SelectItem>
-                    <SelectItem value="least">Më pak votes</SelectItem>
+                    <SelectItem value="most">Më shumë vota</SelectItem>
+                    <SelectItem value="least">Më pak vota</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -705,4 +707,4 @@ const MyProfileData = ({session}: {session: Session}) => {
   );
 };
 
-export default MyProfileData;
+export default memo(MyProfileData);

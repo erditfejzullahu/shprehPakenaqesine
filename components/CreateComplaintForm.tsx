@@ -15,12 +15,12 @@ import { Textarea } from './ui/textarea'
 import CTAButton from './CTAButton'
 import { ImagePlus, X } from 'lucide-react'
 import { toast } from 'sonner'
-
+import { useRouter } from 'next/navigation'
 
 type ComplaintsType = z.infer<typeof createComplaintsSchema> 
 
 const CreateComplaintForm = () => {
-
+  const router = useRouter();
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [audioPreviews, setAudioPreviews] = useState<string[]>([]);
   const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
@@ -41,10 +41,7 @@ const CreateComplaintForm = () => {
     },
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5
-  })
-
-  console.log(data);
-  
+  })  
 
   const {control, handleSubmit, reset, formState: {errors, isSubmitting}} = useForm<ComplaintsType>({
     resolver: zodResolver(createComplaintsSchema),
@@ -73,7 +70,7 @@ const CreateComplaintForm = () => {
       })
       if(response.data.success){
         toast.success('Ju sapo keni krijuar ankese/raportim me sukses!')
-        reset();
+        router.push(`/ankesat/${response.data.url}`)
       }
     } catch (error: any) {
       toast.error(error.response.data.message)

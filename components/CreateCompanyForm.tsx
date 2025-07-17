@@ -13,10 +13,13 @@ import { cn } from '@/lib/utils';
 import CTAButton from './CTAButton';
 import api from '@/lib/api';
 import { toast } from 'sonner';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 type CompanySchemaType = z.infer<typeof createCompanySchema>;
 
 const CreateCompanyForm = () => {
+  const router = useRouter();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
@@ -25,12 +28,12 @@ const CreateCompanyForm = () => {
     description: "",
     logoAttachment: "",
     address: "",
-    website: undefined,
-    email: undefined,
-    phone: undefined,
+    website: null,
+    email: null,
+    phone: "",
     imageAttachments: [],
     industry: "",
-    foundedYear: undefined
+    foundedYear: null
   }), []);
 
   const form = useForm<CompanySchemaType>({
@@ -40,9 +43,14 @@ const CreateCompanyForm = () => {
 
   const onSubmit = useCallback(async (data: CompanySchemaType) => {
     try {
-      const response = await api.post('/api/createCompany', {data})
+      const response = await api.post('/api/createCompany', data)
+      console.log(response.data);
+      
       if(response.data.success){
         toast.success('Sapo keni shtuar nje kompani ne platforme. Ju faleminderit!')
+      }
+      if(response.data.url){
+        router.push(`/kompanite/${response.data.url}`)
       }
     } catch (error: any) {
       console.error(error)
@@ -136,11 +144,13 @@ const CreateCompanyForm = () => {
                 <FormControl>
                   <div className="space-y-2">
                     {logoPreview ? (
-                      <div className="relative group">
-                        <img 
+                      <div className="relative group w-fit">
+                        <Image 
                           src={logoPreview} 
-                          alt="Logo preview" 
-                          className="h-32 w-32 object-contain border rounded-md"
+                          alt={`${form.getValues("name")} Company logo preview`}
+                          width={100}
+                          height={100}
+                          className="h-52 w-full object-contain border rounded-md"
                         />
                         <Button
                           type="button"
@@ -322,6 +332,7 @@ const CreateCompanyForm = () => {
                                 placeholder="info@kompania.com"
                                 className="pl-10"
                                 {...field}
+                                value={field.value || ""}
                                 />
                             </div>
                             </FormControl>

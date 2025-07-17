@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { subscriberSchema } from "@/lib/schemas/createSubscriptionSchema";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import {z} from "zod"
 import DOMPurify from 'isomorphic-dompurify' // Client+server side sanitization
@@ -9,8 +9,7 @@ import validator from "validator"
 type CreateSubscriberType = z.infer<typeof subscriberSchema> 
 
 export const GET = async (req: NextRequest) => {
-    const session = await getServerSession()
-    //TODO: add role
+    const session = await auth()
 } 
 
 export const POST = async (req: NextRequest) => {

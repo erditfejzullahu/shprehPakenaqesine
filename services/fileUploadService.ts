@@ -97,12 +97,14 @@ class FileUploadService {
         mimeType: string
       ): Promise<UploadResult> {
         // Validate entity type
-        if (!['complaint', 'company'].includes(entityType)) {
+
+    const entityTypes: string[] = ['complaints/attachments', 'complaints/audiosAttached', 'complaints/videosAttached', 'companys/images', 'companys/logo', 'users', 'reports/attachments', 'reports/audiosAttached', 'reports/videosAttached']
+        if (!entityTypes.includes(entityType)) {
           throw new Error('Invalid entity type');
         }
     
         // Create directory path
-        const baseDir = path.join(process.cwd(), 'uploads', `${entityType}`, entityId);
+        const baseDir = path.join(process.cwd(), 'public', 'uploads', `${entityType}`, entityId);
         await fs.mkdir(baseDir, { recursive: true });
     
         // Generate unique filename

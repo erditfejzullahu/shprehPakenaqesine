@@ -19,12 +19,12 @@ export const createCompanySchema = z.object({
         message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG ose GIF)"
     }),
     address: z.string().min(10, "Adresa duhet të përmbajë të paktën 10 karaktere"),
-    website: z.url("URL jo valid").optional(),
-    email: z.email("Email jo valid").optional(),
-    phone: xkPhoneNumberSchema.optional(),
+    website: z.url("URL jo valid").optional().nullable(),
+    email: z.email("Email jo valid").optional().nullable(),
+    phone: xkPhoneNumberSchema,
     imageAttachments: z.array(z.string().regex(/^data:image\/(png|jpeg|jpg|gif);base64,/, {
         message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG ose GIF)"
     })).optional(),
     industry: z.string().min(3, "Industria duhet të përmbajë të paktën 3 karaktere"),
-    foundedYear: z.number({ message: "Viti i themelimit duhet të jetë numër" }).int().min(1900).max(new Date().getFullYear()).optional(),
+    foundedYear: z.number({ message: "Viti i themelimit duhet të jetë numër" }).int().min(1900).max(new Date().getFullYear()).optional().nullable(),
 });

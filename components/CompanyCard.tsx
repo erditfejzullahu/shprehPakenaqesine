@@ -21,6 +21,8 @@ const CompanyCard = ({
   complaintsCount
 }: CompanyInterface) => {
 
+console.log(process.env.NEXT_PUBLIC_BASE_URL, ' eii');
+
   
   return (
     <Link href={`/kompanite/${id}`} aria-description="kompania" className="bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative">
@@ -64,7 +66,7 @@ const CompanyCard = ({
               {images.map((img, index) => (
                 <div key={index} className="flex-shrink-0">
                   <Image
-                    src={img}
+                    src={img || process.env.NEXT_PUBLIC_BASE_URL + img}
                     width={200}
                     height={100}
                     alt={`${name} gallery image ${index + 1}`}
