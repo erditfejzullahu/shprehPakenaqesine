@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { AudioLinesIcon, ImageIcon, X } from 'lucide-react'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
+import CTAButton from './CTAButton'
 
 const contributionsSchema = z.object({
   attachments: z.array(z.string().regex(/^data:image\/(png|jpeg|jpg|gif);base64,/, {
@@ -203,8 +204,13 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 </>
             )}
             </button>
-            <Dialog>
-              <form>
+            <Dialog onOpenChange={() => {
+              contributeReset();
+              setAttachmentPreviews([]);
+              setAudioPreviews([]);
+              setVideoPreviews([]);
+            }}>
+              <form onSubmit={contributeHandleSubmit(contributeOnSubmit)}>
                 <DialogTrigger asChild>
                   <button
                     type="button"
@@ -372,6 +378,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                           </div>
                         )}
                       />
+                    </div>
+                    <div>
+                      <CTAButton type='button' onClick={contributeHandleSubmit(contributeOnSubmit)} isLoading={contributeIsSubmitting} text='Shto kontribuim' primary classNames='w-full'/>
                     </div>
                   </div>
                 </DialogContent>

@@ -8,6 +8,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ReportsCategory {
+  LAJMERIM_I_RREMSHEM   // Fake or false report
+  SHPIFJE               // Defamation or slander
+  GJUHE_URREJTJE        // Hate speech
+  PERVERSE_OSE_ABUZIVE  // Obscene or abusive
+  SPAM_OSE_DUPLIKAT     // Spam or duplicate
+  JO_RELAVANT           // Not relevant
+  SHKELJE_PRIVATESIE    // Privacy violation
+  TJETER                // Other
+}
+
+
 model Users {
   id               String             @id @default(uuid())
   createdAt        DateTime
@@ -85,6 +97,21 @@ model Complaint {
   user            Users              @relation(fields: [userId], references: [id])
   complaintUpVote ComplaintUpVotes[]
   contributions   Contributions[]
+  reports Reports[]
+}
+
+model Reports {
+  id String @id @default(uuid())
+  title String
+  descrition String
+  attachments String[] @default([])
+  audioAttachments String[] @default([])
+  videoAttachments String[] @default([])
+  complaintId String
+  complaint Complaint @relation(fields: [complaintId], references: [id])
+  category ReportsCategory
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Subscribers {
