@@ -1,18 +1,20 @@
 "use client"
 import { Session } from 'next-auth'
-import React, { useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { FaInfoCircle } from 'react-icons/fa'
 import api from '@/lib/api'
 import { toast } from 'sonner'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
+import { SessionProvider, useSession } from 'next-auth/react'
 
-const AnonimityToggle = ({session}: {session: Session | null}) => {
+const AnonimityToggle = ({session}: {session: Session | null}) => {    
+    const {update} = useSession();
     const [changedAnonimityStatus, setChangedAnonimityStatus] = useState(false)
     const [anonimityStatus, setAnonimityStatus] = useState(session?.user.anonimity ? "Anonim" : "Publik")
     const [anonimityHover, setAnonimityHover] = useState(false)
 
-    const handleChangeAnonimity = async (val: string) => {
+    const handleChangeAnonimity = useCallback(async (val: string) => {
         try {
             const response = await api.post(`/api/auth/changeAnonimity`, {
                 anonimity: val === "Anonim" ? true : false
@@ -21,13 +23,14 @@ const AnonimityToggle = ({session}: {session: Session | null}) => {
                 setAnonimityStatus(val)
                 setChangedAnonimityStatus(true)
                 toast.success(`Ndryshuat dukshmerine tuaj ne ${val}`)
+                await update({ anonimity: val === "Anonim" })
             }
         } catch (error: any) {
             console.error(error)
             setChangedAnonimityStatus(false)
             toast.error(error.response.data.message)
         }
-    }
+    }, []) 
 
     useEffect(() => {
       let timeout: NodeJS.Timeout;
@@ -75,4 +78,4 @@ const AnonimityToggle = ({session}: {session: Session | null}) => {
   )
 }
 
-export default AnonimityToggle
+export default memo(AnonimityToggle)
