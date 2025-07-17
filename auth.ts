@@ -25,21 +25,22 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
         const user = await prisma.users.findUnique({
             where: { username },
             select: {
-            id: true,
-            username: true,
-            fullName: true,
-            email: true,
-            password: true,
-            createdAt: true,
-            gender: true,
-            _count: {
-                select: {
-                complaints: true,
-                contributions: true,
+                id: true,
+                username: true,
+                fullName: true,
+                email: true,
+                password: true,
+                createdAt: true,
+                gender: true,
+                _count: {
+                    select: {
+                    complaints: true,
+                    contributions: true,
+                    },
                 },
-            },
-            reputation: true,
-            userProfileImage: true,
+                reputation: true,
+                userProfileImage: true,
+                anonimity: true
             },
         });
 
@@ -64,6 +65,7 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
             contributions: user._count.contributions,
             reputation: user.reputation,
             userProfileImage: user.userProfileImage,
+            anonimity: user.anonimity
         };
         },
     }),
@@ -73,18 +75,36 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
     },
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
+            if(trigger === "update"){
+                token.id = user.id;
+                token.email = user.email;
+                token.gender = user.gender;
+                token.fullName = user.fullName;
+                token.username = user.username;
+                token.createdAt = user.createdAt;
+                token.complaints = user.complaints;
+                token.contributions = user.contributions;
+                token.reputation = user.reputation;
+                token.userProfileImage = user.userProfileImage;
+                token.anonimity = user.anonimity;
+                return {
+                    token,
+                    ...session.user
+                }
+            }
             if (user) {
-            token.id = user.id;
-            token.email = user.email;
-            token.gender = user.gender;
-            token.fullName = user.fullName;
-            token.username = user.username;
-            token.createdAt = user.createdAt;
-            token.complaints = user.complaints;
-            token.contributions = user.contributions;
-            token.reputation = user.reputation;
-            token.userProfileImage = user.userProfileImage;
+                token.id = user.id;
+                token.email = user.email;
+                token.gender = user.gender;
+                token.fullName = user.fullName;
+                token.username = user.username;
+                token.createdAt = user.createdAt;
+                token.complaints = user.complaints;
+                token.contributions = user.contributions;
+                token.reputation = user.reputation;
+                token.userProfileImage = user.userProfileImage;
+                token.anonimity = user.anonimity;
             }
             return token;
         },
@@ -101,6 +121,7 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
                 contributions: token.contributions,
                 reputation: token.reputation,
                 userProfileImage: token.userProfileImage,
+                anonimity: token.anonimity
             };
             return session;
         },

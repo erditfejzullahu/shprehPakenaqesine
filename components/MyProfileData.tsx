@@ -418,7 +418,8 @@ const MyProfileData = ({session}: {session: Session}) => {
               </div>
               <div className="w-full sm:w-auto">
                 <Select
-                  value={sortOrder}
+                  // value={sortOrder}
+                  defaultValue={sortOrder}
                   onValueChange={(value: 'newest' | 'oldest') => setSortOrder(value)}
                 >
                   <SelectTrigger className="w-[180px]">
@@ -507,7 +508,7 @@ const MyProfileData = ({session}: {session: Session}) => {
                       <Input
                         type="text"
                         id="fullName"
-                        defaultValue={session.user.fullName}
+                        // defaultValue={session.user.fullName}
                         {...field}
                         className="shadow-sm"
                       />
@@ -558,7 +559,7 @@ const MyProfileData = ({session}: {session: Session}) => {
                         type="email"
                         id="email"
                         {...field}
-                        defaultValue={session.user.email}
+                        // defaultValue={session.user.email}
                         className="shadow-sm"
                       />
                     )}
@@ -579,7 +580,7 @@ const MyProfileData = ({session}: {session: Session}) => {
                         type="username"
                         id="username"
                         {...field}
-                        defaultValue={session.user.username}
+                        // defaultValue={session.user.username}
                         className="shadow-sm"
                       />
                     )}
@@ -689,6 +690,7 @@ const MyProfileData = ({session}: {session: Session}) => {
 
               <div className="pt-2">
                 <CTAButton
+                  isLoading={isSubmitting}
                   onClick={handleSubmit(onSubmit)}
                   type="submit"
                   primary

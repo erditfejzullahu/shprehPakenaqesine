@@ -2,21 +2,23 @@ import React from 'react'
 import { redirect } from 'next/navigation';
 import MyProfileData from '@/components/MyProfileData';
 import { auth } from '@/auth';
+import AnonimityToggle from '@/components/AnonimityToggle';
 
 const page = async () => {
     const session = await auth();
-    console.log(session);
     
     if(!session){
         redirect('/kycuni?from=profili')
     }
+    
   return (
     <div className="min-h-screen bg-gray-50">
         <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Profili</h1>
             <p className='text-gray-600 text-center'>Ketu mund te gjeni te gjitha ankesat/raportimet, kontribimet apo te dhena tuaja personale</p>
         </div>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-lg">
+        <div className="max-w-6xl relative mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-lg">
+            <AnonimityToggle session={session}/>
             <div className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                     <div className="relative">

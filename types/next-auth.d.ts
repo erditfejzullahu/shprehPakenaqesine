@@ -15,6 +15,7 @@ declare module "next-auth" {
     contributions: number;
     reputation: number;
     userProfileImage: string;
+    anonimity: boolean;
   }
 
   interface Session {
@@ -34,6 +35,7 @@ declare module "@auth/core/adapters" {
     contributions: number;
     reputation: number;
     userProfileImage: string;
+    anonimity: boolean;
   }
 }
 
@@ -49,5 +51,6 @@ declare module "next-auth/jwt" {
     contributions: number;
     reputation: number;
     userProfileImage: string;
+    anonimity: boolean;
   }
 }

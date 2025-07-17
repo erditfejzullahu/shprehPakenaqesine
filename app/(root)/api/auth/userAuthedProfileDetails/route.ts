@@ -3,10 +3,8 @@ import { NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 
 export const GET = async () => {
-    try {
-
+    try {        
         const session = await auth();
-        
         if(!session){
             return NextResponse.json({success: false, message: "Nuk jeni te autorizuar per kete veprim!"}, {status: 401})
         }
@@ -43,6 +41,9 @@ export const GET = async () => {
                 }
             }
         })
+
+        console.log(userDetails, ' userdetails');
+        
 
         if(!userDetails){
             return NextResponse.json({success: false, message: "Nuk u gjet ndonje detaj!"}, {status: 404})
