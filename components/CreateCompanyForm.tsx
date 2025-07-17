@@ -1,7 +1,7 @@
 "use client"
 import { createCompanySchema } from '@/lib/schemas/createCompanySchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -395,4 +395,4 @@ const CreateCompanyForm = () => {
   );
 };
 
-export default CreateCompanyForm;
+export default memo(CreateCompanyForm);

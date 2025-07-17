@@ -151,7 +151,7 @@ const CompanyPage = ({ companyData }: Props) => {
                 <div
                   key={complaint.id}
                   className="p-6 hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
-                  onClick={() => router.push(`/complaints/${complaint.id}`)}
+                  onClick={() => router.push(`/ankesat/${complaint.id}`)}
                 >
                   <div className="flex justify-between items-start">
                     <div>
@@ -226,7 +226,7 @@ const CompanyPage = ({ companyData }: Props) => {
               </p>
               <div className="mt-6">
                 <button
-                  onClick={() => router.push("/complaints/new")}
+                  onClick={() => router.push("/krijo-raportim")}
                   className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Raporto Ankesë

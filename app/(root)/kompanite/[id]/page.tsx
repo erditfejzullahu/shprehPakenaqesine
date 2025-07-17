@@ -7,8 +7,12 @@ import React from 'react'
 
 const page = async ({params}: {params: Promise<{id: string}>}) => {    
     const {id} = await params;
-    const response = await api.get<CompanyPerIdInterface>(`/api/company/${id}`)
-    const data = response.data;
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/company/${id}`)
+    if(!response.ok){
+      throw new Error('Dicka shkoi gabim')
+    }
+    const data: CompanyPerIdInterface = await response.json();
     const images: string[] | [] = data.company.images ? JSON.parse(data.company.images) : [];
   return (
     <div className="min-h-screen bg-gray-50">

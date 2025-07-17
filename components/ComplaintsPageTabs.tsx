@@ -1,6 +1,6 @@
 "use client"
 import { ComplantPerIdInterface } from '@/types/types'
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 
 type ActiveTab = "details" | "contributions" | "discussion"
 
@@ -94,4 +94,4 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
   )
 }
 
-export default ComplaintsPageTabs
+export default memo(ComplaintsPageTabs)

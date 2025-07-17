@@ -2,7 +2,7 @@
 import api from '@/lib/api'
 import { ComplantPerIdInterface } from '@/types/types'
 import { Session } from 'next-auth'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
 import { Controller, useForm } from 'react-hook-form'
@@ -711,4 +711,4 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
   )
 }
 
-export default ComplaintActionsCard
+export default memo(ComplaintActionsCard)
