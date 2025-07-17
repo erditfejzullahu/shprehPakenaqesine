@@ -103,7 +103,7 @@ model Complaint {
 model Reports {
   id String @id @default(uuid())
   title String
-  descrition String
+  description String
   attachments String[] @default([])
   audioAttachments String[] @default([])
   videoAttachments String[] @default([])
