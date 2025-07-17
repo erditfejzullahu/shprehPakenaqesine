@@ -25,8 +25,6 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
     
     const data: ComplantPerIdInterface = await response.json();
 
-    const attachments: string[] = data.complaint.attachments ? JSON.parse(data.complaint.attachments) : []
-
     const getCategoryLabel = (category: string) => {
       // Convert enum value to readable label
       const words = category.split('_').map(word => {
@@ -82,14 +80,14 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                   </div>
 
                   {/* Attachments */}
-                  {(attachments.length > 0 || 
+                  {(data.complaint.attachments.length > 0 || 
                     data.complaint.audiosAttached?.length > 0 || 
                     data.complaint.videosAttached?.length > 0) && (
                     <div className="mb-8">
                       <h3 className="text-lg font-medium text-gray-900 mb-3">Bashkngjitjet/provat</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         {/* Documents */}
-                        {attachments.map((file, index) => (
+                        {data.complaint.attachments.map((file, index) => (
                           <div key={`doc-${index}`} className="shadow-md p-3 flex items-center">
                             <svg className="w-8 h-8 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />

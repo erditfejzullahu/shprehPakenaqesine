@@ -20,17 +20,7 @@ const CompanyCard = ({
   foundedYear,
   complaintsCount
 }: CompanyInterface) => {
-  
-  const parsedImages = React.useMemo(() => {
-    if (!images) return [];
-    if (Array.isArray(images)) return images;
-    try {
-      const parsed = JSON.parse(images as any);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  }, [images]);
+
   
   return (
     <Link href={`/kompanite/${id}`} aria-description="kompania" className="bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative">
@@ -67,11 +57,11 @@ const CompanyCard = ({
           {industry && <div>🏢 Industria: <span className="text-gray-800">{industry}</span></div>}
           {foundedYear && <div>📅 E krijuar: {foundedYear}</div>}
         </div>
-        {parsedImages.length > 0 && (
+        {images && images.length > 0 && (
           <div className="mt-4">
             <h3 className="text-sm font-medium text-gray-700 mb-2">Galeria</h3>
             <div className="flex gap-2 overflow-x-auto pb-2">
-              {parsedImages.map((img, index) => (
+              {images.map((img, index) => (
                 <div key={index} className="flex-shrink-0">
                   <Image
                     src={img}

@@ -13,7 +13,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
       throw new Error('Dicka shkoi gabim')
     }
     const data: CompanyPerIdInterface = await response.json();
-    const images: string[] | [] = data.company.images ? JSON.parse(data.company.images) : [];
+
   return (
     <div className="min-h-screen bg-gray-50">
         {/* Header */}
@@ -116,7 +116,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                   <div className="p-6">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Imazhet e kompanise</h3>
                     <div className="grid grid-cols-2 gap-3">
-                      {images.length > 0 ? images.map((image, index) => (
+                      {data.company.images.length > 0 ? data.company.images.map((image, index) => (
                         <div key={index} className="aspect-square bg-gray-100 shadow-md overflow-hidden">
                           <Image 
                             src={image} 

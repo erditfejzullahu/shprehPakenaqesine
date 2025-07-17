@@ -106,6 +106,10 @@ async function main(){
         status: statuses[Math.floor(Math.random() * statuses.length)],
         category: categories[Math.floor(Math.random() * categories.length)],
         createdAt: randomDate,
+        attachments: ([
+          faker.image.urlLoremFlickr({ category: 'business' }),
+          faker.image.urlLoremFlickr({ category: 'office' })
+        ]),
         updatedAt: faker.date.between({ 
           from: randomDate, 
           to: new Date() 

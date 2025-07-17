@@ -1,12 +1,10 @@
 import { Companies, Complaint, Contributions, ResolvedStatus, Users } from "@/app/generated/prisma";
 
-export interface ComplaintCardProps extends Omit<Complaint, "attachments"> {
-    attachments?: string[]
+export interface ComplaintCardProps extends Complaint {
     company: Companies,
     user: Users
 }
-export interface CompanyInterface extends Omit<Companies, "images"> {
-    images?: string[]
+export interface CompanyInterface extends Companies {
     complaintsCount: number;
 }
 
@@ -47,8 +45,7 @@ export interface MyProfileComplaintsContributions{
     } | null
 }
 
-export interface CompanyPerIdWithComplaint extends Omit<Companies, "images">{
-    images?: string
+export interface CompanyPerIdWithComplaint extends Companies{
     complaints: Complaint[]
 }
 
