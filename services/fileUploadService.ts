@@ -124,7 +124,7 @@ class FileUploadService {
         }
     
         // Return public URL
-        const publicUrl = `/uploads/${entityType}s/${entityId}/${uniqueFileName}`;
+        const publicUrl = `/uploads/${entityType}/${entityId}/${uniqueFileName}`;
         return {
           success: true,
           url: publicUrl,

@@ -88,34 +88,34 @@ const CreateComplaintForm = () => {
     const newPreviews: string[] = [];
     const fileReaders: FileReader[] = [];
     let filesRead = 0;
+    setAttachmentProgress(0)
+    let fakeProgress = 0;
+  
+    // Simulate: tick every 50ms
+    const interval = setInterval(() => {
+      fakeProgress += 5;
+      setAttachmentProgress(Math.min(fakeProgress, 95))
+    }, 50);
 
     Array.from(files).forEach((file) => {
       const reader = new FileReader();
       fileReaders.push(reader);
-      setAttachmentProgress(0)
-      let fakeProgress = 0;
-    
-      // Simulate: tick every 50ms
-      const interval = setInterval(() => {
-        fakeProgress += 5;
-        setVideoProgress(Math.min(fakeProgress, 95))
-      }, 50);
 
       reader.onloadend = () => {
         filesRead++;
         if (reader.result) {
           newPreviews.push(reader.result as string);
         }
-
+        
         if (filesRead === files.length) {
           clearInterval(interval);
-          setAttachmentProgress(100)
           const updatedPreviews = [...imagePreviews, ...newPreviews];
           setImagePreviews(updatedPreviews);
           fieldOnChange(updatedPreviews);
+          setAttachmentProgress(null)
         }
       };
-
+      
       reader.readAsDataURL(file);
     });
   }, []);
@@ -140,7 +140,7 @@ const CreateComplaintForm = () => {
     const interval = setInterval(() => {
       fakeProgress += 5;
       setVideoProgress(Math.min(fakeProgress, 95))
-    }, 50);
+    }, 100);
 
     switch (acceptType) {
       case "audio":
@@ -171,10 +171,10 @@ const CreateComplaintForm = () => {
           clearInterval(interval);
           switch (acceptType) {
             case "video":
-              setVideoProgress(100)
+              setVideoProgress(null)
               break;
             case "audio":
-              setAudioProgress(100)
+              setAudioProgress(null)
               break;
           }
           const updatedPreviews = [...currentPreviews, ...newPreviews];
@@ -326,7 +326,7 @@ const CreateComplaintForm = () => {
                 <CTAButton type="button" onClick={() => imageAttachmentsRef.current?.click()} text='Ngarko Imazhe'/>
                 <ImagePlus className='h-8 w-8'/>
               </div>
-              {attachmentProgress && attachmentProgress < 100 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
+              {typeof attachmentProgress === "number" && attachmentProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
                 <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${attachmentProgress}%`}} />
               </div>}
               {imagePreviews.length > 0 && <div className='shadow-xl p-4 mt-2' style={{ 
@@ -399,7 +399,7 @@ const CreateComplaintForm = () => {
                   Ngarko Audio/Zerim
                 </Label>
                 <CTAButton text='Ngarko Audio' onClick={() => audioAttachmentsRef.current?.click()}/>
-                {audioProgress && audioProgress < 100 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
+                {typeof audioProgress === "number" && audioProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
                   <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${audioProgress}%`}} />
                 </div>}
                 <div className="mt-4 space-y-2">
@@ -449,7 +449,7 @@ const CreateComplaintForm = () => {
                   Ngarko Video/Inxhiqime
                 </Label>
                 <CTAButton text='Ngarko Video' onClick={() => videoAttachmentsRef.current?.click()}/>
-                {videoProgress && videoProgress < 100 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
+                {typeof videoProgress === "number" && videoProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
                   <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${videoProgress}%`}} />
                 </div>}
                 <div className="mt-4 space-y-4">

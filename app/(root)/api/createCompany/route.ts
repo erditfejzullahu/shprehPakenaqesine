@@ -46,6 +46,7 @@ export const POST = async (req: NextRequest) => {
     }
     try {
         const body: CreateCompanyType = await req.json();
+            console.log(body.email);
             
             
         const sanitizedBody = {
@@ -60,7 +61,7 @@ export const POST = async (req: NextRequest) => {
             imageAttachments: body.imageAttachments,
             foundedYear: body.foundedYear
         }
-        console.log(sanitizedBody);
+        console.log(sanitizedBody.email);
 
 
         const validatedCompany = createCompanySchema.parse(sanitizedBody);

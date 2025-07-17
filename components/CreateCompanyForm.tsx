@@ -405,7 +405,7 @@ const CreateCompanyForm = () => {
           <CTAButton
             primary
             type="submit"
-            classNames='w-[150px]'
+            classNames='min-w-[150px]'
             isLoading={form.formState.isSubmitting}
             text={form.formState.isSubmitting ? 'Duke u ruajtur...' : 'Ruaj'}
            />
