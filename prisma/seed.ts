@@ -105,10 +105,6 @@ async function main(){
         description: faker.lorem.paragraphs(3),
         status: statuses[Math.floor(Math.random() * statuses.length)],
         category: categories[Math.floor(Math.random() * categories.length)],
-        attachments: JSON.stringify([
-            faker.image.urlLoremFlickr({ category: 'business' }),
-            faker.image.urlLoremFlickr({ category: 'office' })
-          ]),
         createdAt: randomDate,
         updatedAt: faker.date.between({ 
           from: randomDate, 

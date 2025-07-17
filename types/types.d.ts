@@ -85,3 +85,45 @@ export interface ComplantPerIdInterface {
     success: boolean;
     complaint: ComplaintPerIdWithCompany;
 }
+
+declare module '@/services/fileUploadService' {
+    import { UploadResult } from '@/services/fileUploadService';
+    
+    export type EntityType = 
+    'complaints/attachments' 
+    | 'complaints/audiosAttached' 
+    | 'complaints/videosAttached' 
+    | 'companys/images'
+    | 'companys/logo' 
+    | 'users' 
+    | 'reports/attachments'
+    | 'reports/audiosAttached' 
+    | 'reports/videosAttached';
+    
+    interface IFileUploadService {
+      uploadFile(
+        base64Data: string,
+        entityType: EntityType,
+        entityId: string
+      ): Promise<UploadResult>;
+      
+      deleteFile(filePath: string): Promise<boolean>;
+    }
+  
+    const fileUploadService: IFileUploadService;
+    export default fileUploadService;
+}
+
+export interface UploadRequest {
+    file: string;
+    fileName: string;
+    fileType: string;
+}
+
+export interface UploadResult {
+    success: boolean;
+    url: string;
+    fileName: string;
+    filePath: string;
+    mimeType: string;
+  }

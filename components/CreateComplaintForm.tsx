@@ -14,6 +14,7 @@ import { FileUp, Image, AudioLines, Video } from 'lucide-react'
 import { Textarea } from './ui/textarea'
 import CTAButton from './CTAButton'
 import { ImagePlus, X } from 'lucide-react'
+import { toast } from 'sonner'
 
 
 type ComplaintsType = z.infer<typeof createComplaintsSchema> 
@@ -60,7 +61,23 @@ const CreateComplaintForm = () => {
   })
 
   const onSubmit = useCallback(async (data: ComplaintsType) => {
-    console.log(data)
+    try {
+      const response = await api.post(`/api/createComplaint`, {
+        companyId: data.companyId,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        attachments: data.attachments,
+        audiosAttached: data.audiosAttached,
+        videosAttached: data.videosAttached
+      })
+      if(response.data.success){
+        toast.success('Ju sapo keni krijuar ankese/raportim me sukses!')
+        reset();
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message)
+    }
   }, [])
 
   
