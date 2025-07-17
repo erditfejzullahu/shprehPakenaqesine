@@ -34,28 +34,56 @@ const page = () => {
           </Link>
         </section>
 
-        <section className="w-full max-w-6xl mx-auto py-16 pb-20 sm:px-6 lg:px-8 text-center ">
-          <div className="flex flex-row items-end gap-2 mb-2 justify-between">
-            <h2 className="text-3xl font-bold text-gray-800 border-b-2 w-fit border-indigo-600">Kompanite</h2>
-            <Link aria-description='all companies' href={'/kompanite'} className="text-indigo-600 group hover:font-semibold transition-all font-medium flex flex-row items-end">Te gjithe kompanite <FaChevronDown className='group-hover:size-5 rotate-[40deg]' /></Link>
+        <section className="w-full max-w-6xl mx-auto py-16 pb-20 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
+            <div className="space-y-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+                Kompanitë
+              </h2>
+              <p className="text-gray-600 max-w-2xl text-base">
+                Eksploroni kompanitë e regjistruara në platformën tonë dhe shikoni vlerësimet e tyre
+              </p>
+            </div>
+            <Link 
+              href="/kompanite" 
+              aria-description="all companies"
+              className="group flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors duration-200"
+            >
+              <span className="text-indigo-700 font-medium">Shiko të gjitha</span>
+              <FaChevronDown className="h-3.5 w-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
           </div>
-            <CompanysQuery />
+          
+          <CompanysQuery />
         </section>
 
 
-        <section className="w-full max-w-6xl mx-auto py-16 pb-8 px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex flex-row items-end gap-2 mb-3 justify-between">
-            <h2 className="text-3xl font-bold text-gray-800 border-b-2 w-fit border-indigo-600">Ankesat</h2>
-            <Link href={'/ankesat'} aria-description='all complaints' className="text-indigo-600 group hover:font-semibold transition-all font-medium flex flex-row items-end">Te gjithe ankesat <FaChevronDown className='group-hover:size-5 rotate-[40deg]' /></Link>
+        <section className="w-full max-w-6xl mx-auto py-16 pb-20 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
+            <div className="space-y-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+                Ankesat/Raportimet
+              </h2>
+              <p className="text-gray-600 max-w-2xl text-base">
+                Eksploroni kompanitë e regjistruara në platformën tonë dhe shikoni vlerësimet e tyre
+              </p>
+            </div>
+            <Link 
+              href="/ankesat" 
+              aria-description="all companies"
+              className="group flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors duration-200"
+            >
+              <span className="text-indigo-700 font-medium">Shiko të gjitha</span>
+              <FaChevronDown className="h-3.5 w-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
           </div>
-          <div>
-            <ComplaintsQuery />
-          </div>
+          
+          <ComplaintsQuery />
         </section>
 
 
         {/* Features Section */}
-        <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center ">
+        <section className="w-full max-w-6xl mx-auto py-16 pt-6 px-4 sm:px-6 lg:px-8 text-center ">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Pse ne?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard 

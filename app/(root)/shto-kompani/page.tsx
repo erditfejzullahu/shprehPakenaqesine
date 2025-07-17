@@ -11,7 +11,7 @@ const page = async () => {
         Krijo Ankese
         <FaPlusSquare size={24} color='#4f46e5'/>
       </Link>
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">Krijo <span className="text-indigo-600">Kompani</span></h1>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Krijo <span className="text-indigo-600">Kompani</span></h1>
       <p className='text-gray-600'>Ketu mund te shtoni kompanine per te cilen mund te krijoni ankese ju apo perdoruesit e tjere te platformes <span className="text-indigo-600">ShprehPakenaqesine</span></p>
     </div>
     <CreateCompanyForm />

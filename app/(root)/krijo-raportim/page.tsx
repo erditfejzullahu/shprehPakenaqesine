@@ -11,7 +11,7 @@ const page = async () => {
         Shto kompani
         <FaPlusSquare size={24} color='#4f46e5'/>
       </Link>
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">Krijo <span className="text-indigo-600">Ankesen</span></h1>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Krijo <span className="text-indigo-600">Ankesen</span></h1>
       <p className='text-gray-600'>Sigurohuni qe para raportimit te jeni ne dijeni dhe ne perputhje me <Link className="text-indigo-600" href="/termat-e-perdorimit">Termat e Perdorimit</Link> dhe <Link className="text-indigo-600" href={'verifikimi'}>Procesin e Verifikimit</Link></p>
     </div>
 

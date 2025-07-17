@@ -29,11 +29,6 @@ const CreateComplaintForm = () => {
   const [audioPreviews, setAudioPreviews] = useState<string[]>([]);
   const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
 
-  
-  const imageAttachmentsRef = useRef<HTMLInputElement>(null)
-  const audioAttachmentsRef = useRef<HTMLInputElement>(null)
-  const videoAttachmentsRef = useRef<HTMLInputElement>(null)
-  
   const [comunalComplaint, setComunalComplaint] = useState(false)
   const [videoProgress, setVideoProgress] = useState<number | null>(null)
   const [attachmentProgress, setAttachmentProgress] = useState<number | null>(null)
@@ -52,7 +47,7 @@ const CreateComplaintForm = () => {
   const {control, handleSubmit, setValue, reset, formState: {errors, isSubmitting}} = useForm<ComplaintsType>({
     resolver: zodResolver(createComplaintsSchema),
     defaultValues: useMemo(() => ({
-      companyId: "",
+      companyId: null,
       title: "",
       description: "",
       category: "FAVORIZIMI",
@@ -65,7 +60,7 @@ const CreateComplaintForm = () => {
 
   useEffect(() => {
     if(comunalComplaint){
-      setValue("companyId", "")
+      setValue("companyId", null)
     }
   }, [comunalComplaint])
   
@@ -260,7 +255,7 @@ const CreateComplaintForm = () => {
             control={control}
             name='companyId'
             render={({field}) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
               <SelectTrigger disabled={comunalComplaint} id='companyId' className="flex-1 w-full cursor-pointer">
                   <SelectValue placeholder="Zgjidh nje kompani" />
               </SelectTrigger>

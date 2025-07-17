@@ -56,8 +56,8 @@ const CompanysQuery = () => {
         ))
       )}
       {hasNextPage && (
-        <div className="mt-1 w-full mx-auto absolute right-0 -bottom-16 left-0">
-          <CTAButton onClick={() => fetchNextPage()} isLoading={isFetchingNextPage} text='Me shume' primary/>
+        <div className="mt-1 w-full flex justify-between items-center mx-auto absolute right-0 -bottom-16 left-0">
+          <CTAButton onClick={() => fetchNextPage()} isLoading={isFetchingNextPage} text='Me shume' primary classNames='mx-auto'/>
         </div>
       )}
     </div>
