@@ -28,6 +28,10 @@ const CreateComplaintForm = () => {
   const audioAttachmentsRef = useRef<HTMLInputElement>(null)
   const videoAttachmentsRef = useRef<HTMLInputElement>(null)
 
+  const [videoProgress, setVideoProgress] = useState<number | null>(null)
+  const [attachmentProgress, setAttachmentProgress] = useState<number | null>(null)
+  const [audioProgress, setAudioProgress] = useState<number | null>(null)
+
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ['companiesForm'],
     queryFn: async () => {
@@ -74,6 +78,14 @@ const CreateComplaintForm = () => {
     Array.from(files).forEach((file) => {
       const reader = new FileReader();
       fileReaders.push(reader);
+      setAttachmentProgress(0)
+      let fakeProgress = 0;
+    
+      // Simulate: tick every 50ms
+      const interval = setInterval(() => {
+        fakeProgress += 5;
+        setVideoProgress(Math.min(fakeProgress, 95))
+      }, 50);
 
       reader.onloadend = () => {
         filesRead++;
@@ -82,6 +94,8 @@ const CreateComplaintForm = () => {
         }
 
         if (filesRead === files.length) {
+          clearInterval(interval);
+          setAttachmentProgress(100)
           const updatedPreviews = [...imagePreviews, ...newPreviews];
           setImagePreviews(updatedPreviews);
           fieldOnChange(updatedPreviews);
@@ -106,6 +120,23 @@ const CreateComplaintForm = () => {
     const fileReaders: FileReader[] = [];
     let filesRead = 0;
 
+    let fakeProgress = 0;
+
+    // Simulate: tick every 50ms
+    const interval = setInterval(() => {
+      fakeProgress += 5;
+      setVideoProgress(Math.min(fakeProgress, 95))
+    }, 50);
+
+    switch (acceptType) {
+      case "audio":
+        setAudioProgress(0)
+        break;
+      case "video":
+        setVideoProgress(0)
+        break;
+    }
+
     Array.from(files).forEach((file) => {
       // Validate file type
       if (!file.type.includes(acceptType)) {
@@ -123,6 +154,15 @@ const CreateComplaintForm = () => {
         }
 
         if (filesRead === newPreviews.length) {
+          clearInterval(interval);
+          switch (acceptType) {
+            case "video":
+              setVideoProgress(100)
+              break;
+            case "audio":
+              setAudioProgress(100)
+              break;
+          }
           const updatedPreviews = [...currentPreviews, ...newPreviews];
           setPreviews(updatedPreviews);
           fieldOnChange(updatedPreviews);
@@ -272,6 +312,9 @@ const CreateComplaintForm = () => {
                 <CTAButton type="button" onClick={() => imageAttachmentsRef.current?.click()} text='Ngarko Imazhe'/>
                 <ImagePlus className='h-8 w-8'/>
               </div>
+              {attachmentProgress && attachmentProgress < 100 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
+                <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${attachmentProgress}%`}} />
+              </div>}
               {imagePreviews.length > 0 && <div className='shadow-xl p-4 mt-2' style={{ 
                 display: 'flex', 
                 flexWrap: 'wrap', 
@@ -342,7 +385,9 @@ const CreateComplaintForm = () => {
                   Ngarko Audio/Zerim
                 </Label>
                 <CTAButton text='Ngarko Audio' onClick={() => audioAttachmentsRef.current?.click()}/>
-                
+                {audioProgress && audioProgress < 100 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
+                  <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${audioProgress}%`}} />
+                </div>}
                 <div className="mt-4 space-y-2">
                   {audioPreviews.map((preview, index) => (
                     <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded">
@@ -390,7 +435,9 @@ const CreateComplaintForm = () => {
                   Ngarko Video/Inxhiqime
                 </Label>
                 <CTAButton text='Ngarko Video' onClick={() => videoAttachmentsRef.current?.click()}/>
-                
+                {videoProgress && videoProgress < 100 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
+                  <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${videoProgress}%`}} />
+                </div>}
                 <div className="mt-4 space-y-4">
                   {videoPreviews.map((preview, index) => (
                     <div key={index} className="relative">
