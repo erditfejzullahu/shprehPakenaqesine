@@ -59,9 +59,9 @@ model Companies {
   website     String?
   email       String?
   phone       String?
-  images      String?
+  images      String[] @default([])
   industry    String
-  foundedYear String?
+  foundedYear Int?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   complaints  Complaint[]

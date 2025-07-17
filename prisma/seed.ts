@@ -72,12 +72,12 @@ async function main(){
         website: faker.internet.url(),
         email: faker.internet.email(),
         phone: faker.phone.number(),
-        images: JSON.stringify([
+        images: ([
           faker.image.urlLoremFlickr({ category: 'business' }),
           faker.image.urlLoremFlickr({ category: 'office' })
         ]),
         industry: industries[Math.floor(Math.random() * industries.length)],
-        foundedYear: faker.date.past({ years: 30 }).getFullYear().toString(),
+        foundedYear: faker.date.past({ years: 30 }).getFullYear(),
       }
     });
     companies.push(company);

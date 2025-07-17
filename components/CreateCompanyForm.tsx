@@ -11,6 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Phone, Mail, Globe, Upload, Image as ImageIcon, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CTAButton from './CTAButton';
+import api from '@/lib/api';
+import { toast } from 'sonner';
 
 type CompanySchemaType = z.infer<typeof createCompanySchema>;
 
@@ -37,9 +39,16 @@ const CreateCompanyForm = () => {
   });
 
   const onSubmit = useCallback(async (data: CompanySchemaType) => {
-    console.log('Form submitted:', data);
-    // Handle form submission logic here
-  }, []);
+    try {
+      const response = await api.post('/api/createCompany', {data})
+      if(response.data.success){
+        toast.success('Sapo keni shtuar nje kompani ne platforme. Ju faleminderit!')
+      }
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.response.data.message)
+    }
+  }, [form.reset]);
 
   const handleReset = useCallback(() => {
     form.reset(defaultValues);

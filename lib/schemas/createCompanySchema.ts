@@ -17,7 +17,7 @@ export const createCompanySchema = z.object({
     description: z.string().optional(),
     logoAttachment: z.string().regex(/^data:image\/(png|jpeg|jpg|gif);base64,/, {
         message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG ose GIF)"
-    }).optional(),
+    }),
     address: z.string().min(10, "Adresa duhet të përmbajë të paktën 10 karaktere"),
     website: z.url("URL jo valid").optional(),
     email: z.email("Email jo valid").optional(),

@@ -9,16 +9,6 @@ import prisma from "@/lib/prisma";
 import { UploadResult } from "@/types/types";
 
 type ComplaintsSchema = z.infer<typeof createComplaintsSchema>
-const complaintsSchema = z.object({
-    title: z.string().min(8, {
-        message: "Titulli duhet të përmbajë të paktën 8 karaktere"
-    }),
-    description: z.string().min(26, {
-        message: "Përshkrimi duhet të përmbajë të paktën 26 karaktere"
-    }),
-    companyId: z.uuid()
-})
-
 
 export const POST = async (req: NextRequest) => {
     const session = await auth();
