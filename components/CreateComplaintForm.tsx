@@ -272,7 +272,7 @@ const CreateComplaintForm = () => {
             )}
           />
           {errors.category && (
-            <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>
+            <p className="text-red-500 text-sm mt-1">Zgjidhni nje opsion</p>
           )}
         </div>
       </div>

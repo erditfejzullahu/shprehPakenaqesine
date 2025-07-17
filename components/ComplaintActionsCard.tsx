@@ -72,15 +72,51 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
     })
 
     const {control: reportControl, handleSubmit: reportHandleSubmit, reset: reportReset, formState: {errors: reportErrors, isSubmitting: reportIsSubmitting}} = useForm<ReportsValidationSchema>({
-
+      resolver: zodResolver(reportsSchema),
+      defaultValues: useMemo(() => ({
+        title: "",
+        description: "",
+        attachments: [],
+        audiosAttached: [],
+        videosAttached: []
+      }), [])
     })
 
     const reportsOnSubmit = useCallback(async (data: ReportsValidationSchema) => {
-
+      try {
+        const response = await api.post(`/api/createReport`, {
+          title: data.title,
+          description: data.description,
+          attachments: data.attachments,
+          audiosAttached: data.audiosAttached,
+          videosAttached: data.videosAttached,
+          complaintId: complaintsData.complaint.id,
+          category: data.category
+        })
+        if(response.data.success){
+          toast.success('Sapo keni krijuar nje raportim me sukses')
+        }
+      } catch (error: any) {
+        console.error(error)
+        toast.error(error.response.data.message)
+      }
     }, [reportReset])
 
     const contributeOnSubmit = useCallback(async (data: ValidationSchema) => {
-
+      try {
+        const response = await api.post(`/api/createContribute`, {
+          complaintId: complaintsData.complaint.id,
+          attachments: data.attachments,
+          audiosAttached: data.audiosAttached,
+          videosAttached: data.videosAttached
+        })
+        if(response.data.success){
+          toast.success(`Sapo keni krijuar nje kontribuim mbi rastin e ${complaintsData.complaint.title}`)
+        }
+      } catch (error: any) {
+        console.error(error)
+        toast.error(error.response.data.message)
+      }
     }, [contributeReset])
 
     const removeItems = (index: number, type: "attachments" | "audiosAttached" | "videosAttached") => {
@@ -234,6 +270,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
             </button>
             <Dialog onOpenChange={() => {
               contributeReset();
+              reportReset();
               setAttachmentPreviews([]);
               setAudioPreviews([]);
               setVideoPreviews([]);
@@ -310,6 +347,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                           </div>
                         )}
                       />
+                      {contributeErrors.attachments && (
+                        <p className="text-red-500 text-sm mt-1">{contributeErrors.attachments.message}</p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor='audiosAttached' className='mb-2'>Ngarkoni audio/zerime</Label>
@@ -358,6 +398,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                           </div>
                         )}
                       />
+                      {contributeErrors.audiosAttached && (
+                        <p className="text-red-500 text-sm mt-1">{contributeErrors.audiosAttached.message}</p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor='videosAttached' className='mb-2'>Ngarkoni video/zerime</Label>
@@ -406,6 +449,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                           </div>
                         )}
                       />
+                      {contributeErrors.videosAttached && (
+                        <p className="text-red-500 text-sm mt-1">{contributeErrors.videosAttached.message}</p>
+                      )}
                     </div>
                     <div>
                       <CTAButton type='button' onClick={contributeHandleSubmit(contributeOnSubmit)} isLoading={contributeIsSubmitting} text='Shto kontribuim' primary classNames='w-full'/>
@@ -414,7 +460,13 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 </DialogContent>
               </form>
             </Dialog>
-            <Dialog>
+            <Dialog onOpenChange={() => {
+              contributeReset();
+              reportReset();
+              setAttachmentPreviews([]);
+              setAudioPreviews([]);
+              setVideoPreviews([]);
+            }}>
               <form onSubmit={reportHandleSubmit(reportsOnSubmit)}>
                 <DialogTrigger asChild>
                   <button
@@ -430,7 +482,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 <DialogContent className='max-h-[90vh] !w-full !max-w-[700px] px-4 overflow-y-scroll'>
                     <DialogHeader>
                       <DialogTitle>Krijo Raportim</DialogTitle>
-                      <DialogDescription>Ne rast se ankesa/raportimi nuk eshte valid, ju mund ta raportoni ketu.</DialogDescription>
+                      <DialogDescription>Ne rast se ankesa/raportimi nuk eshte valid, ju mund ta raportoni ketu duke shtuar detaje relevante ne lidhje me ankesen/raportim.</DialogDescription>
                     </DialogHeader>
                     <div className='flex flex-col gap-4  relative'>
                         <div>
@@ -442,6 +494,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               <Input id='title' {...field} placeholder='Titulli i raportimit'/>
                             )}
                           />
+                          {reportErrors.title && (
+                            <p className="text-red-500 text-sm mt-1">{reportErrors.title.message}</p>
+                          )}
                         </div>
                         <div>
                           <Label className='mb-1' htmlFor='description'>Detajet e raportimit</Label>
@@ -452,6 +507,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               <Textarea id='description' {...field} placeholder='Pershkruani detajisht arsyjen e raportimit' rows={5}/>
                             )}
                           />
+                          {reportErrors.description && (
+                            <p className="text-red-500 text-sm mt-1">{reportErrors.description.message}</p>
+                          )}
                         </div>
                         <div>
                           <Label className='mb-1' htmlFor='category'>Kategoria</Label>
@@ -479,6 +537,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               </Select>
                             )}
                           />
+                          {reportErrors.category && (
+                            <p className="text-red-500 text-sm mt-1">Zgjidhni nje opsion</p>
+                          )}
                         </div>
                         <div>
                         <Label htmlFor='attachments' className='mb-2'>Ngarkoni imazhe/dokumente</Label>
@@ -532,6 +593,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                             </div>
                           )}
                           />
+                          {reportErrors.attachments && (
+                            <p className="text-red-500 text-sm mt-1">{reportErrors.attachments.message}</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor='audiosAttached' className='mb-2'>Ngarkoni audio/zerime</Label>
@@ -580,6 +644,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               </div>
                             )}
                           />
+                          {reportErrors.audiosAttached && (
+                            <p className="text-red-500 text-sm mt-1">{reportErrors.audiosAttached.message}</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor='videosAttached' className='mb-2'>Ngarkoni video/zerime</Label>
@@ -628,6 +695,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               </div>
                             )}
                           />
+                          {reportErrors.videosAttached && (
+                            <p className="text-red-500 text-sm mt-1">{reportErrors.videosAttached.message}</p>
+                          )}
                         </div>
                         <div>
                           <CTAButton type='button' onClick={reportHandleSubmit(reportsOnSubmit)} isLoading={reportIsSubmitting} text='Krijo raportim' classNames='w-full' primary/>
