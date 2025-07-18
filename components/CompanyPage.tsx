@@ -3,6 +3,15 @@
 import { useRouter } from "next/navigation";
 import { memo, useCallback, useMemo, useState } from "react";
 import { CompanyPerIdInterface } from "@/types/types";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface Props {
   companyData: CompanyPerIdInterface;
@@ -12,6 +21,8 @@ const CompanyPage = ({ companyData }: Props) => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
   const [sortOption, setSortOption] = useState("newest");
+  const [currentPage, setCurrentPage] = useState(1);
+  const complaintsPerPage = 5;
 
   const getCategoryLabel = useCallback((category: string) => {
     const words = category.split("_").map((word) => {
@@ -33,6 +44,21 @@ const CompanyPage = ({ companyData }: Props) => {
     });
   }, [companyData.company.complaints, sortOption]);
 
+  // Pagination logic
+  const indexOfLastComplaint = currentPage * complaintsPerPage;
+  const indexOfFirstComplaint = indexOfLastComplaint - complaintsPerPage;
+  const currentComplaints = sortedComplaints.slice(
+    indexOfFirstComplaint,
+    indexOfLastComplaint
+  );
+  const totalPages = Math.ceil(sortedComplaints.length / complaintsPerPage);
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   const totalComplaints = companyData.company.complaints.length;
   const acceptedComplaints = companyData.company.complaints.filter(
     (c) => c.status === "ACCEPTED"
@@ -48,7 +74,10 @@ const CompanyPage = ({ companyData }: Props) => {
       <div className="border-b border-gray-200 mb-6">
         <nav className="-mb-px flex space-x-8">
           <button
-            onClick={() => setActiveTab("overview")}
+            onClick={() => {
+              setActiveTab("overview");
+              setCurrentPage(1);
+            }}
             className={`whitespace-nowrap cursor-pointer py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === "overview"
                 ? "border-indigo-500 text-indigo-600"
@@ -58,7 +87,10 @@ const CompanyPage = ({ companyData }: Props) => {
             Vështrim i përgjithshëm
           </button>
           <button
-            onClick={() => setActiveTab("complaints")}
+            onClick={() => {
+              setActiveTab("complaints");
+              setCurrentPage(1);
+            }}
             className={`whitespace-nowrap cursor-pointer py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === "complaints"
                 ? "border-indigo-500 text-indigo-600"
@@ -126,16 +158,16 @@ const CompanyPage = ({ companyData }: Props) => {
               Ankesat/Raportimet
             </h3>
             <div className="flex items-center">
-              <label
-                htmlFor="sort"
-                className="mr-2 text-sm text-gray-500"
-              >
+              <label htmlFor="sort" className="mr-2 text-sm text-gray-500">
                 Rendit sipas:
               </label>
               <select
                 id="sort"
                 value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
+                onChange={(e) => {
+                  setSortOption(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="border-gray-300 shadow-sm px-2 focus:border-indigo-500 focus:ring-indigo-500 text-sm"
               >
                 <option value="newest">Më të rejat</option>
@@ -145,64 +177,132 @@ const CompanyPage = ({ companyData }: Props) => {
             </div>
           </div>
 
-          {sortedComplaints.length > 0 ? (
-            <div className="divide-y divide-gray-200">
-              {sortedComplaints.map((complaint) => (
-                <div
-                  key={complaint.id}
-                  className="p-6 hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
-                  onClick={() => router.push(`/ankesat/${complaint.id}`)}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {complaint.title}
-                      </h3>
-                      <p className="text-gray-600 mt-1 line-clamp-2">
-                        {complaint.description}
-                      </p>
-                      <div className="mt-2 flex items-center gap-2">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            complaint.status === "PENDING"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
-                          }`}
-                        >
-                          {complaint.status}
-                        </span>
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {getCategoryLabel(complaint.category)}
+          {currentComplaints.length > 0 ? (
+            <>
+              <div className="divide-y divide-gray-200">
+                {currentComplaints.map((complaint) => (
+                  <div
+                    key={complaint.id}
+                    className="p-6 hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
+                    onClick={() => router.push(`/ankesat/${complaint.id}`)}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          {complaint.title}
+                        </h3>
+                        <p className="text-gray-600 mt-1 line-clamp-2">
+                          {complaint.description}
+                        </p>
+                        <div className="mt-2 flex items-center gap-2">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              complaint.status === "PENDING"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-green-100 text-green-800"
+                            }`}
+                          >
+                            {complaint.status}
+                          </span>
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {getCategoryLabel(complaint.category)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="flex items-center text-gray-500">
+                          <svg
+                            className="w-4 h-4 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                          </svg>
+                          {complaint.upVotes}
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="flex items-center text-gray-500">
-                        <svg
-                          className="w-4 h-4 mr-1"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
-                        </svg>
-                        {complaint.upVotes}
-                      </span>
-                    </div>
-                  </div>
-                  <p className="mt-3 text-sm text-gray-500">
-                    Paraqitur më{" "}
-                    {new Date(complaint.createdAt).toLocaleDateString(
-                      "sq-AL",
-                      {
+                    <p className="mt-3 text-sm text-gray-500">
+                      Paraqitur më{" "}
+                      {new Date(complaint.createdAt).toLocaleDateString("sq-AL", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
-                      }
-                    )}
-                  </p>
+                      })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {totalPages > 1 && (
+                <div className="p-4 border-t border-gray-200">
+                  <Pagination>
+                    <PaginationContent style={{listStyle: "none"}}>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handlePageChange(currentPage - 1);
+                          }}
+                          className={
+                            currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                          }
+                        />
+                      </PaginationItem>
+
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+
+                        return (
+                          <PaginationItem key={pageNum}>
+                            <PaginationLink
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handlePageChange(pageNum);
+                              }}
+                              isActive={currentPage === pageNum}
+                            >
+                              {pageNum}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      })}
+
+                      {totalPages > 5 && currentPage < totalPages - 2 && (
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handlePageChange(currentPage + 1);
+                          }}
+                          className={
+                            currentPage === totalPages
+                              ? "pointer-events-none opacity-50"
+                              : ""
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           ) : (
             <div className="p-8 text-center">
               <svg
@@ -238,6 +338,6 @@ const CompanyPage = ({ companyData }: Props) => {
       )}
     </div>
   );
-}
+};
 
-export default memo(CompanyPage)
+export default memo(CompanyPage);
