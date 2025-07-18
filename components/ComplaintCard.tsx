@@ -17,7 +17,8 @@ const ComplaintCard = ({
   upVotes,
   createdAt,
   company,
-  user
+  user,
+  municipality
 }: ComplaintCardProps) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -60,9 +61,9 @@ const ComplaintCard = ({
 
       <div className="flex items-center justify-between text-sm text-gray-500">
         {company ? (
-          <span>Kundër: <button onClick={() => router.push(`/kompanite/${company.id}`)} className="text-indigo-600 hover:underline">{company.name}</button></span>
+          <span>Kundër: <button onClick={() => router.push(`/kompanite/${company.id}`)} className="text-indigo-600 cursor-pointer hover:underline">{company.name}</button></span>
         ) : (
-          <button className="text-indigo-600 hover:underline">Ankese Komunale</button>
+          <span>Ankese Komunale ne: <button className="text-indigo-600 cursor-pointer hover:underline">{municipality}</button></span>
         )}
         <span>{new Date(createdAt).toLocaleDateString('sq-AL', {day: "2-digit", month: "short", year: "2-digit"})}</span>
       </div>

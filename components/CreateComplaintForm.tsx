@@ -331,7 +331,7 @@ const CreateComplaintForm = () => {
             name='companyId'
             render={({field}) => (
               <Popover open={openCompaniesCombobox} onOpenChange={setOpenCompaniesCombobox}>
-                <PopoverTrigger asChild className='cursor-pointer w-full '>
+                <PopoverTrigger disabled={comunalComplaint} asChild className='cursor-pointer w-full '>
                   <Button 
                     variant="outline" 
                     role="combobox" 

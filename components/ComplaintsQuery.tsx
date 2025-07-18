@@ -54,7 +54,7 @@ const ComplaintsQuery = () => {
         grabCursor={true}
         modules={[Autoplay]}
         autoplay={{
-            delay: 2500,
+            delay: 3500,
             disableOnInteraction: true,
         }}
         direction="horizontal"

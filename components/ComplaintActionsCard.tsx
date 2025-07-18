@@ -154,14 +154,13 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
           }, 50);
     
           reader.onload = (event) => {
-            clearInterval(interval);
+            
             const base64 = event.target?.result as string;
             newPreviews[index] = base64;
         
             if (newPreviews.filter(Boolean).length === files.length) {
               switch (type) {
                 case "attachments":
-                  setAttachmentProgress(null)
                   setAttachmentPreviews((prev) => [...prev, ...newPreviews]);
                   setValue("attachments", [
                     ...(getValues("attachments") || []),
@@ -169,7 +168,6 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                   ]);
                   break;
                 case "audiosAttached":
-                  setAudioProgress(null)
                   setAudioPreviews((prev) => [...prev, ...newPreviews]);
                   setValue("audiosAttached", [
                     ...(getValues("audiosAttached") || []),
@@ -177,7 +175,6 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                   ]);
                   break;
                 case "videosAttached":
-                  setVideoProgress(null)
                   setVideoPreviews((prev) => [...prev, ...newPreviews]);
                   setValue("videosAttached", [
                     ...(getValues("videosAttached") || []),
@@ -187,6 +184,21 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
               }
             }
           };
+
+          reader.onloadend = () => {
+            clearInterval(interval);
+            switch (type) {
+              case "attachments":
+                setAttachmentProgress(null)
+                break;
+              case "audiosAttached":
+                setAudioProgress(null)
+                break;
+              case "videosAttached":
+                setVideoProgress(null)
+                break;
+            }
+          }
     
           reader.readAsDataURL(file);
         });
@@ -249,6 +261,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
               setAttachmentPreviews([]);
               setAudioPreviews([]);
               setVideoPreviews([]);
+              setAudioProgress(null)
+              setVideoProgress(null)
+              setAttachmentProgress(null)
             }}>
               <form onSubmit={contributeHandleSubmit(contributeOnSubmit)}>
                 <DialogTrigger asChild>
@@ -441,6 +456,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
               setAttachmentPreviews([]);
               setAudioPreviews([]);
               setVideoPreviews([]);
+              setAudioProgress(null)
+              setVideoProgress(null)
+              setAttachmentProgress(null)
             }}>
               <form onSubmit={reportHandleSubmit(reportsOnSubmit)}>
                 <DialogTrigger asChild>
@@ -539,7 +557,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                                   onChange={(e) => handleAttachmentUploads(e, "attachments")}
                                 />
                               </label>
-                              {attachmentProgress && attachmentProgress < 100 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
+                              {typeof attachmentProgress === "number" && attachmentProgress > 0 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
                                 <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${attachmentProgress}%`}} />
                               </div>}
                               
@@ -595,7 +613,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                                     onChange={(e) => handleAttachmentUploads(e, "audiosAttached")}
                                   />
                                 </label>
-                                {audioProgress && audioProgress < 100 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
+                                {typeof audioProgress === "number" && audioProgress > 0 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
                                   <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${audioProgress}%`}} />
                                 </div>}
                                 {audioPreviews.length > 0 && (
@@ -646,7 +664,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                                     onChange={(e) => handleAttachmentUploads(e, "videosAttached")}
                                   />
                                 </label>
-                                {videoProgress && videoProgress < 100 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
+                                {typeof videoProgress === "number" && videoProgress > 0 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
                                   <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${videoProgress}%`}} />
                                 </div>}
                                 {videoPreviews.length > 0 && (

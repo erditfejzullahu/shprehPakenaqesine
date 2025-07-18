@@ -249,7 +249,7 @@ const MyProfileData = ({session}: {session: Session}) => {
         <PaginationContent style={{listStyle: "none", cursor: "pointer"}}>
           <PaginationItem>
             <PaginationPrevious 
-              className='cursor-pointer'
+              className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
               onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
               // disabled={currentPage === 1}
               
@@ -258,7 +258,7 @@ const MyProfileData = ({session}: {session: Session}) => {
             {pages}
           <PaginationItem>
             <PaginationNext
-              className='cursor-pointer' 
+              className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
               onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
               // disabled={currentPage === totalPages}
             />
