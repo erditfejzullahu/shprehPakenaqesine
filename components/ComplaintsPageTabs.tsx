@@ -1,10 +1,16 @@
 "use client"
 import { ComplantPerIdInterface } from '@/types/types'
 import React, { memo, useState } from 'react'
+import { GrAttachment } from "react-icons/gr";
+import { FaFileAudio } from "react-icons/fa6";
+import { FaFileVideo } from "react-icons/fa6";
+import { ReusableHoverCard } from './ReusableHoverCard';
 
 type ActiveTab = "details" | "contributions" | "discussion"
 
 const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInterface}) => {
+    console.log(complaintsData, ' asdasdasdasdasdasd');
+    
     const [activeTab, setActiveTab] = useState<ActiveTab>("details")
   return (
     <>
@@ -64,6 +70,47 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                                 </span>
                                 </div>
                                 <p className="mt-1 text-sm text-gray-600">Ka kontribuar ne kete ankese/raportim</p>
+                                <div className='flex flex-wrap gap-2 items-center mt-1'>
+                                    {contribution.evidencesGiven.attachments !== 0 && <ReusableHoverCard 
+                                        trigger={
+                                            <div className='flex flex-row gap-1 items-center bg-black rounded-sm px-1.5 py-1 cursor-pointer'>
+                                            <GrAttachment size={17} color='#fff'/>
+                                            <span className='text-xs font-semibld text-white'>{contribution.evidencesGiven.attachments}</span>
+                                            </div>
+                                        }
+                                        content={
+                                            <div>
+                                                <span className='text-sm'>{contribution.user.fullName} Ka kontribuar me {contribution.evidencesGiven.attachments} Imazhe/Dokumente</span>
+                                            </div>
+                                        }
+                                    />}
+                                    {contribution.evidencesGiven.audioAttachments !== 0 && <ReusableHoverCard 
+                                        trigger={
+                                            <div className='flex flex-row gap-1 items-center bg-black rounded-sm px-1.5 py-1 cursor-pointer'>
+                                            <FaFileAudio size={17} color='#fff'/>
+                                            <span className='text-xs font-semibld text-white'>{contribution.evidencesGiven.audioAttachments}</span>
+                                            </div>
+                                        }
+                                        content={
+                                            <div>
+                                                <span className='text-sm'>{contribution.user.fullName} Ka kontribuar me {contribution.evidencesGiven.audioAttachments} Audio/Inqizime</span>
+                                            </div>
+                                        }
+                                    />}
+                                    {contribution.evidencesGiven.videoAttachments !== 0 && <ReusableHoverCard 
+                                        trigger={
+                                            <div className='flex flex-row gap-1 items-center bg-black rounded-sm px-1.5 py-1 cursor-pointer'>
+                                            <FaFileVideo size={17} color='#fff'/>
+                                            <span className='text-xs font-semibld text-white'>{contribution.evidencesGiven.videoAttachments}</span>
+                                            </div>
+                                        }
+                                        content={
+                                            <div>
+                                                <span className='text-sm'>{contribution.user.fullName} Ka kontribuar me {contribution.evidencesGiven.videoAttachments} Video/Inqizime</span>
+                                            </div>
+                                        }
+                                    />}
+                                </div>
                             </div>
                             </div>
                         </div>

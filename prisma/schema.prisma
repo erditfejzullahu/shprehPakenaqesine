@@ -40,6 +40,7 @@ model Users {
 }
 
 model Contributions {
+  id String @id @default(uuid())
   complaintId String
   userId      String
   attachments String[] @default([])
@@ -50,8 +51,8 @@ model Contributions {
   user        Users     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@id([complaintId, userId])
+  
+  @@index([complaintId, userId])
 }
 
 model Companies {

@@ -1,7 +1,7 @@
 import { Companies, Complaint, Contributions, ResolvedStatus, Users } from "@/app/generated/prisma";
 
 export interface ComplaintCardProps extends Complaint {
-    company: Companies,
+    company?: Companies,
     user: Users
 }
 export interface CompanyInterface extends Companies {
@@ -61,7 +61,12 @@ export interface ComplaintPageContributions {
         username: string;
         fullName: string;
         reputation: string;
-    } | null
+    } | null,
+    evidencesGiven: {
+        attachments: number
+        audioAttachments: number
+        videoAttachments: number
+    },
 }
 
 export interface ComplaintPerIdWithCompany extends Complaint {
@@ -73,6 +78,11 @@ export interface ComplaintPerIdWithCompany extends Complaint {
         reputation: string;
         complaints: string;
     } | null;
+    evidencesGiven: {
+        attachments: number
+        audioAttachments: number
+        videoAttachments: number
+    },
     contributions: ComplaintPageContributions[];
     hasVoted: boolean;
 }

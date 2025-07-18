@@ -73,7 +73,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
         }
       } catch (error: any) {
         console.error(error)
-        toast.error(error.response.data.message)
+        toast.error(error.response.data.message || "Dicka shkoi gabim")
       }
     }, [reportReset])
 
@@ -90,7 +90,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
         }
       } catch (error: any) {
         console.error(error)
-        toast.error(error.response.data.message)
+        toast.error(error.response.data.message || "Dicka shkoi gabim")
       }
     }, [contributeReset])
 
@@ -429,7 +429,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                       )}
                     </div>
                     <div>
-                      <CTAButton type='button' onClick={contributeHandleSubmit(contributeOnSubmit)} isLoading={contributeIsSubmitting} text='Shto kontribuim' primary classNames='w-full'/>
+                      <CTAButton type='button' onClick={contributeHandleSubmit(contributeOnSubmit)} isLoading={contributeIsSubmitting} text={`${contributeIsSubmitting ? "Duke shtuar..." : "Shto kontribuim"}`} primary classNames='w-full'/>
                     </div>
                   </div>
                 </DialogContent>

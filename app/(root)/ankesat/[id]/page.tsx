@@ -7,7 +7,7 @@ import React from 'react'
 import { auth } from '../../../../auth';
 import { cookies } from 'next/headers';
 import { ImageIcon } from 'lucide-react';
-import { FaImage } from 'react-icons/fa';
+import { FaFileAudio, FaFileVideo, FaImage } from 'react-icons/fa';
 
 const page = async ({params}: {params: Promise<{id: string}>}) => {
     const session = await auth()  
@@ -90,7 +90,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         {/* Documents */}
                         {data.complaint.attachments.map((file, index) => (
-                          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}${file}`} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100">
+                          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/${file}`} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100">
                             {file.includes('application/pdf') || 
                             file.includes('application/msword') || 
                             file.includes('vnd.openxmlformats-officedocument.wordprocessingml.document') || 
@@ -113,28 +113,24 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
 
                         {/* Videos */}
                         {data.complaint.videosAttached?.map((file, index) => (
-                          <div key={`video-${index}`} className="shadow-md p-3 flex items-center">
-                            <svg className="w-8 h-8 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-                            </svg>
+                          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/${file}`} aria-description='attachment' target='_blank' key={`video-${index}`} className="shadow-md p-3 flex items-center">
+                            <FaFileVideo className='text-gray-400 w-8 h-8 mr-2' />
                             <div className="truncate">
                               <p className="text-sm font-medium text-gray-900 truncate">Video/Inqizime</p>
                               <p className="text-xs text-gray-500">Klikoni per hapje</p>
                             </div>
-                          </div>
+                          </Link>
                         ))}
 
                         {/* Audios */}
                         {data.complaint.audiosAttached?.map((file, index) => (
-                          <div key={`audio-${index}`} className="shadow-md p-3 flex items-center">
-                            <svg className="w-8 h-8 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clipRule="evenodd" />
-                            </svg>
+                          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/${file}`} aria-description='attachment' target='_blank' key={`audio-${index}`} className="shadow-md p-3 flex items-center">
+                            <FaFileAudio className='text-gray-400 w-8 h-8 mr-2' />
                             <div className="truncate">
                               <p className="text-sm font-medium text-gray-900 truncate">Audio/Inqizime</p>
                               <p className="text-xs text-gray-500">Klikoni per hapje</p>
                             </div>
-                          </div>
+                          </Link>
                         ))}
                       </div>
                     </div>

@@ -21,7 +21,7 @@ const ComplaintsQuery = () => {
         },
         retry: 2,
         refetchOnWindowFocus: false
-    })    
+    })
 
     if(isLoading) return <LoadingSpinner />
     if(!data) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">

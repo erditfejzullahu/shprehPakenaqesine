@@ -32,7 +32,6 @@ export const POST = async (req: NextRequest) => {
 
         await prisma.$transaction(async(prisma) => {
             
-
             let attachments: string[] = []
             let audioAttachments: string[] = []
             let videoAttachments: string[] = []
@@ -77,9 +76,9 @@ export const POST = async (req: NextRequest) => {
                     contributionValidated: false
                 }
             })
-
-            return NextResponse.json({success: true}, {status: 201})
         })
+        
+        return NextResponse.json({success: true}, {status: 201})
 
     } catch (error) {
         console.error(error)

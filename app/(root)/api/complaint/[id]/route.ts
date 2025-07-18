@@ -6,9 +6,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
     
     try {
         const session = await auth();
-        if(!session){
-            console.log("no session");
-            
+        if(!session){            
             return NextResponse.json({message: "Not authorized"}, {status: 500})
         }
         let hasVoted = false;
@@ -23,12 +21,8 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                     }
                 }
             })
-            console.log(vote, ' votaaaaa');
             hasVoted = !!vote;
-            console.log(hasVoted, ' hasVoted');
-            
         }
-        console.log(session, ' aoskdaoskdoaskdoasdk');
         
         const complaintQuery = await prisma.complaint.findUnique({
             where: {id},
@@ -68,6 +62,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                 },
                 contributions: {
                     select: {
+                        id: true,
                         user: {
                             select: {
                                 userProfileImage: true,
@@ -75,9 +70,11 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                                 fullName: true,
                                 reputation: true,
                                 anonimity: true,
-
                             }
-                        }
+                        },
+                        attachments: true,
+                        audiosAttached: true,
+                        videosAttached: true
                     }
                 },
             }
@@ -116,14 +113,23 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
             },
             contributions: complaintQuery.contributions.map((contribution) => ({
                 user: contribution.user.anonimity ? null : {
+                    id: contribution.id,
                     userProfileImage: contribution.user.userProfileImage,
                     username: contribution.user.username,
                     fullName: contribution.user.fullName,
                     reputation: contribution.user.reputation,
+                },
+                evidencesGiven: {
+                    attachments: contribution.attachments.length,
+                    audioAttachments: contribution.audiosAttached.length,
+                    videoAttachments: contribution.videosAttached.length
                 }
             })),
             hasVoted
         }
+
+        console.log(complaint.contributions);
+        
 
         return NextResponse.json({success: true, complaint}, {status: 200})
     } catch (error) {
