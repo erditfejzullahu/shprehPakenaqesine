@@ -45,9 +45,7 @@ export const POST = async (req: NextRequest) => {
         return NextResponse.json({success: false, message: "Ju nuk jeni te autorizuar per kete veprim!"}, {status: 401})
     }
     try {
-        const body: CreateCompanyType = await req.json();
-            console.log(body.email);
-            
+        const body: CreateCompanyType = await req.json();            
             
         const sanitizedBody = {
             name: DOMPurify.sanitize(validator.escape(body.name.trim())),
@@ -61,7 +59,6 @@ export const POST = async (req: NextRequest) => {
             imageAttachments: body.imageAttachments,
             foundedYear: body.foundedYear
         }
-        console.log(sanitizedBody.email);
 
 
         const validatedCompany = createCompanySchema.parse(sanitizedBody);

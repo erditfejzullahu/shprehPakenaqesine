@@ -53,8 +53,8 @@ export const GET = async () => {
 
         const details = {
                 complaints: userDetails.complaints.map((complaint) => ({
-                    companyId: complaint.company.id,
-                    companyName: complaint.company.name,
+                    companyId: complaint.company?.id,
+                    companyName: complaint.company?.name,
                     title: complaint.title,
                     createdAt: complaint.createdAt,
                     upVotes: complaint.upVotes,

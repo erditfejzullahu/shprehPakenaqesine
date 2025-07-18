@@ -101,12 +101,12 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
             upVotes: complaintQuery.upVotes,
             resolvedStatus: complaintQuery.resolvedStatus,
             category: complaintQuery.category,
-            company: {
+            company: complaintQuery.company ? {
                 name: complaintQuery.company.name,
                 logoUrl: complaintQuery.company.logoUrl,
                 industry: complaintQuery.company.industry,
                 website: complaintQuery.company.website
-            },
+            } : null,
             user: complaintQuery.user.anonimity ? null : {
                 userProfileImage: complaintQuery.user.userProfileImage,
                 username: complaintQuery.user.username,

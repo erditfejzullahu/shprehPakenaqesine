@@ -69,7 +69,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
           category: data.category
         })
         if(response.data.success){
-          toast.success('Sapo keni krijuar nje raportim me sukses')
+          toast.success(`Sapo keni krijuar raportimin me sukses! Do te njoftoheni vazhdimisht per cdo ndryshim ne lidhje me kete raportim.`)
         }
       } catch (error: any) {
         console.error(error)
@@ -79,14 +79,14 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
 
     const contributeOnSubmit = useCallback(async (data: ValidationSchema) => {
       try {
-        const response = await api.post(`/api/createContribute`, {
+        const response = await api.post(`/api/createContribution`, {
           complaintId: complaintsData.complaint.id,
           attachments: data.attachments,
           audiosAttached: data.audiosAttached,
           videosAttached: data.videosAttached
         })
         if(response.data.success){
-          toast.success(`Sapo keni krijuar nje kontribuim mbi rastin e ${complaintsData.complaint.title}`)
+          toast.success(`Aplikimi per kontribuim ne kete ankese/raport shkoi me sukses. Do njoftoheni kur te behet validimi i evidences tuaj.`)
         }
       } catch (error: any) {
         console.error(error)
@@ -266,7 +266,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                   <DialogHeader>
                     <DialogTitle>Kontribuoni ne {complaintsData.complaint.title}</DialogTitle>
                     <DialogDescription>
-                      Ketu mund te kontribuoni duke shtuar deshmi dokumentesh, zerimeve, pamjeve etj.
+                      Ketu mund te aplikoni per kontribuim ne kete rast duke shtuar deshmi dokumentesh, zerimeve, pamjeve etj.
                     </DialogDescription>
                   </DialogHeader>
                   <div className='flex flex-col gap-4  relative'>

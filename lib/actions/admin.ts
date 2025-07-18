@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma'
+import { ExtendedReport, ReportsGroupBy } from '@/types/admin'
 
 export async function getDashboardStats() {
   const [
@@ -10,6 +11,9 @@ export async function getDashboardStats() {
     lastMonthComplaints,
     lastMonthUsers,
     lastMonthSubscribers,
+    recentComplaints,
+    reportOverview
+
   ] = await Promise.all([
     prisma.companies.count(),
     prisma.complaint.count(),
@@ -43,12 +47,32 @@ export async function getDashboardStats() {
         }
       }
     }),
+    prisma.complaint.findMany({
+      orderBy: {
+        createdAt: "desc"
+      },
+      take: 10
+    }),
+    prisma.reports.groupBy({
+      by: ['complaintId'],
+      _count: {complaintId: true},
+      orderBy: {_count: {complaintId: 'desc'}},
+      take: 10
+    })
   ])
+
 
   const calculateChange = (current: number, lastMonth: number) => {
     if (lastMonth === 0) return 0
     return Math.round(((current - lastMonth) / lastMonth) * 100)
   }
+
+  // const getReportsWithData = async (data: ReportsGroupBy[]) => {
+  //   const complaintIds = data.map(item => item.complaintId)
+  //   const complaintWithReport = await prisma.reports.findMany({
+  //     where: {complaintId: {in: complaintIds}}
+  //   })
+  // }
 
   return {
     companiesCount,
@@ -59,8 +83,11 @@ export async function getDashboardStats() {
     complaintsChange: calculateChange(complaintsCount, lastMonthComplaints),
     usersChange: calculateChange(usersCount, lastMonthUsers),
     subscribersChange: calculateChange(subscribersCount, lastMonthSubscribers),
+    recentComplaints,
+    reportOverview 
   }
 }
+
 
 export async function getCompanies() {
   return await prisma.companies.findMany({
