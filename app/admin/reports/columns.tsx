@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Company } from "@/types/admin"
+import { ExtendedReport } from "@/types/admin"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
@@ -12,37 +12,37 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
 
-export const columns: ColumnDef<Company>[] = [
+export const columns: ColumnDef<ExtendedReport>[] = [
   {
-    accessorKey: "name",
-    header: ({ column }) => {
+    accessorKey: "title",
+    header: "Title",
+  },
+  {
+    accessorKey: "complaint.title",
+    header: "Complaint",
+    cell: ({ row }) => {
+      const complaint = row.original.complaint
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <Link href={`/admin/complaints/${complaint.id}`} className="text-indigo-600 hover:underline">
+          {complaint.title}
+        </Link>
       )
-    },
+    }
   },
   {
-    accessorKey: "industry",
-    header: "Industry",
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-  },
-  {
-    accessorKey: "complaintsCount",
-    header: "Complaints",
+    accessorKey: "category",
+    header: "Category",
+    cell: ({ row }) => {
+      const category = row.getValue("category") as string
+      const formatted = category.toLowerCase().replace(/_/g, ' ')
+      return <span className="capitalize">{formatted}</span>
+    }
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: "Created",
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"))
       return date.toLocaleDateString()
@@ -51,7 +51,7 @@ export const columns: ColumnDef<Company>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const company = row.original
+      const report = row.original
 
       return (
         <DropdownMenu>
@@ -64,10 +64,10 @@ export const columns: ColumnDef<Company>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href={`/admin/companies/${company.id}`}>View</Link>
+              <Link href={`/admin/reports/${report.id}`}>View Details</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/admin/companies/${company.id}/edit`}>Edit</Link>
+              <Link href={`/ankesat/${report.complaint.id}`}>View Complaint</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

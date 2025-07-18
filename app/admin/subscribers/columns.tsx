@@ -1,9 +1,8 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Company } from "@/types/admin"
+import { ExtendedSubscriber } from "@/types/admin"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import {
   DropdownMenu,
@@ -12,46 +11,35 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { format } from "date-fns"
 
-export const columns: ColumnDef<Company>[] = [
+export const columns: ColumnDef<ExtendedSubscriber>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "email",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
   },
   {
-    accessorKey: "industry",
-    header: "Industry",
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-  },
-  {
-    accessorKey: "complaintsCount",
-    header: "Complaints",
-  },
-  {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: "Subscribed On",
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"))
-      return date.toLocaleDateString()
+      return format(date, "PPpp")
     },
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const company = row.original
+      const subscriber = row.original
 
       return (
         <DropdownMenu>
@@ -63,11 +51,13 @@ export const columns: ColumnDef<Company>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link href={`/admin/companies/${company.id}`}>View</Link>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(subscriber.email)}
+            >
+              Copy Email
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/admin/companies/${company.id}/edit`}>Edit</Link>
+            <DropdownMenuItem className="text-red-600">
+              Unsubscribe
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

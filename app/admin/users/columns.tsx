@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Company } from "@/types/admin"
+import { ExtendedUser } from "@/types/admin"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
@@ -12,37 +12,58 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
+import Image from "next/image"
 
-export const columns: ColumnDef<Company>[] = [
+export const columns: ColumnDef<ExtendedUser>[] = [
   {
-    accessorKey: "name",
-    header: ({ column }) => {
+    accessorKey: "",
+    header: "Username",
+    cell: ({ row }) => {
+      const user = row.original
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-3">
+          <Image
+            src={user.userProfileImage}
+            alt={user.username}
+            width={32}
+            height={32}
+            className="rounded-full"
+          />
+          <Link href={`/admin/users/${user.id}`} className="hover:underline">
+            {user.username}
+          </Link>
+        </div>
       )
-    },
-  },
-  {
-    accessorKey: "industry",
-    header: "Industry",
+    }
   },
   {
     accessorKey: "email",
     header: "Email",
   },
   {
+    accessorKey: "fullName",
+    header: "Name",
+  },
+  {
     accessorKey: "complaintsCount",
     header: "Complaints",
   },
   {
+    accessorKey: "reputation",
+    header: "Reputation",
+    cell: ({ row }) => {
+      const reputation = row.getValue("reputation") as number
+      return (
+        <Badge variant={reputation >= 0 ? "default" : "destructive"}>
+          {reputation}
+        </Badge>
+      )
+    }
+  },
+  {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: "Joined",
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"))
       return date.toLocaleDateString()
@@ -51,7 +72,7 @@ export const columns: ColumnDef<Company>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const company = row.original
+      const user = row.original
 
       return (
         <DropdownMenu>
@@ -64,10 +85,10 @@ export const columns: ColumnDef<Company>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href={`/admin/companies/${company.id}`}>View</Link>
+              <Link href={`/admin/users/${user.id}`}>View</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/admin/companies/${company.id}/edit`}>Edit</Link>
+              <Link href={`/profili/${user.id}`}>View Public</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

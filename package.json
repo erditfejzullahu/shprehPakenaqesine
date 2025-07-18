@@ -31,6 +31,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cookie": "^1.0.2",
+    "date-fns": "^4.1.0",
     "formidable": "^3.5.4",
     "fs-extra": "^11.3.0",
     "isomorphic-dompurify": "^2.26.0",

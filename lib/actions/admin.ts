@@ -74,3 +74,52 @@ export async function getCompanies() {
     }
   })
 }
+
+// Add to your existing admin actions
+
+export async function getComplaints() {
+    return await prisma.complaint.findMany({
+      include: {
+        company: true,
+        user: true,
+        _count: {
+          select: { reports: true, contributions: true }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+  }
+  
+  export async function getUsers() {
+    return await prisma.users.findMany({
+      include: {
+        _count: {
+          select: { complaints: true, contributions: true }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+  }
+  
+  export async function getReports() {
+    return await prisma.reports.findMany({
+      include: {
+        complaint: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+  }
+  
+  export async function getSubscribers() {
+    return await prisma.subscribers.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+  }
