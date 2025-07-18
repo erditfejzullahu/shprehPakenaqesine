@@ -1,6 +1,7 @@
 import { AlertCircleIcon, BuildingIcon, MailIcon, UsersIcon } from 'lucide-react'
 import { StatsCard } from '@/components/admin/StatsCard'
 import { getDashboardStats } from '@/lib/actions/admin'
+import ReportedComplaintsCard from '@/components/admin/ReportedComplaintsCard'
 
 export default async function AdminDashboard() {
   const stats = await getDashboardStats()
@@ -38,12 +39,22 @@ export default async function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">Recent Complaints</h2>
+          <h2 className="text-lg font-semibold mb-4">Recent Unapproved Complaints</h2>
           {/* Recent complaints table or chart */}
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-6 rounded-lg shadow max-h-[400px] overflow-y-auto">
           <h2 className="text-lg font-semibold mb-4">Reports Overview</h2>
-          {/* Reports chart */}
+          <div className='flex flex-col gap-4'>
+            {stats.reportOverview.map((complaint) => (
+              <ReportedComplaintsCard {...complaint} key={complaint.complaintId}/>
+            ))}
+          </div>
+        </div>
+        <div className='bg-white p-6 rounded-lg shadow'>
+          <h2 className='text-lg font-semibold mb-4'>Contribution Requests</h2>
+        </div>
+        <div className='bg-white p-6 rounded-lg shadow'>
+          <h2 className='text-lg font-semibold mb-4'>User Logs</h2>
         </div>
       </div>
     </div>

@@ -22,11 +22,21 @@ export const POST = async (req: NextRequest) => {
         if(checkExisting){
             return NextResponse.json({success: false, message: "Ju vecse keni votuar per kete ankese/raportim"}, {status: 400})
         }
-        await prisma.complaintUpVotes.create({
-            data: {
-                complaintId: body.complaintId,
-                userId: session.user.id
-            }
+        await prisma.$transaction(async (prisma) => {
+            await prisma.complaintUpVotes.create({
+                data: {
+                    complaintId: body.complaintId,
+                    userId: session.user.id
+                }
+            })
+            await prisma.complaint.update({
+                where: {id: body.complaintId},
+                data: {
+                    upVotes: {
+                        increment: 1
+                    }
+                }
+            })
         })
         return NextResponse.json({success: true, message: "Sapo keni votuar me sukses"}, {status: 201})
     } catch (error) {

@@ -32,6 +32,6 @@ export type ExtendedContribution = Contributions & {
 }
 
 export type ReportsGroupBy = {
-  complaintId: number | null,
+  complaintId: string | null,
   _count: {complaintId: number}
 }

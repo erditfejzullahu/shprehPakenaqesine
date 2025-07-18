@@ -12,8 +12,6 @@ export async function getDashboardStats() {
     lastMonthUsers,
     lastMonthSubscribers,
     recentComplaints,
-    reportOverview
-
   ] = await Promise.all([
     prisma.companies.count(),
     prisma.complaint.count(),
@@ -51,28 +49,80 @@ export async function getDashboardStats() {
       orderBy: {
         createdAt: "desc"
       },
-      take: 10
+      take: 20
     }),
-    prisma.reports.groupBy({
-      by: ['complaintId'],
-      _count: {complaintId: true},
-      orderBy: {_count: {complaintId: 'desc'}},
-      take: 10
-    })
   ])
 
+  const complaintsWithMostReports = await prisma.complaint.findMany({
+    take: 20,
+    orderBy: {
+      reports: {
+        _count: 'desc'
+      }
+    },
+    include: {
+      _count: {
+        select: {
+          reports: true,
+          contributions: true
+        }
+      },
+      user: {
+        select: {
+          fullName: true,
+          userProfileImage: true
+        }
+      },
+      company: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
+      reports: {
+        take: 1,
+        orderBy: {
+          createdAt: 'desc'
+        }
+      }
+    }
+  })
 
   const calculateChange = (current: number, lastMonth: number) => {
     if (lastMonth === 0) return 0
     return Math.round(((current - lastMonth) / lastMonth) * 100)
   }
 
-  // const getReportsWithData = async (data: ReportsGroupBy[]) => {
-  //   const complaintIds = data.map(item => item.complaintId)
-  //   const complaintWithReport = await prisma.reports.findMany({
-  //     where: {complaintId: {in: complaintIds}}
-  //   })
-  // }
+  const reportOverview = complaintsWithMostReports.map(complaint => ({
+    complaintId: complaint.id,
+    complaintTitle: complaint.title,
+    complaintResolvedStatus: complaint.resolvedStatus,
+    complaintStatus: complaint.status,
+    totalReports: complaint._count.reports,
+    complaintContributions: complaint._count.contributions,
+    complaintUser: {
+      name: complaint.user.fullName,
+      image: complaint.user.userProfileImage
+    },
+    complaintCompany: complaint.company ? {
+      companyName: complaint.company.name,
+      companyId: complaint.company.id
+    } : null,
+    complaintUpVotes: complaint.upVotes,
+    complaintAttachments: complaint.attachments.length,
+    complaintVideoAttachments: complaint.videosAttached.length,
+    complaintAudioAttachments: complaint.audiosAttached.length,
+    complaintCategory: complaint.category,
+    complaintMunicipality: complaint.municipality,
+    mostRecentReport: complaint.reports[0] ? {
+      title: complaint.reports[0].title,
+      description: complaint.reports[0].description,
+      attachments: complaint.reports[0].attachments,
+      videoAttachments: complaint.reports[0].videoAttachments,
+      audioAttachments: complaint.reports[0].audioAttachments,
+      createdAt: complaint.reports[0].createdAt
+    } : null
+  }))
 
   return {
     companiesCount,
@@ -84,7 +134,7 @@ export async function getDashboardStats() {
     usersChange: calculateChange(usersCount, lastMonthUsers),
     subscribersChange: calculateChange(subscribersCount, lastMonthSubscribers),
     recentComplaints,
-    reportOverview 
+    reportOverview // No need for getReportsWithData as we've already formatted it
   }
 }
 
