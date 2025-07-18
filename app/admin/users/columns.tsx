@@ -46,8 +46,12 @@ export const columns: ColumnDef<ExtendedUser>[] = [
     header: "Name",
   },
   {
-    accessorKey: "complaintsCount",
+    accessorKey: "_count.complaints",
     header: "Complaints",
+  },
+  {
+    accessorKey: "_count.contributions",
+    header: "Contributions"
   },
   {
     accessorKey: "reputation",

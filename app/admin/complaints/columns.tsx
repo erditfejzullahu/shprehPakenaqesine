@@ -18,6 +18,7 @@ export const columns: ColumnDef<ExtendedComplaint>[] = [
   {
     accessorKey: "title",
     header: "Title",
+    enableGlobalFilter: true
   },
   {
     accessorKey: "company.name",
@@ -48,18 +49,31 @@ export const columns: ColumnDef<ExtendedComplaint>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status")
-      const resolvedStatus = row.getValue("resolvedStatus")
+      
       
       return (
         <Badge 
           variant={
-            resolvedStatus === 'RESOLVED' ? 'secondary' :
-            status === 'ACCEPTED' ? 'default' :
-            'outline'
+            status === 'PENDING' ? 'outline' : 'default'
           }
         >
-          {resolvedStatus === 'RESOLVED' ? 'Resolved' : 
-           status === 'ACCEPTED' ? 'Accepted' : 'Pending'}
+          {status === 'PENDING' ? 'Pending' : "Accepted" }
+        </Badge>
+      )
+    }
+  },
+  {
+    accessorKey: "resolvedStatus",
+    header: "Resolved Status",
+    cell: ({ row }) => {
+      const resolvedStatus = row.getValue("resolvedStatus")
+      return (
+        <Badge 
+          variant={
+            resolvedStatus === 'PENDING' ? 'outline' : 'default'
+          }
+        >
+          {resolvedStatus === 'PENDING' ? 'Pending' : "Resolved" }
         </Badge>
       )
     }

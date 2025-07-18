@@ -1,7 +1,9 @@
 import { Companies, Complaint, Users, Reports, Subscribers, Contributions } from "@prisma/client"
 
 export type Company = Companies & {
-  complaintsCount: number
+  _count: {
+    complaints: number
+  }
 }
 
 export type ExtendedComplaint = Complaint & {
@@ -12,8 +14,10 @@ export type ExtendedComplaint = Complaint & {
 }
 
 export type ExtendedUser = Users & {
-  complaintsCount: number
-  contributionsCount: number
+  _count: {
+    complaints: number,
+    contributions: number  
+  }
 }
 
 export type ExtendedReport = Reports & {

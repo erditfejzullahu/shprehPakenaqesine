@@ -12,7 +12,7 @@ export default async function CompaniesPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Companies</h1>
         <Button asChild>
-          <Link href="/admin/companies/new">Add Company</Link>
+          <Link href="/shto-kompani" target='_blank'>Add Company</Link>
         </Button>
       </div>
       <DataTable 

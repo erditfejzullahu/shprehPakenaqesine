@@ -75,6 +75,7 @@ export async function getCompanies() {
   })
 }
 
+
 // Add to your existing admin actions
 
 export async function getComplaints() {
@@ -123,3 +124,18 @@ export async function getComplaints() {
       }
     })
   }
+
+  export async function getContributions() {
+    return await prisma.contributions.findMany({
+      include: {
+        complaint: true,
+        user: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+  }
+
+  
+  

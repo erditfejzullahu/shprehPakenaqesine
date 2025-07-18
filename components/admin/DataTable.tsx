@@ -2,8 +2,11 @@
 
 import {
   ColumnDef,
+  ColumnResizeMode,
+  FilterFn,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
@@ -22,12 +25,27 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { DataTablePagination } from "./DataTablePagination"
+import { rankItem } from '@tanstack/match-sorter-utils'
+import { FaChevronDown, FaChevronUp } from "react-icons/fa"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   searchKey: string
 }
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value)
+  
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  })
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed
+};
 
 export function DataTable<TData, TValue>({
   columns,
@@ -36,15 +54,19 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
+  const [columnResizeMode] = useState<ColumnResizeMode>('onChange')
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
+    columnResizeMode,
     state: {
       sorting,
       globalFilter,
@@ -56,25 +78,42 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center py-4">
         <Input
           placeholder={`Search ${searchKey}...`}
-          value={globalFilter}
-          onChange={(event) => setGlobalFilter(event.target.value)}
+          value={globalFilter ?? ''}
+          onChange={(event) => setGlobalFilter(String(event.target.value))}
           className="max-w-sm"
         />
       </div>
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-x-auto w-full">
+        <Table className="w-full border-collapse">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                    <TableHead 
+                      key={header.id} 
+                      className="relative group"
+                      style={{ width: header.getSize() }}
+                    >
+                      <div
+                        className={`flex items-center ${
+                          header.column.getCanSort() ? 'cursor-pointer select-none' : ''
+                        }`}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {{
+                          asc: <FaChevronUp className="ml-2" size={12} />,
+                          desc: <FaChevronDown className="ml-2" size={12}/>,
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                      <div
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        className={`absolute right-0 top-0 h-full w-1 bg-gray-300 cursor-col-resize select-none touch-none ${
+                          header.column.getIsResizing() ? 'bg-blue-500' : ''
+                        } group-hover:bg-gray-400`}
+                      />
                     </TableHead>
                   )
                 })}
@@ -89,7 +128,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
