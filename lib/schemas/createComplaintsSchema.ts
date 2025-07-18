@@ -1,8 +1,9 @@
-import { Category, ComplaintStatus } from "@/app/generated/prisma"
+import { Category, ComplaintStatus, Municipality } from "@/app/generated/prisma"
 import {z} from "zod"
 
 export const createComplaintsSchema = z.object({
     companyId: z.uuid("ID e kompanisë duhet të jetë një UUID valid").optional().nullable(),
+    municipality: z.enum(Municipality),
     title: z.string().min(8, {
         message: "Titulli duhet të përmbajë të paktën 8 karaktere"
     }),

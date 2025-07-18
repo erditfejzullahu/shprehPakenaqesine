@@ -6,11 +6,11 @@ import { Controller, useForm } from 'react-hook-form'
 import {z} from "zod"
 import { Label } from './ui/label'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
-import { Category, Companies } from '@/app/generated/prisma'
+import { Category, Companies, Municipality } from '@/app/generated/prisma'
 import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/api'
 import { Input } from './ui/input'
-import { FileUp, Image as ImageLucide, AudioLines, Video, Check, Upload } from 'lucide-react'
+import { FileUp, Image as ImageLucide, AudioLines, Video, Check, Upload, ChevronsUpDown } from 'lucide-react'
 import { Textarea } from './ui/textarea'
 import CTAButton from './CTAButton'
 import { ImagePlus, X } from 'lucide-react'
@@ -19,6 +19,9 @@ import { useRouter } from 'next/navigation'
 import { Checkbox } from './ui/checkbox'
 import { Button } from './ui/button'
 import Image from 'next/image'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command'
+import { cn } from '@/lib/utils'
 // import Image from 'next/image'
 
 type ComplaintsType = z.infer<typeof createComplaintsSchema> 
@@ -28,6 +31,10 @@ const CreateComplaintForm = () => {
   const [attachmentPreviews, setAttachmentPreviews] = useState<string[]>([])
   const [audioPreviews, setAudioPreviews] = useState<string[]>([]);
   const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
+
+  const [openCompaniesCombobox, setOpenCompaniesCombobox] = useState(false)
+  const [openCategories, setOpenCategories] = useState(false)
+  const [openMunicipality, setOpenMunicipality] = useState(false)
 
   const [comunalComplaint, setComunalComplaint] = useState(false)
   const [videoProgress, setVideoProgress] = useState<number | null>(null)
@@ -53,10 +60,17 @@ const CreateComplaintForm = () => {
       category: "FAVORIZIMI",
       attachments: [],
       audiosAttached: [],
-      videosAttached: []
+      videosAttached: [],
+      municipality: "PRISHTINE"
     }), []),
     mode: "onChange"
   })
+
+  const formatCategoryDisplay = useCallback((value: string): string => {
+    let displayText = value.replace(/_/g, ' ');
+    displayText = displayText.toLowerCase();
+    return displayText.replace(/\b\w/g, char => char.toUpperCase());
+  }, [])
 
   useEffect(() => {
     if(comunalComplaint){
@@ -222,18 +236,79 @@ const CreateComplaintForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-6xl mx-auto flex flex-col gap-4 my-4 shadow-lg p-4">
-      <div className='max-w-lg mx-auto w-full'>
-        <Label htmlFor='title' className="mb-1 flex items-center justify-center">Titulli i ankeses/raportimit</Label>
-        <Controller 
-          control={control}
-          name="title"
-          render={({field}) => (
-            <Input id='title' {...field} placeholder='Nje titull terheqes per krijimin e ankeses/raportimit...' className="placeholder:text-center text-center"/>
+      <div className='flex flex-row gap-2 justify-between'>
+        <div className='flex-1'>
+          <Label htmlFor='title' className="mb-1">Titulli i ankeses/raportimit</Label>
+          <Controller 
+            control={control}
+            name="title"
+            render={({field}) => (
+              <Input id='title' {...field} placeholder='Nje titull terheqes per krijimin e ankeses/raportimit...'/>
+            )}
+          />
+          {errors.title && (
+            <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
           )}
-        />
-        {errors.title && (
-          <p className="text-red-500 text-sm mt-1 text-center">{errors.title.message}</p>
-        )}
+        </div>
+        <div className='flex-1'>
+          <Label htmlFor='komuna' className="mb-1">
+            Zgjidhni komunen
+          </Label>
+          
+          <Controller 
+            control={control}
+            name="municipality"
+            render={({field}) => (
+              <Popover open={openMunicipality} onOpenChange={setOpenMunicipality}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    className="w-full justify-between font-normal"
+                    aria-expanded={openMunicipality}
+                    id="komuna"
+                  >
+                    {field.value.replace("_", " ") || "Zgjidhni komunën..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0 max-h-[300px] overflow-y-auto">
+                  <Command>
+                    <CommandInput placeholder="Kërko komunën..." className="h-9" />
+                    <CommandEmpty>Nuk u gjet asnjë komunë.</CommandEmpty>
+                    <CommandGroup>
+                      {/* Replace with your actual municipalities data */}
+                      {Object.values(Municipality).map((municipality) => (
+                        <CommandItem
+                          key={municipality}
+                          value={municipality}
+                          onSelect={() => {
+                            field.onChange(municipality)
+                            setOpenMunicipality(false)
+                          }}
+                        >
+                          {municipality.replace("_", " ")}
+                          <Check
+                            className={cn(
+                              "ml-auto h-4 w-4",
+                              field.value === municipality ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            )}
+          />
+          
+          {errors.municipality && (
+            <p className="text-red-500 text-sm mt-1">
+              Ju lutem zgjidhni një komunë.
+            </p>
+          )}
+        </div>
       </div>
       <div className='flex flex-row items-center justify-between gap-4'>
         <div className="flex-1">
@@ -255,27 +330,57 @@ const CreateComplaintForm = () => {
             control={control}
             name='companyId'
             render={({field}) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
-              <SelectTrigger disabled={comunalComplaint} id='companyId' className="flex-1 w-full cursor-pointer">
-                  <SelectValue placeholder="Zgjidh nje kompani" />
-              </SelectTrigger>
-              <SelectContent>
-                  <SelectGroup>
-                  <SelectLabel>Zgjidhni mes opsioneve me poshte</SelectLabel>
-                  {isLoading ? (
-                    <SelectItem value='loading'>Ju lutem prisni...</SelectItem>
-                  ) : isError ? (
-                    <SelectItem value='error' onClick={() => refetch()}>Dicka shkoi gabim, klikoni per rifreskim.</SelectItem>
-                  ) : !data || data.length === 0 ? (
-                    <SelectItem value='empty'>Nuk u gjet ndonje kompani</SelectItem>
-                  ) : (
-                    (data.map(company => (
-                      <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>
-                    )))
-                  )}
-                  </SelectGroup>
-              </SelectContent>
-              </Select>
+              <Popover open={openCompaniesCombobox} onOpenChange={setOpenCompaniesCombobox}>
+                <PopoverTrigger asChild className='cursor-pointer w-full '>
+                  <Button 
+                    variant="outline" 
+                    role="combobox" 
+                    aria-expanded={openCompaniesCombobox}
+                    className="w-full justify-between font-normal" 
+                  >
+                    {field.value
+                      ? data?.find((company) => company.id === field.value)?.name
+                      : "Zgjidh nje kompani"}
+                    <ChevronsUpDown className="opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="max-h-[300px] overflow-y-auto p-0">
+                  <Command>
+                    <CommandInput placeholder="Kerkoni kompanite..." />
+                    <CommandEmpty>Nuk u gjet asnje kompani.</CommandEmpty>
+                    <CommandGroup>
+                      {isLoading ? (
+                        <CommandItem value="loading">Ju lutem prisni...</CommandItem>
+                      ) : isError ? (
+                        <CommandItem value="error" onSelect={() => refetch()}>
+                          Dicka shkoi gabim, klikoni per rifreskim.
+                        </CommandItem>
+                      ) : !data || data.length === 0 ? (
+                        <CommandItem value="empty">Nuk u gjet ndonje kompani</CommandItem>
+                      ) : (
+                        data.map((company) => (
+                          <CommandItem
+                            key={company.id}
+                            value={company.id}
+                            onSelect={() => {
+                              field.onChange(company.id)
+                              setOpenCompaniesCombobox(false)
+                            }}
+                          >
+                            {company.name}
+                            <Check
+                              className={cn(
+                                "ml-auto h-4 w-4",
+                                field.value === company.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))
+                      )}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             )}
           />
           {errors.companyId && (
@@ -287,27 +392,49 @@ const CreateComplaintForm = () => {
           <Controller
             control={control}
             name="category"
-            render={({field}) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-              <SelectTrigger id='category' className="flex-1 w-full cursor-pointer">
-                  <SelectValue placeholder="Zgjidh nje arsyje kontakti" />
-              </SelectTrigger>
-              <SelectContent>
-                  <SelectGroup>
-                  <SelectLabel>Zgjidhni mes opsioneve me poshte</SelectLabel>
-                  {Object.keys(Category).map((item) => {
-                    let displayText = item.replace(/_/g, ' ');
-                    // Convert to lowercase
-                    displayText = displayText.toLowerCase();
-                    // Capitalize first letter of each word
-                    displayText = displayText.replace(/\b\w/g, char => char.toUpperCase());
-                    return (
-                      <SelectItem key={item} value={item}>{displayText}</SelectItem>
-                    )
-                  })}
-                  </SelectGroup>
-              </SelectContent>
-              </Select>
+            render={({ field }) => (
+              <Popover open={openCategories} onOpenChange={setOpenCategories}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openCategories}
+                    className="w-full justify-between font-normal"
+                  >
+                    {field.value
+                      ? formatCategoryDisplay(field.value)
+                      : "Zgjidh nje arsyje kontakti"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="max-h-[300px] overflow-y-auto p-0">
+                  <Command>
+                    <CommandInput placeholder="Kerkoni arsyet..." />
+                    <CommandEmpty>Nuk u gjet asnje arsye.</CommandEmpty>
+                    <CommandGroup>
+                      {/* <CommandLabel>Zgjidhni mes opsioneve me poshte</CommandLabel> */}
+                      {Object.keys(Category).map((item) => (
+                        <CommandItem
+                          key={item}
+                          value={item}
+                          onSelect={() => {
+                            field.onChange(item)
+                            setOpenCategories(false)
+                          }}
+                        >
+                          {formatCategoryDisplay(item)}
+                          <Check
+                            className={cn(
+                              "ml-auto h-4 w-4",
+                              field.value === item ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             )}
           />
           {errors.category && (

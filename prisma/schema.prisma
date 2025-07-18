@@ -19,6 +19,46 @@ enum ReportsCategory {
   TJETER                // Other
 }
 
+enum Municipality {
+  DECAN                 // Deçan
+  DRAGASH               // Dragash
+  FERIZAJ               // Ferizaj
+  FUSHE_KOSOVE          // Fushë Kosovë
+  GJAKOVE               // Gjakovë
+  GJILAN                // Gjilan
+  GLLOGOC               // Gllogoc
+  GRACANICE             // Graçanicë
+  HANI_I_ELEZIT         // Hani i Elezit
+  ISTOG                 // Istog
+  JUNIK                 // Junik
+  KACANIK               // Kaçanik
+  KAMENICE              // Kamenicë
+  KLINA                 // Klinë
+  KLOKOT                // Kllokot
+  LEPOSAVIQ             // Leposaviq
+  LIPJAN                // Lipjan
+  MALISHEVE             // Malishevë
+  MITROVICE_JUG         // Mitrovicë e Jugut
+  MITROVICE_VERI        // Mitrovicë e Veriut
+  NOVO_BRDO             // Novo Brdo
+  OBILIQ                // Obiliq
+  PARTESH               // Partesh
+  PEJE                  // Pejë
+  PODUJEVE              // Podujevë
+  PRISHTINE             // Prishtinë
+  PRIZREN               // Prizren
+  RAHOVEC               // Rahovec
+  RANILLUG              // Ranillug
+  SHTERPCE              // Shtërpcë
+  SKENDERAJ             // Skenderaj
+  SUHAREKE              // Suharekë
+  SHARR                 // Sharr
+  VITI                  // Viti
+  VUSHTRRI              // Vushtrri
+  ZUBIN_POTOK           // Zubin Potok
+  ZVECAN                // Zveçan
+}
+
 
 model Users {
   id               String             @id @default(uuid())
@@ -86,6 +126,7 @@ model ComplaintUpVotes {
 model Complaint {
   id              String             @id @default(uuid())
   companyId       String?
+  municipality    Municipality @default(PRISHTINE)
   title           String
   description     String
   status          ComplaintStatus    @default(PENDING)
