@@ -37,6 +37,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
     const [attachmentProgress, setAttachmentProgress] = useState<number | null>(null)
     const [audioProgress, setAudioProgress] = useState<number | null>(null)
 
+    const [reportsDialog, setReportsDialog] = useState(false)
+    const [contributeDialog, setContributeDialog] = useState(false)
+
     const {control: contributeControl, setValue, getValues, handleSubmit: contributeHandleSubmit, reset: contributeReset, formState: {errors: contributeErrors, isSubmitting: contributeIsSubmitting}} = useForm<ValidationSchema>({
       resolver: zodResolver(contributionsSchema),
       defaultValues: useMemo(() => ({
@@ -46,7 +49,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
       }), [])
     })
 
-    const {control: reportControl, handleSubmit: reportHandleSubmit, reset: reportReset, formState: {errors: reportErrors, isSubmitting: reportIsSubmitting}} = useForm<ReportsValidationSchema>({
+    const {control: reportControl, handleSubmit: reportHandleSubmit, setValue: reportSetValue, getValues: reportGetValues, reset: reportReset, formState: {errors: reportErrors, isSubmitting: reportIsSubmitting}} = useForm<ReportsValidationSchema>({
       resolver: zodResolver(reportsSchema),
       defaultValues: useMemo(() => ({
         title: "",
@@ -58,6 +61,8 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
     })
 
     const reportsOnSubmit = useCallback(async (data: ReportsValidationSchema) => {
+      console.log(data);
+      
       try {
         const response = await api.post(`/api/createReport`, {
           title: data.title,
@@ -70,6 +75,11 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
         })
         if(response.data.success){
           toast.success(`Sapo keni krijuar raportimin me sukses! Do te njoftoheni vazhdimisht per cdo ndryshim ne lidhje me kete raportim.`)
+          setReportsDialog(false)
+          reportReset()
+          setAttachmentPreviews([])
+          setAudioPreviews([])
+          setVideoPreviews([])
         }
       } catch (error: any) {
         console.error(error)
@@ -87,6 +97,11 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
         })
         if(response.data.success){
           toast.success(`Aplikimi per kontribuim ne kete ankese/raport shkoi me sukses. Do njoftoheni kur te behet validimi i evidences tuaj.`)
+          setContributeDialog(false)
+          contributeReset()
+          setAttachmentPreviews([])
+          setAudioPreviews([])
+          setVideoPreviews([])
         }
       } catch (error: any) {
         console.error(error)
@@ -162,24 +177,44 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
               switch (type) {
                 case "attachments":
                   setAttachmentPreviews((prev) => [...prev, ...newPreviews]);
+
+                  contributeDialog ?
                   setValue("attachments", [
                     ...(getValues("attachments") || []),
                     ...newPreviews,
+                  ]) : 
+                  reportSetValue("attachments", [
+                    ...(reportGetValues("attachments") || []),
+                    ...newPreviews
                   ]);
                   break;
                 case "audiosAttached":
                   setAudioPreviews((prev) => [...prev, ...newPreviews]);
+
+                  contributeDialog ?
                   setValue("audiosAttached", [
                     ...(getValues("audiosAttached") || []),
                     ...newPreviews,
+                  ]) : 
+                  reportSetValue("audiosAttached", [
+                    ...(reportGetValues("audiosAttached") || []),
+                    ...newPreviews
                   ]);
+
                   break;
                 case "videosAttached":
                   setVideoPreviews((prev) => [...prev, ...newPreviews]);
+
+                  contributeDialog ?
                   setValue("videosAttached", [
                     ...(getValues("videosAttached") || []),
                     ...newPreviews,
+                  ]) : 
+                  reportSetValue("videosAttached", [
+                    ...(reportGetValues("videosAttached") || []),
+                    ...newPreviews
                   ]);
+                  
                   break;
               }
             }
@@ -255,8 +290,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 </>
             )}
             </button>
-            <Dialog onOpenChange={() => {
-              contributeReset();
+            <Dialog open={contributeDialog} onOpenChange={() => {
               reportReset();
               setAttachmentPreviews([]);
               setAudioPreviews([]);
@@ -264,6 +298,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
               setAudioProgress(null)
               setVideoProgress(null)
               setAttachmentProgress(null)
+              setContributeDialog(!contributeDialog)
             }}>
               <form onSubmit={contributeHandleSubmit(contributeOnSubmit)}>
                 <DialogTrigger asChild>
@@ -450,8 +485,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 </DialogContent>
               </form>
             </Dialog>
-            <Dialog onOpenChange={() => {
-              contributeReset();
+            <Dialog open={reportsDialog} onOpenChange={() => {
               reportReset();
               setAttachmentPreviews([]);
               setAudioPreviews([]);
@@ -459,6 +493,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
               setAudioProgress(null)
               setVideoProgress(null)
               setAttachmentProgress(null)
+              setReportsDialog(!reportsDialog)
             }}>
               <form onSubmit={reportHandleSubmit(reportsOnSubmit)}>
                 <DialogTrigger asChild>
@@ -693,7 +728,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                           )}
                         </div>
                         <div>
-                          <CTAButton type='button' onClick={reportHandleSubmit(reportsOnSubmit)} isLoading={reportIsSubmitting} text='Krijo raportim' classNames='w-full' primary/>
+                          <CTAButton type='button' onClick={reportHandleSubmit(reportsOnSubmit)} isLoading={reportIsSubmitting} text={`${reportIsSubmitting ? "Duke krijuar raportimin..." : "Krijo raportim"}`} classNames='w-full' primary/>
                         </div>
                     </div>
                 </DialogContent>

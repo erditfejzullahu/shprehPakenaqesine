@@ -21,8 +21,10 @@ export const POST = async (req: NextRequest) => {
             audiosAttached: body.audiosAttached,
             attachments: body.attachments,
             videosAttached: body.videosAttached,
+            category: body.category
         }
-
+        console.log(body, ' body');
+        
         const validateObj = reportsSchema.parse(sanitizedObj);
 
         await prisma.$transaction(async (prisma) => {
@@ -42,16 +44,22 @@ export const POST = async (req: NextRequest) => {
             if(validateObj.attachments && validateObj.attachments.length > 0){
                 for(const element of validateObj.attachments){
                     const result: UploadResult = await fileUploadService.uploadFile(element, "reports/attachments", report.id)
+                    console.log(result, '  result');
                     if(!result.success){
                         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve"}, {status: 400})
                     }
                     attachments.push(result.url)
                 }
             }
+
+            console.log(attachments, '  asdasdasdasdasdasdasd');
+            
     
             if(validateObj.audiosAttached && validateObj.audiosAttached.length > 0){
                 for(const element of validateObj.audiosAttached){
                     const result: UploadResult = await fileUploadService.uploadFile(element, "reports/audiosAttached", report.id)
+                    
+                    
                     if(!result.success){
                         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te audiove/inqizimeve"}, {status: 400})
                     }
@@ -68,6 +76,15 @@ export const POST = async (req: NextRequest) => {
                     videoAttachments.push(result.url)
                 }
             }
+
+            await prisma.reports.update({
+                where: {id: report.id},
+                data: {
+                    attachments,
+                    audioAttachments,
+                    videoAttachments
+                }
+            })
         })
 
         return NextResponse.json({success: true, message: `Sapo keni raportuar me sukses ankesen/raportimin. Do te njoftoheni vazhdimisht ne rast te ndryshimeve!`}, {status: 201})
