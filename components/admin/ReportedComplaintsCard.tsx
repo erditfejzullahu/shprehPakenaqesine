@@ -222,8 +222,10 @@ const ReportedComplaintsCard = ({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+          
+    
 
-    <ComplaintReportsActions complaintId={complaintId} open={openDialog} onClose={() => setOpenDialog(false)}/>
+    <ComplaintReportsActions complaintTitle={complaintTitle} complaintId={complaintId} open={openDialog} onClose={() => setOpenDialog(false)}/>
     </>
   );
 }

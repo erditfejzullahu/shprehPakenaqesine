@@ -9,7 +9,7 @@ import CTAButton from '../CTAButton'
 import ReportsCard from './ReportsCard'
 import { ExtendedReport } from '@/types/admin'
 
-const ComplaintReportsActions = ({complaintId, open, onClose}: {complaintId: string, open: boolean, onClose: () => void}) => {
+const ComplaintReportsActions = ({complaintTitle, complaintId, open, onClose}: {complaintTitle: string, complaintId: string, open: boolean, onClose: () => void}) => {
     const {data, isLoading, isError, refetch, isRefetching} = useQuery({
         queryKey: ["reports", complaintId],
         queryFn: async () => {
@@ -25,8 +25,8 @@ const ComplaintReportsActions = ({complaintId, open, onClose}: {complaintId: str
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="!min-w-[700px] flex flex-col max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Raportimet mbi COMPLAINT</DialogTitle>
-          <DialogDescription>Ketu mund te nderveproni me te gjitha raportimet e COMPLAINT</DialogDescription>
+          <DialogTitle>Raportimet mbi <span className='underline'>{complaintTitle}</span></DialogTitle>
+          <DialogDescription>Ketu mund te nderveproni me te gjitha raportimet e {complaintTitle}</DialogDescription>
         </DialogHeader>
         {isLoading || isRefetching ? (
             <div className="py-8 flex justify-center">
