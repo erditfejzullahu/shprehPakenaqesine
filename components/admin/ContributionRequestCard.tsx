@@ -6,6 +6,8 @@ import { Badge } from '../ui/badge';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Companies, Complaint } from '@/app/generated/prisma';
+import api from '@/lib/api';
+import { toast } from 'sonner';
 
 interface ContributionRequestCardProps {
   id: string;
@@ -70,6 +72,32 @@ const ContributionRequestCard = ({
     });
     return words.join(' ');
   };
+
+  const deleteContribution = async () => {
+    try {
+        const response = await api.delete(`/api/admin/contributions/${id}`)
+        if(response.data.success){
+            toast.success(`Sapo fshite me sukses kontribuimin per ankesen ${complaint.title}`)
+            router.refresh()
+        }
+    } catch (error: any) {
+        console.error();
+        toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni perseri.")
+    }
+  }
+
+  const acceptContribution = async () => {
+    try {
+        const response = await api.patch(`/api/admin/contributions/${id}`, "APPROVE")
+        if(response.data.success){
+            toast.success(`Sapo ndryshuat me sukses statusin e kontribuimit per ankesen ${complaint.title}`)
+            router.refresh()
+        }
+    } catch (error:any) {
+        console.error(error);
+        toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni perseri.")
+    }
+  }
 
   return (
     <div className="w-full bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative">
@@ -263,18 +291,18 @@ const ContributionRequestCard = ({
             <button
             onClick={(e) => {
                 e.stopPropagation();
-                // Handle reject action
+                deleteContribution();
             }}
-            className="px-3 py-1 text-sm text-red-600 border border-red-200 rounded hover:bg-red-50"
+            className="px-3 py-1 cursor-pointer text-sm text-red-600 border border-red-200 rounded hover:bg-red-50"
             >
             Refuzoni
             </button>
             <button
             onClick={(e) => {
                 e.stopPropagation();
-                // Handle accept action
+                acceptContribution();
             }}
-            className="px-3 py-1 text-sm text-white bg-indigo-600 rounded hover:bg-indigo-700"
+            className="px-3 py-1 text-sm cursor-pointer text-white bg-indigo-600 rounded hover:bg-indigo-700"
             >
             Pranoni
             </button>
