@@ -5,6 +5,10 @@ import React, { memo } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { Badge } from "../ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { toast } from "sonner";
+import api from "@/lib/api";
 
 interface ReportedComplaintsCardProps {
   complaintId: string;
@@ -73,8 +77,23 @@ const ReportedComplaintsCard = ({
     });
   };
 
+  const deleteComplaint = async () => {
+    try {
+      const response = await api.delete(`/api/admin/complaints/${complaintId}`)
+      if(response.data.success){
+        toast.success(`Sapo fshite me sukses ankesen/raportimin ${complaintTitle}`)
+        router.refresh();
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message || "Dicka shkoi gabim")
+    }
+  }
+
   return (
-    <div className={`w-full bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative`}>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+      <div className={`w-full cursor-pointer bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative`}>
       <div className="flex justify-between items-start">
         <div>
           <Link href={`/ankesat/${complaintId}`} className="text-lg font-semibold text-gray-900 line-clamp-1 hover:underline">
@@ -181,6 +200,21 @@ const ReportedComplaintsCard = ({
       </div>
       {complaintMunicipality && <Badge className="absolute bottom-1 right-1" variant={"default"}>{complaintMunicipality}</Badge>}
     </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuItem asChild>
+          <Button className="cursor-pointer w-full mb-1" variant={"default"}>Show reports</Button>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+        <Button onClick={deleteComplaint} variant={"destructive"} className="cursor-pointer w-full mb-1">Delete</Button>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+        <Link href={`/ankesat/${complaintId}`} target="_blank" className="cursor-pointer w-full">View complaint</Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+    
   );
 }
 

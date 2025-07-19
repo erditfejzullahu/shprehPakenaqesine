@@ -5,6 +5,7 @@ import ReportedComplaintsCard from '@/components/admin/ReportedComplaintsCard'
 import Link from 'next/link'
 import { FaArrowsUpDown } from 'react-icons/fa6'
 import LatestComplaintCard from '@/components/admin/LatestPendingComplaintCard'
+import ContributionRequestCard from '@/components/admin/ContributionRequestCard'
 
 export default async function AdminDashboard() {
   const stats = await getDashboardStats()
@@ -69,7 +70,7 @@ export default async function AdminDashboard() {
         </div>
         <div className="bg-white p-6 rounded-lg shadow max-h-[400px] overflow-y-auto">
           <div className='mb-4 flex flex-row justify-between items-center'>
-            <h2 className="text-lg font-semibold">Reports Overview</h2>
+            <h2 className="text-lg font-semibold">Complaints with most reports</h2>
             <Link 
               href="/admin/reports" 
               aria-description="all companies"
@@ -93,8 +94,38 @@ export default async function AdminDashboard() {
               <FaArrowsUpDown className="h-3.5 w-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
-        <div className='bg-white p-6 rounded-lg shadow'>
-          <h2 className='text-lg font-semibold mb-4'>Contribution Requests</h2>
+        <div className='bg-white p-6 rounded-lg shadow max-h-[600px] overflow-y-auto'>
+          <div className='mb-4 flex flex-row justify-between items-center'>
+            <div>
+              <h2 className='text-lg font-semibold'>Contribution Requests</h2>
+              <span className='text-gray-600 text-sm'>{stats.contributionsRequests.length} Contributes</span>
+            </div>
+            <Link 
+              href="/admin/contributions" 
+              aria-description="all companies"
+              className="group flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors duration-200"
+            >
+              <span className="text-indigo-700 font-medium">Shiko të gjitha</span>
+              <FaArrowsUpDown className="h-3.5 w-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
+            <div className='flex flex-col gap-4'>
+              {stats.contributionsRequests ? ( stats.contributionsRequests.map((contribution) => (
+                <ContributionRequestCard key={contribution.id} {...contribution} videoAttachments={contribution.videoAttacments}/>
+              ))) : (
+                <div>
+                  No data available!
+                </div>
+              )}
+            </div>
+          <Link 
+              href="/admin/contributions"
+              aria-description="all companies"
+              className="group mt-4 w-fit ml-auto flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors duration-200"
+            >
+              <span className="text-indigo-700 font-medium">Shiko të gjitha</span>
+              <FaArrowsUpDown className="h-3.5 w-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
         </div>
         <div className='bg-white p-6 rounded-lg shadow'>
           <h2 className='text-lg font-semibold mb-4'>User Logs</h2>

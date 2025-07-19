@@ -58,6 +58,12 @@ export async function getDashboardStats() {
     }),
   ])
 
+  
+  const calculateChange = (current: number, lastMonth: number) => {
+    if (lastMonth === 0) return 0
+    return Math.round(((current - lastMonth) / lastMonth) * 100)
+  }
+
   const complaintsWithMostReports = await prisma.complaint.findMany({
     take: 20,
     orderBy: {
@@ -93,11 +99,6 @@ export async function getDashboardStats() {
     }
   })
 
-  const calculateChange = (current: number, lastMonth: number) => {
-    if (lastMonth === 0) return 0
-    return Math.round(((current - lastMonth) / lastMonth) * 100)
-  }
-
   const reportOverview = complaintsWithMostReports.map(complaint => ({
     complaintId: complaint.id,
     complaintTitle: complaint.title,
@@ -129,6 +130,31 @@ export async function getDashboardStats() {
     } : null
   }))
 
+  const contributionsWithComplaints = await prisma.contributions.findMany({
+    where: {contributionValidated: false},
+    include: {
+      complaint: {
+        include: {
+          company: true
+        }
+      },
+      user: true,
+    }
+  })
+
+  const contributionsRequests = contributionsWithComplaints.map(contribution => ({
+    id: contribution.id,
+    userId: contribution.userId,
+    attachments: contribution.attachments,
+    audioAttachments: contribution.audiosAttached,
+    videoAttacments: contribution.videosAttached,
+    complaint: contribution.complaint,
+    user: {
+      name: contribution.user.fullName,
+      image: contribution.user.userProfileImage,
+    },
+  }))  
+
   return {
     companiesCount,
     complaintsCount,
@@ -139,7 +165,8 @@ export async function getDashboardStats() {
     usersChange: calculateChange(usersCount, lastMonthUsers),
     subscribersChange: calculateChange(subscribersCount, lastMonthSubscribers),
     recentComplaints,
-    reportOverview // No need for getReportsWithData as we've already formatted it
+    reportOverview,
+    contributionsRequests
   }
 }
 

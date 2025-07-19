@@ -86,7 +86,7 @@ const LatestPendingComplaintCard = ({
     try {
       const response = await api.delete(`/api/admin/complaints/${id}`)
       if(response.data.success){
-        toast.success(`Sapo fshite me sukses ${title} me sukses`)
+        toast.success(`Sapo fshite me sukses ${title}`)
         router.refresh();
       }
     } catch (error: any) {
