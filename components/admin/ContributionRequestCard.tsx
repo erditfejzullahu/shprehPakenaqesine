@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { Badge } from '../ui/badge';
 import { useRouter } from 'next/navigation';
@@ -8,6 +8,14 @@ import Image from 'next/image';
 import { Companies, Complaint } from '@/app/generated/prisma';
 import api from '@/lib/api';
 import { toast } from 'sonner';
+import Lightbox from 'yet-another-react-lightbox';
+import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails';
+import "yet-another-react-lightbox/styles.css";
+import "yet-another-react-lightbox/plugins/thumbnails.css";
+import { Button } from '../ui/button';
+import { MoreVerticalIcon } from 'lucide-react';
+import { FaCopy, FaDownload, FaTrash } from 'react-icons/fa';
+import { copyToClipboard } from '@/lib/utils';
 
 interface ContributionRequestCardProps {
   id: string;
@@ -39,6 +47,10 @@ const ContributionRequestCard = ({
   const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
+  const [showImageMoreOptions, setShowImageMoreOptions] = useState(false)
+
+  const [openLightBox, setOpenLightBox] = useState(false)
+
   // Categorize attachments into images and documents
   const { images, documents } = useMemo(() => {
     const images: string[] = [];
@@ -55,6 +67,48 @@ const ContributionRequestCard = ({
     
     return { images, documents };
   }, [attachments]);
+
+  const handleRemovePhoto = useCallback(async () => {
+    try {
+      const response = await api.patch(`/api/admin/contributions/removeContributtionAttch/${id}?fileName=${images[currentImageIndex]}&fileType=attachments`)
+      if(response.data.success){
+        toast.success('Sapo larguat me sukses imazhin e ketij indeksi')
+        router.refresh()
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message || "Dicka shkoi gabim!")
+    }
+  }, [])
+
+  const handleDownloadPhoto = useCallback(async () => {
+    try {
+      const response = await api.get(`/api/admin/download?file=${images[currentImageIndex]}`, {
+        responseType: "blob"
+      })
+
+      const blob = new Blob([response.data])
+      const url = window.URL.createObjectURL(blob)
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = images[currentImageIndex];
+      document.body.appendChild(a);
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a)
+
+      if(response.status === 200){
+        toast.success('Tani do filloje shkarkimi i imazhit')
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Dicka shkoi gabim! Ju lutem provoni perseri.')
+    } finally {
+      setShowImageMoreOptions(false)
+    }
+  }, [])
 
   const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
   const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -137,6 +191,7 @@ const ContributionRequestCard = ({
       </div>
 
       {/* Image Carousel */}
+
       {images.length > 0 && (
         <div className="relative">
           <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
@@ -144,7 +199,8 @@ const ContributionRequestCard = ({
               src={images[currentImageIndex]}
               alt={`Attachment ${currentImageIndex + 1}`}
               fill
-              className="object-contain"
+              className="object-contain cursor-pointer"
+              onClick={() => setOpenLightBox(true)}
             />
           </div>
           {images.length > 1 && (
@@ -177,6 +233,27 @@ const ContributionRequestCard = ({
           )}
         </div>
       )}
+
+      <Lightbox 
+        open={openLightBox} 
+        close={() => setOpenLightBox(false)} 
+        index={currentImageIndex} 
+        slides={images.map((img) => ({src: img}))} 
+        plugins={[Thumbnails]}
+        render={{
+          controls: () => (
+            <>
+              <Button onClick={() => setShowImageMoreOptions(!showImageMoreOptions)} variant={"outline"} className='fixed cursor-pointer top-2 left-2'><MoreVerticalIcon /></Button>
+              {showImageMoreOptions && <div className='fixed top-12 left-2 flex flex-col gap-1 bg-white rounded-lg p-1'>
+                <Button onClick={handleRemovePhoto} variant={"destructive"} className='cursor-pointer text-white'>Fshij <FaTrash color='#fff'/></Button>
+                <Button onClick={handleDownloadPhoto} variant={"default"} className='cursor-pointer'>Shkarko <FaDownload /></Button>
+                <Button onClick={() => {copyToClipboard(images[currentImageIndex]); setShowImageMoreOptions(false)}} variant={"outline"} className='cursor-pointer'>Kopjo Linkun <FaCopy /></Button>
+              </div>}
+            </>
+          ),
+        }}/>
+
+      {/* <AdminGalleryLightbox className='w-full h-full' images={images.map((img) => ({src: img}))}/> */}
 
       {/* Video Carousel */}
       {videoAttachments.length > 0 && (
