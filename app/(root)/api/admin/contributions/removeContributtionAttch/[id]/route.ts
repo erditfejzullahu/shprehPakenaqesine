@@ -1,14 +1,16 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { existsSync, unlinkSync } from "fs";
 import { NextRequest, NextResponse } from "next/server";
+import { join } from "path";
 
 export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params;
     const session = await auth();
     try {
         const {searchParams} = req.nextUrl
-        const fileName = searchParams.get('file')
-        const fileType = searchParams.get('type') as "attachments" | "audioAttachments" | "videoAttachments"
+        const fileName = searchParams.get('fileName')
+        const fileType = searchParams.get('fileType') as "attachments" | "audioAttachments" | "videoAttachments"
 
         if(!fileName || typeof fileName !== "string"){
             return NextResponse.json({success: false, message: "Nevojitet emer fajlli me tipin varg"}, {status: 400})
@@ -40,6 +42,11 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
                 break;
             default:
                 return NextResponse.json({success: false, message: "Tip invalid i fajllit"}, {status: 400})
+        }
+
+        const filePath = join(process.cwd(), "public", fileName);
+        if(existsSync(filePath)){
+            unlinkSync(filePath);
         }
 
         await prisma.contributions.update({

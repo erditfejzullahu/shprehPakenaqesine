@@ -78,6 +78,8 @@ const ContributionRequestCard = ({
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message || "Dicka shkoi gabim!")
+    } finally {
+      setShowImageMoreOptions(false)
     }
   }, [])
 
