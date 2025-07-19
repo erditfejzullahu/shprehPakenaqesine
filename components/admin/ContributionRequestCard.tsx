@@ -18,6 +18,7 @@ interface ContributionRequestCardProps {
   user: {
     name: string;
     image: string;
+    email: string;
   };
 }
 
@@ -95,9 +96,15 @@ const ContributionRequestCard = ({
             className="object-cover"
           />
         </div>
-        <div>
-          <p className="text-sm font-medium text-gray-900">{user.name}</p>
-          <p className="text-xs text-gray-500">Kontribues</p>
+        <div className='flex flex-row justify-between flex-1'>
+            <div>
+                <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                <p className="text-xs text-gray-500">Kontribues</p>
+            </div>
+            <div className='flex flex-col'>
+                <p className="text-sm font-medium text-gray-900">Email</p>
+                <Link href={`mailto:${user.email}`} className="text-xs text-indigo-600 m-0">{user.email}</Link>
+            </div>
         </div>
       </div>
 

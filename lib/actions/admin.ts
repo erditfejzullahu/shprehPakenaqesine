@@ -81,7 +81,8 @@ export async function getDashboardStats() {
       user: {
         select: {
           fullName: true,
-          userProfileImage: true
+          userProfileImage: true,
+          email: true
         }
       },
       company: {
@@ -108,7 +109,8 @@ export async function getDashboardStats() {
     complaintContributions: complaint._count.contributions,
     complaintUser: {
       name: complaint.user.fullName,
-      image: complaint.user.userProfileImage
+      image: complaint.user.userProfileImage,
+      email: complaint.user.email,
     },
     complaintCompany: complaint.company ? {
       companyName: complaint.company.name,
@@ -152,6 +154,7 @@ export async function getDashboardStats() {
     user: {
       name: contribution.user.fullName,
       image: contribution.user.userProfileImage,
+      email: contribution.user.email
     },
   }))  
 

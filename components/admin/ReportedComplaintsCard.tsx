@@ -20,6 +20,7 @@ interface ReportedComplaintsCardProps {
   complaintUser: {
     name: string;
     image: string;
+    email: string;
   };
   complaintCompany: {
     companyName: string;
@@ -196,7 +197,12 @@ const ReportedComplaintsCard = ({
       </div>
 
       <div className="text-sm text-gray-500">
-        Postuar nga: <span className="text-gray-700">{complaintUser.name}</span>
+        <div>
+          Postuar nga: <span className="text-gray-700">{complaintUser.name}</span>
+        </div>
+        <div>
+          Email: <Link href={`mailto:${complaintUser.email}`} className="text-indigo-600">{complaintUser.email}</Link>
+        </div>
       </div>
       {complaintMunicipality && <Badge className="absolute bottom-1 right-1" variant={"default"}>{complaintMunicipality}</Badge>}
     </div>
