@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     try {
-        var body = await req.json();
+        const body = await req.json();
         const {id} = await params;
 
         const session = await auth();
@@ -18,6 +18,20 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
         })
 
         return NextResponse.json({success: true, message: `Sapo ndryshuar statusin e ${complaint.title} ne ${complaint.status}`}, {status: 200})
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})
+    }
+}
+
+export const DELETE = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
+    try {
+        const {id} = await params;
+        const session = await auth();
+        //admin check
+
+        await prisma.complaint.delete({where: {id}})
+        return NextResponse.json({success: true, message: "Sapo fshite me sukses"}, {status: 200})
     } catch (error) {
         console.error(error);
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})

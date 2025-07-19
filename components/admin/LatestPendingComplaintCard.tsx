@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
+import api from "@/lib/api";
+import { toast } from "sonner";
 
 interface LatestPendingComplaintCardProps {
   id: string;
@@ -66,6 +68,32 @@ const LatestPendingComplaintCard = ({
       year: "2-digit"
     });
   };
+
+  const approveComplaint = async () => {
+    try {
+      const response = await api.patch(`/api/admin/complaints/${id}`, {status: "ACCEPTED"})  
+      if(response.data.success){
+        toast.success(response.data.message || 'Ndryshimi statusit ne te pranuar ndodhi me sukses')
+        router.refresh();
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message || "Dicka shkoi gabim")
+    }
+  }
+
+  const deleteComplaint = async () => {
+    try {
+      const response = await api.delete(`/api/admin/complaints/${id}`)
+      if(response.data.success){
+        toast.success(`Sapo fshite me sukses ${title} me sukses`)
+        router.refresh();
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message || "Dicka shkoi gabim")
+    }
+  }
 
   const totalAttachments = attachments.length + videosAttached.length + audiosAttached.length;
 
@@ -144,13 +172,13 @@ const LatestPendingComplaintCard = ({
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuItem asChild>
-          <Button className="cursor-pointer w-full mb-1" variant={"default"}>Approve</Button>
+          <Button onClick={approveComplaint} className="cursor-pointer w-full mb-1" variant={"default"}>Approve</Button>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-        <Button variant={"destructive"} className="cursor-pointer w-full mb-1">Delete</Button>
+        <Button onClick={deleteComplaint} variant={"destructive"} className="cursor-pointer w-full mb-1">Delete</Button>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-        <Button variant={"outline"} className="cursor-pointer w-full">View complaint</Button>
+        <Link href={`/ankesat/${id}`} target="_blank" className="cursor-pointer w-full">View complaint</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
