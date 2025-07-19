@@ -1,4 +1,5 @@
-import { Companies, Complaint, Users, Reports, Subscribers, Contributions } from "@prisma/client"
+import { Reports } from "@/app/generated/prisma"
+import { Companies, Complaint, Users, Subscribers, Contributions } from "@/app/generated/prisma"
 
 export type Company = Companies & {
   _count: {
@@ -21,7 +22,7 @@ export type ExtendedUser = Users & {
 }
 
 export type ExtendedReport = Reports & {
-  complaint: Complaint
+  complaint: ExtendedComplaint
 }
 
 export type ExtendedSubscriber = Subscribers

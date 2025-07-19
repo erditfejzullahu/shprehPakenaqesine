@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import React, { memo } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
 import { Badge } from "../ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import api from "@/lib/api";
+import ComplaintReportsActions from "./ComplaintReportsActions";
 
 interface ReportedComplaintsCardProps {
   complaintId: string;
@@ -60,25 +60,26 @@ const ReportedComplaintsCard = ({
   mostRecentReport
 }: ReportedComplaintsCardProps) => {
   const router = useRouter();
-  const pathname = usePathname();
 
-  const getCategoryLabel = (category: string) => {
+  const [openDialog, setOpenDialog] = useState(false)
+
+  const getCategoryLabel = useCallback((category: string) => {
     const words = category.split('_').map(word => {
       if (word === 'NE') return 'në';
       return word.charAt(0) + word.slice(1).toLowerCase();
     });
     return words.join(' ');
-  };
+  }, []);
 
-  const formatDate = (date: Date) => {
+  const formatDate = useCallback((date: Date) => {
     return new Date(date).toLocaleDateString('sq-AL', {
       day: "2-digit",
       month: "short",
       year: "2-digit"
     });
-  };
+  }, []);
 
-  const deleteComplaint = async () => {
+  const deleteComplaint = useCallback(async () => {
     try {
       const response = await api.delete(`/api/admin/complaints/${complaintId}`)
       if(response.data.success){
@@ -89,9 +90,10 @@ const ReportedComplaintsCard = ({
       console.error(error);
       toast.error(error.response.data.message || "Dicka shkoi gabim")
     }
-  }
+  }, [])
 
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
       <div className={`w-full cursor-pointer bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative`}>
@@ -208,19 +210,21 @@ const ReportedComplaintsCard = ({
     </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuLabel>Nderveprimet</DropdownMenuLabel>
         <DropdownMenuItem asChild>
-          <Button className="cursor-pointer w-full mb-1" variant={"default"}>Show reports</Button>
+          <Button onClick={() => setOpenDialog(true)} className="cursor-pointer w-full mb-1" variant={"default"}>Shfaq Raportimet</Button>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-        <Button onClick={deleteComplaint} variant={"destructive"} className="cursor-pointer w-full mb-1">Delete</Button>
+        <Button onClick={deleteComplaint} variant={"destructive"} className="cursor-pointer w-full mb-1">Fshije Ankesen</Button>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-        <Link href={`/ankesat/${complaintId}`} target="_blank" className="cursor-pointer w-full">View complaint</Link>
+        <DropdownMenuItem className="mx-auto text-center flex items-center justify-center" asChild>
+        <Link href={`/ankesat/${complaintId}`} target="_blank" className="cursor-pointer w-full">Shiko Ankesen</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-    
+
+    <ComplaintReportsActions complaintId={complaintId} open={openDialog} onClose={() => setOpenDialog(false)}/>
+    </>
   );
 }
 

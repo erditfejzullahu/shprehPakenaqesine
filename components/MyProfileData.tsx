@@ -349,7 +349,7 @@ const MyProfileData = ({session}: {session: Session}) => {
             ) : currentComplaints.length > 0 ? (
               <>
                 {currentComplaints.map((complaint) => (
-                  <div onClick={() => router.push(`/ankesat/${complaint.id}`)} key={complaint.id} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
+                  <div onClick={() => router.push(`/ankesat/${complaint.id}`)} key={`ankesat-${complaint.id}`} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">{complaint.title}</h3>
@@ -452,7 +452,7 @@ const MyProfileData = ({session}: {session: Session}) => {
             ) : currentContributions.length > 0 ? (
               <>
                 {currentContributions.map((contribution) => (
-                  <div onClick={() => router.push(`/ankesat/${contribution.complaintId}`)} key={contribution.complaintId} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
+                  <div onClick={() => router.push(`/ankesat/${contribution.complaintId}`)} key={`kontribuimet-${contribution.complaintId}`} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">{contribution.complaintTitle}</h3>
