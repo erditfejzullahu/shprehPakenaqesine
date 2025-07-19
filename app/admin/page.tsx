@@ -43,7 +43,7 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow max-h-[400px] overflow-y-auto">
           <div className='mb-4 flex flex-row justify-between items-center'>          
-            <h2 className="text-lg font-semibold">Recent Unapproved Complaints</h2>
+            <h2 className="text-lg font-semibold">Ankesat e fundit të pamiratuara</h2>
             <Link 
               href="/admin/complaints" 
               aria-description="all companies"
@@ -70,7 +70,7 @@ export default async function AdminDashboard() {
         </div>
         <div className="bg-white p-6 rounded-lg shadow max-h-[400px] overflow-y-auto">
           <div className='mb-4 flex flex-row justify-between items-center'>
-            <h2 className="text-lg font-semibold">Complaints with most reports</h2>
+            <h2 className="text-lg font-semibold">Ankesat me shume raporte</h2>
             <Link 
               href="/admin/reports" 
               aria-description="all companies"
@@ -97,7 +97,7 @@ export default async function AdminDashboard() {
         <div className='bg-white p-6 rounded-lg shadow max-h-[600px] overflow-y-auto'>
           <div className='mb-4 flex flex-row justify-between items-center'>
             <div>
-              <h2 className='text-lg font-semibold'>Contribution Requests</h2>
+              <h2 className='text-lg font-semibold'>Kërkesat për kontribut</h2>
               <span className='text-gray-600 text-sm'>{stats.contributionsRequests.length} Contributes</span>
             </div>
             <Link 
@@ -128,7 +128,7 @@ export default async function AdminDashboard() {
           </Link>
         </div>
         <div className='bg-white p-6 rounded-lg shadow'>
-          <h2 className='text-lg font-semibold mb-4'>User Logs</h2>
+          <h2 className='text-lg font-semibold mb-4'>Regjistrat e përdoruesve</h2>
         </div>
       </div>
     </div>

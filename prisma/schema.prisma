@@ -77,6 +77,8 @@ model Users {
   complaints       Complaint[]
   complaintUpVotes ComplaintUpVotes[]
   contributions    Contributions[]
+
+  @@index([username])
 }
 
 model Contributions {
@@ -93,6 +95,8 @@ model Contributions {
   updatedAt DateTime @updatedAt
   
   @@index([complaintId, userId])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model Companies {
@@ -110,6 +114,10 @@ model Companies {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   complaints  Complaint[]
+
+  @@index([name])
+  @@index([industry])
+  @@index([foundedYear])
 }
 
 model ComplaintUpVotes {
@@ -139,11 +147,20 @@ model Complaint {
   resolvedStatus  ResolvedStatus     @default(PENDING)
   upVotes         Int                @default(0)
   userId          String
-  company         Companies?          @relation(fields: [companyId], references: [id])
-  user            Users              @relation(fields: [userId], references: [id])
+  company         Companies?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  user            Users              @relation(fields: [userId], references: [id], onDelete: Cascade)
   complaintUpVote ComplaintUpVotes[]
   contributions   Contributions[]
   reports Reports[]
+
+  @@index([category])
+  @@index([status])
+  @@index([resolvedStatus])
+  @@index([createdAt])
+  @@index([upVotes])
+  @@index([title])
+  @@index([userId])
+  @@index([updatedAt])
 }
 
 model Reports {
@@ -154,7 +171,7 @@ model Reports {
   audioAttachments String[] @default([])
   videoAttachments String[] @default([])
   complaintId String
-  complaint Complaint @relation(fields: [complaintId], references: [id])
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
   category ReportsCategory
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

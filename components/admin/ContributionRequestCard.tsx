@@ -73,6 +73,7 @@ const ContributionRequestCard = ({
       const response = await api.patch(`/api/admin/contributions/removeContributtionAttch/${id}?fileName=${images[currentImageIndex]}&fileType=attachments`)
       if(response.data.success){
         toast.success('Sapo larguat me sukses imazhin e ketij indeksi')
+        
         router.refresh()
       }
     } catch (error: any) {
