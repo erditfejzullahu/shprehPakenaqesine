@@ -179,6 +179,7 @@ const ReportedComplaintsCard = ({
       <div className="text-sm text-gray-500">
         Postuar nga: <span className="text-gray-700">{complaintUser.name}</span>
       </div>
+      {complaintMunicipality && <Badge className="absolute bottom-1 right-1" variant={"default"}>{complaintMunicipality}</Badge>}
     </div>
   );
 }

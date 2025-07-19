@@ -3,7 +3,7 @@ import { HomeIcon, BuildingIcon, UsersIcon, AlertCircleIcon, FileTextIcon, MailI
 
 export function Sidebar() {
   return (
-    <div className="w-64 bg-white border-r border-gray-200 h-full fixed">
+    <div className="w-64 bg-white border-r border-gray-200 h-full">
       <div className="p-4 border-b border-gray-200">
         <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
       </div>

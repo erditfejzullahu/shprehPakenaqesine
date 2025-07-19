@@ -8,16 +8,12 @@ export default async function AdminLayout({
 }) {
   const session = await auth()
 
-//   if (!session?.user?.isAdmin) {
-//     return <div>Unauthorized</div>
-//   }
-
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
       <div className="flex-1 overflow-auto">
         <div className="p-6">
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto ">
             {children}
           </div>
         </div>

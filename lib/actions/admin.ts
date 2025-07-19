@@ -46,8 +46,13 @@ export async function getDashboardStats() {
       }
     }),
     prisma.complaint.findMany({
+      where: {status: "PENDING"},
       orderBy: {
         createdAt: "desc"
+      },
+      include: {
+        company: true,
+        user: true,
       },
       take: 20
     }),
