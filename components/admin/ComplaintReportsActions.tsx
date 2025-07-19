@@ -19,7 +19,6 @@ const ComplaintReportsActions = ({complaintTitle, complaintId, open, onClose}: {
         enabled: open,
         refetchOnWindowFocus: false
     })
-    console.log(data);
     
   return (
     <Dialog open={open} onOpenChange={onClose}>

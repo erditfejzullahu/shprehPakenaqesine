@@ -81,6 +81,7 @@ export default async function AdminDashboard() {
             </Link>
           </div>
           <div className='flex flex-col gap-4'>
+            
             {stats.reportOverview.map((complaint) => (
               <ReportedComplaintsCard {...complaint} key={complaint.complaintId}/>
             ))}

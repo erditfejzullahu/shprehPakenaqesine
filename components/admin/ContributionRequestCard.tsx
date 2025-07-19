@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import Link from 'next/link';
 import { Badge } from '../ui/badge';
 import { useRouter } from 'next/navigation';
@@ -82,7 +82,7 @@ const ContributionRequestCard = ({
     } finally {
       setShowImageMoreOptions(false)
     }
-  }, [])
+  }, [id, images, currentImageIndex, router])
 
   const handleDownloadPhoto = useCallback(async () => {
     try {
@@ -111,7 +111,7 @@ const ContributionRequestCard = ({
     } finally {
       setShowImageMoreOptions(false)
     }
-  }, [])
+  }, [images, currentImageIndex])
 
   const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
   const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -130,7 +130,7 @@ const ContributionRequestCard = ({
     return words.join(' ');
   };
 
-  const deleteContribution = async () => {
+  const deleteContribution = useCallback(async () => {
     try {
         const response = await api.delete(`/api/admin/contributions/${id}`)
         if(response.data.success){
@@ -141,9 +141,9 @@ const ContributionRequestCard = ({
         console.error();
         toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni perseri.")
     }
-  }
+  }, [id, complaint.title, router])
 
-  const acceptContribution = async () => {
+  const acceptContribution = useCallback(async () => {
     try {
         const response = await api.patch(`/api/admin/contributions/${id}`, "APPROVE")
         if(response.data.success){
@@ -154,7 +154,7 @@ const ContributionRequestCard = ({
         console.error(error);
         toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni perseri.")
     }
-  }
+  }, [id, complaint.title, router])
 
   return (
     <div className="w-full bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative">
@@ -392,4 +392,4 @@ const ContributionRequestCard = ({
   );
 };
 
-export default ContributionRequestCard;
+export default memo(ContributionRequestCard);

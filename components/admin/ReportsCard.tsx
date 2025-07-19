@@ -15,6 +15,7 @@ import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails';
 import { copyToClipboard } from '@/lib/utils';
 import { FaCopy, FaDownload } from 'react-icons/fa';
 import { MoreVerticalIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface ReportsCardProps {
   id: string;
@@ -48,6 +49,8 @@ const ReportsCard = ({
   createdAt,
   complaint
 }: ReportsCardProps) => {
+  
+  const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -81,13 +84,13 @@ const ReportsCard = ({
   const nextVideo = () => setCurrentVideoIndex((prev) => (prev + 1) % videoAttachments.length);
   const prevVideo = () => setCurrentVideoIndex((prev) => (prev - 1 + videoAttachments.length) % videoAttachments.length);
 
-  const getCategoryLabel = useCallback((category: string) => {
+  const getCategoryLabel = (category: string) => {
     const words = category.split('_').map(word => {
       if (word === 'NE') return 'në';
       return word.charAt(0) + word.slice(1).toLowerCase();
     });
     return words.join(' ');
-  }, []);
+  };
 
   const getReportCategoryLabel = useCallback((category: string) => {
     switch (category) {
@@ -110,9 +113,9 @@ const ReportsCard = ({
       default:
         return category;
     }
-  }, []);
+  }, [category]);
 
-  const formatDate = useCallback((date: Date) => {
+  const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('sq-AL', {
       day: "2-digit",
       month: "short",
@@ -120,19 +123,20 @@ const ReportsCard = ({
       hour: "2-digit",
       minute: "2-digit"
     });
-  }, []);
+  };
 
   const handleReportDelete = useCallback(async () => {
     try {
       const response = await api.delete(`/api/admin/reports/${id}`)
       if(response.data.success){
         toast.success(`Sapo larguat me sukses raportimin mbi ${complaint.title}`)
+        router.refresh()
       }
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message || "Dicka shkoi gabim!")
     }
-  }, [])
+  }, [id, complaint.title, router])
 
   const handleExtractReport = useCallback(async () => {
     try {
@@ -144,11 +148,16 @@ const ReportsCard = ({
 
   const handleComplaintDelete = useCallback(async () => {
     try {
-      
-    } catch (error) {
-      
+      const response = await api.delete(`/api/admin/complaints/${complaint.id}`)
+      if(response.data.success){
+        toast.success(`Sapo fshite me sukses ankesen/raportimin ${complaint.title}`)
+        router.refresh();
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message || "Dicka shkoi gabim")
     }
-  }, [])
+  }, [complaint.id, complaint.title, router])
 
   const handleDownloadPhoto = useCallback(async () => {
     try {
@@ -177,7 +186,7 @@ const ReportsCard = ({
     } finally {
       setShowImageMoreOptions(false)
     }
-  }, [])
+  }, [images, currentImageIndex])
 
   return (
     <>

@@ -63,21 +63,21 @@ const ReportedComplaintsCard = ({
 
   const [openDialog, setOpenDialog] = useState(false)
 
-  const getCategoryLabel = useCallback((category: string) => {
+  const getCategoryLabel = (category: string) => {
     const words = category.split('_').map(word => {
       if (word === 'NE') return 'në';
       return word.charAt(0) + word.slice(1).toLowerCase();
     });
     return words.join(' ');
-  }, []);
+  };
 
-  const formatDate = useCallback((date: Date) => {
+  const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('sq-AL', {
       day: "2-digit",
       month: "short",
       year: "2-digit"
     });
-  }, []);
+  };
 
   const deleteComplaint = useCallback(async () => {
     try {
@@ -90,7 +90,7 @@ const ReportedComplaintsCard = ({
       console.error(error);
       toast.error(error.response.data.message || "Dicka shkoi gabim")
     }
-  }, [])
+  }, [complaintId, complaintTitle, router])
 
   return (
     <>

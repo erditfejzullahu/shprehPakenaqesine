@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { memo } from "react";
+import React, { memo, useCallback } from "react";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
@@ -51,7 +51,6 @@ const LatestPendingComplaintCard = ({
   audiosAttached
 }: LatestPendingComplaintCardProps) => {
   const router = useRouter();
-  const pathname = usePathname();
 
   const getCategoryLabel = (category: string) => {
     const words = category.split('_').map(word => {
@@ -69,7 +68,7 @@ const LatestPendingComplaintCard = ({
     });
   };
 
-  const approveComplaint = async () => {
+  const approveComplaint = useCallback(async () => {
     try {
       const response = await api.patch(`/api/admin/complaints/${id}`, {status: "ACCEPTED"})  
       if(response.data.success){
@@ -80,9 +79,9 @@ const LatestPendingComplaintCard = ({
       console.error(error);
       toast.error(error.response.data.message || "Dicka shkoi gabim")
     }
-  }
+  }, [id, router])
 
-  const deleteComplaint = async () => {
+  const deleteComplaint = useCallback(async () => {
     try {
       const response = await api.delete(`/api/admin/complaints/${id}`)
       if(response.data.success){
@@ -93,7 +92,7 @@ const LatestPendingComplaintCard = ({
       console.error(error);
       toast.error(error.response.data.message || "Dicka shkoi gabim")
     }
-  }
+  }, [id, title, router])
 
   const totalAttachments = attachments.length + videosAttached.length + audiosAttached.length;
 
