@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import ComplaintActions from "./complaintActions"
 
 export const columns: ColumnDef<ExtendedComplaint>[] = [
   {
@@ -109,23 +110,7 @@ export const columns: ColumnDef<ExtendedComplaint>[] = [
       const complaint = row.original
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger className="cursor-pointer" asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Nderveprime</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="flex flex-col gap-1">
-            <DropdownMenuLabel>Nderveprime</DropdownMenuLabel>
-            <DropdownMenuItem className="flex bg-gray-100 hover:bg-gray-300! cursor-pointer justify-center" asChild>
-              <Link href={`/ankesat/${complaint.id}`}>Shiko</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Button variant={"destructive"} className="w-full cursor-pointer">Fshije</Button>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ComplaintActions complaint={complaint}/>
       )
     },
   },
