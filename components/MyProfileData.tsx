@@ -140,9 +140,9 @@ const MyProfileData = ({session}: {session: Session}) => {
   const totalComplaintPages = Math.ceil(filteredComplaints.length / ITEMS_PER_PAGE);
   const totalContributionPages = Math.ceil(filteredContributions.length / ITEMS_PER_PAGE);
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
-  };
+  }, []);
 
     const renderPagination = useCallback((totalPages: number) => {
     if (totalPages <= 1) return null;
@@ -450,7 +450,7 @@ const MyProfileData = ({session}: {session: Session}) => {
             )}
           </div>
         )}
-        {activeTab && (
+        {activeTab === "settings" && (
           <UpdateProfileData session={session}/>
         )}
       </div>
