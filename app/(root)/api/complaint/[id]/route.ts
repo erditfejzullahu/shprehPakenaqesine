@@ -6,9 +6,9 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
     
     try {
         const session = await auth();
-        if(!session){            
-            return NextResponse.json({message: "Not authorized"}, {status: 500})
-        }
+        // if(!session){            
+        //     return NextResponse.json({message: "Not authorized"}, {status: 500})
+        // }
         let hasVoted = false;
         if(!session){
             hasVoted = false;

@@ -8,12 +8,12 @@ export default async function UsersPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Users</h1>
+        <h1 className="text-2xl font-bold">Perdoruesit</h1>
       </div>
       <DataTable 
         columns={columns} 
         data={users} 
-        searchKey="username" 
+        searchKey="perdorues" 
       />
     </div>
   )

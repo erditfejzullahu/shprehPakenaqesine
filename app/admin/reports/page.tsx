@@ -8,7 +8,7 @@ export default async function ReportsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Reports</h1>
+        <h1 className="text-2xl font-bold">Raportimet</h1>
       </div>
       <DataTable 
         columns={columns} 

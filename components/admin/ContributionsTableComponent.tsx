@@ -113,7 +113,7 @@ const ContributionCard = ({
       }
     }, [id, images, currentImageIndex, router])
 
-  const handleDownloadPhoto = async () => {
+  const handleDownloadPhoto = useCallback(async () => {
     try {
       const response = await api.get(`/api/admin/download?file=${images[currentImageIndex]}`, {
         responseType: "blob"
@@ -138,35 +138,33 @@ const ContributionCard = ({
     } finally {
       setShowImageMoreOptions(false);
     }
-  };
+  }, [images, currentImageIndex]);
 
-  const handleDeleteContribution = async () => {
+  const deleteContribution = useCallback(async () => {
     try {
-      const response = await api.delete(`/api/admin/contributions/${id}`);
-      if (response.data.success) {
-        toast.success('Kontributi u fshi me sukses');
-        router.refresh();
-      }
+        const response = await api.delete(`/api/admin/contributions/${id}`)
+        if(response.data.success){
+            toast.success(`Sapo fshite me sukses kontribuimin per ankesen ${complaint.title}`)
+            router.refresh()
+        }
     } catch (error: any) {
-      console.error(error);
-      toast.error(error.response?.data?.message || "Dicka shkoi gabim!");
+        console.error();
+        toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni perseri.")
     }
-  };
+  }, [id, complaint.title, router])
 
-  const handleValidateContribution = async () => {
+  const acceptContribution = useCallback(async () => {
     try {
-      const response = await api.patch(`/api/admin/contributions/${id}`, {
-        validated: true
-      });
-      if (response.data.success) {
-        toast.success('Kontributi u validua me sukses');
-        router.refresh();
-      }
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.response?.data?.message || "Dicka shkoi gabim!");
+        const response = await api.patch(`/api/admin/contributions/${id}`, "APPROVE")
+        if(response.data.success){
+            toast.success(`Sapo ndryshuat me sukses statusin e kontribuimit per ankesen ${complaint.title}`)
+            router.refresh()
+        }
+    } catch (error:any) {
+        console.error(error);
+        toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni perseri.")
     }
-  };
+  }, [id, complaint.title, router])
 
   const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
   const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -342,14 +340,14 @@ const ContributionCard = ({
         </span>
         <div className="flex gap-2">
           <button
-            onClick={handleDeleteContribution}
+            onClick={deleteContribution}
             className="px-3 py-1 text-sm text-red-600 border border-red-200 rounded hover:bg-red-50"
           >
             Fshij
           </button>
           {!contributionValidated && (
             <button
-              onClick={handleValidateContribution}
+              onClick={acceptContribution}
               className="px-3 py-1 text-sm text-white bg-green-600 rounded hover:bg-green-700"
             >
               Valido
