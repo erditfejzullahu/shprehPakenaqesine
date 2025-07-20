@@ -43,15 +43,17 @@ export const PATCH = async (req: NextRequest) => {
             email: DOMPurify.sanitize(validator.normalizeEmail(body.email.trim() || "") || ""),
             username: DOMPurify.sanitize(validator.escape(body.username)),
             password: body.password,
+            gender: body.gender,
             userProfileImage: body.userProfileImage,
             confirmPassword: body.confirmPassword,
+            changePassword: body.changePassword
         }
 
         let newPassword = user.password
 
         const validatedObj = updateProfileSchema.parse(sanitizedBody);
 
-        if(validatedObj.password && validatedObj.confirmPassword){
+        if(validatedObj.password && validatedObj.confirmPassword && validatedObj.changePassword){
             if(validatedObj.password !== validatedObj.confirmPassword){
                 return NextResponse.json({success: false, message: "Fjalekalimet nuk perputhen!"}, {status: 400})
             }
@@ -79,7 +81,7 @@ export const PATCH = async (req: NextRequest) => {
             }
         })
 
-        return NextResponse.json({success: true, message: "Te dhenat u perditesuan me sukses"}, {status: 200})
+        return NextResponse.json({success: true, message: "Te dhenat u perditesuan me sukses", profilePic: newProfilePicture}, {status: 200})
     } catch (error) {
         console.error(error)
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})

@@ -6,7 +6,7 @@ import AnonimityToggle from '@/components/AnonimityToggle';
 
 const page = async () => {
     const session = await auth();
-    console.log(session, ' servsession');
+    // console.log(session, ' servsession');
     
     if(!session){
         redirect('/kycuni?from=profili')

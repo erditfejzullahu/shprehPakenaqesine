@@ -77,7 +77,16 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
     callbacks: {
         async jwt({ token, user, trigger, session }) {
             if(trigger === "update"){
-                return { ...token, ...session };
+                console.log(session, ' session')
+                return { 
+                    ...token,
+                    ...(session.email && { email: session.email }),
+                    ...(session.gender && { gender: session.gender }),
+                    ...(session.fullName && { fullName: session.fullName }),
+                    ...(session.username && { username: session.username }),
+                    ...(session.userProfileImage && { userProfileImage: session.userProfileImage }),
+                    ...(typeof session.anonimity === "boolean" && { anonimity: session.anonimity })
+                  };
             }
             if (user) {
                 token.id = user.id;
