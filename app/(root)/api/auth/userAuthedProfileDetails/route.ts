@@ -40,10 +40,7 @@ export const GET = async () => {
                     },
                 }
             }
-        })
-
-        console.log(userDetails, ' userdetails');
-        
+        })        
 
         if(!userDetails){
             return NextResponse.json({success: false, message: "Nuk u gjet ndonje detaj!"}, {status: 404})

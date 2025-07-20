@@ -34,12 +34,15 @@ import {z} from "zod"
 import { Upload, X } from 'lucide-react';
 import { Button } from './ui/button';
 import Image from 'next/image';
+import { toast } from 'sonner';
+import { useSession } from 'next-auth/react'
 
 const ITEMS_PER_PAGE = 5;
 type ValidationSchema = z.infer<typeof updateProfileSchema>
 type ActiveTab = "myComplaints" | "contributions" | "settings"
 
 const MyProfileData = ({session}: {session: Session}) => {
+  const {update} = useSession();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<ActiveTab>('myComplaints');
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,7 +92,22 @@ const MyProfileData = ({session}: {session: Session}) => {
   
 
   const onSubmit = useCallback(async (data: ValidationSchema) => {
-    console.log(data);
+  try {
+      const response = await api.patch(`/api/auth/updateUserDetails`, data)
+      if(response.data.success){
+        toast.success('Sapo ndryshuat te dhenat tua me sukses!');
+        await update ({
+          email: data.email,
+          gender: data.gender,
+          fullName: data.fullName,
+          username: data.username,
+          userProfileImage: data.userProfileImage
+        })
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message || "Dicka shkoi gabim!")
+    }
   }, [reset])
 
   const contributions = data?.details?.contributions || [];

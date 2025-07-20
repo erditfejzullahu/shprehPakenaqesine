@@ -6,7 +6,7 @@ import { FaInfoCircle } from 'react-icons/fa'
 import api from '@/lib/api'
 import { toast } from 'sonner'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
-import { SessionProvider, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 
 const AnonimityToggle = ({session}: {session: Session | null}) => {    
     const {update} = useSession();
