@@ -19,10 +19,11 @@ export const GET = async () => {
                         upVotes: true,
                         resolvedStatus: true,
                         id: true,
+                        municipality: true,
                         company: {
                             select: {
                                 name: true,
-                                id: true
+                                id: true,
                             }
                         }
                     }
@@ -34,6 +35,7 @@ export const GET = async () => {
                                 id: true,
                                 title: true,
                                 upVotes: true,
+                                municipality: true
                             }
                         },
                         createdAt: true
@@ -53,6 +55,7 @@ export const GET = async () => {
                     companyId: complaint.company?.id,
                     companyName: complaint.company?.name,
                     title: complaint.title,
+                    municipality: complaint.municipality,
                     createdAt: complaint.createdAt,
                     upVotes: complaint.upVotes,
                     resolvedStatus: complaint.resolvedStatus,
@@ -62,7 +65,8 @@ export const GET = async () => {
                     complaintTitle: contribution.complaint.title,
                     complaintUpVotes: contribution.complaint.upVotes,
                     createdAt: contribution.createdAt,
-                    complaintId: contribution.complaint.id
+                    complaintId: contribution.complaint.id,
+                    municipality: contribution.complaint.municipality
                 }))
         }
 

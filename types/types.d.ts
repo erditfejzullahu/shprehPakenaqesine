@@ -21,8 +21,9 @@ export interface ComplaintsWithHasMore{
 }
 
 export interface MyProfileComplaints{
-    companyId: string;
-    companyName: string;
+    municipality: string;
+    companyId?: string;
+    companyName?: string;
     title: string;
     createdAt: Date;
     upVotes: number;
@@ -35,6 +36,7 @@ export interface MyProfileContributions{
     complaintUpVotes: number;
     createdAt: Date;
     complaintId: string;
+    municipality: string;
 }
 
 export interface MyProfileComplaintsContributions{

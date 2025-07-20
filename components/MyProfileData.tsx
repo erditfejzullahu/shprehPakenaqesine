@@ -60,6 +60,8 @@ const MyProfileData = ({session}: {session: Session}) => {
     }
   })
 
+  
+
   const {control, reset, watch, handleSubmit, formState: {errors, isSubmitting}, setValue} = useForm<ValidationSchema>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
@@ -127,7 +129,7 @@ const MyProfileData = ({session}: {session: Session}) => {
     if (searchTerm) {
       result = result.filter(complaint => 
         complaint.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        complaint.companyName.toLowerCase().includes(searchTerm.toLowerCase())
+        (complaint.companyName && complaint.companyName.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
     
@@ -367,13 +369,20 @@ const MyProfileData = ({session}: {session: Session}) => {
             ) : currentComplaints.length > 0 ? (
               <>
                 {currentComplaints.map((complaint) => (
-                  <div onClick={() => router.push(`/ankesat/${complaint.id}`)} key={`ankesat-${complaint.id}`} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150">
+                  <div onClick={() => router.push(`/ankesat/${complaint.id}`)} key={`ankesat-${complaint.id}`} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150 relative">
+                    <div className='bg-indigo-100 rounded-lg bottom-1 right-1 absolute text-indigo-600 text-xs font-semibold px-2 py-0.5'>
+                      {complaint.municipality}
+                    </div>
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">{complaint.title}</h3>
-                        <p className="text-gray-600 mt-1">
-                          Kunder <span onClick={() => router.push(`/kompanite/${complaint.companyId}`)} className="font-medium hover:text-indigo-600">{complaint.companyName}</span> • {new Date(complaint.createdAt).toLocaleDateString('sq-AL', {day: "2-digit", month: "short" ,year: "numeric"})}
-                        </p>
+                        {complaint.companyId && complaint.companyName ? (
+                          <p className="text-gray-600 mt-1">
+                            Kunder <span onClick={() => router.push(`/kompanite/${complaint.companyId}`)} className="font-medium hover:text-indigo-600">{complaint.companyName}</span> • {new Date(complaint.createdAt).toLocaleDateString('sq-AL', {day: "2-digit", month: "short" ,year: "numeric"})}
+                          </p>
+                        ) : (
+                          <p className="text-gray-600 mt-1">Ankese komunale ne {complaint.municipality}</p>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -477,6 +486,7 @@ const MyProfileData = ({session}: {session: Session}) => {
                         <p className="text-gray-600 mt-1">
                           {new Date(contribution.createdAt).toLocaleDateString('sq-AL', {day: "2-digit", month: "short", year: "numeric"})}
                         </p>
+                        <p className='text-indigo-600 text-sm font-medium'>{contribution.municipality}</p>
                       </div>
                       <span className="flex items-center text-gray-500">
                         <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
