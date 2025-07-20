@@ -18,7 +18,7 @@ export default async function CompaniesPage() {
       <DataTable 
         columns={columns} 
         data={companies} 
-        searchKey="name" 
+        searchKey="kompanite" 
       />
     </div>
   )

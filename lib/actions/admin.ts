@@ -191,7 +191,7 @@ export async function getCompanies() {
 // Add to your existing admin actions
 
 export async function getComplaints() {
-    return await prisma.complaint.findMany({
+    const complaints =  prisma.complaint.findMany({
       include: {
         company: true,
         user: true,
@@ -203,6 +203,7 @@ export async function getComplaints() {
         createdAt: 'desc'
       }
     })
+    return complaints
   }
   
   export async function getUsers() {
@@ -240,7 +241,11 @@ export async function getComplaints() {
   export async function getContributions() {
     return await prisma.contributions.findMany({
       include: {
-        complaint: true,
+        complaint: {
+          include: {
+            company: true
+          }
+        },
         user: true
       },
       orderBy: {

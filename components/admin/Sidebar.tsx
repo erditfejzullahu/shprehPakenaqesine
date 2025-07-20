@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import { HomeIcon, BuildingIcon, UsersIcon, AlertCircleIcon, FileTextIcon, MailIcon, SettingsIcon } from 'lucide-react'
+import { FaLocationArrow } from 'react-icons/fa'
 
 export function Sidebar() {
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-full">
-      <div className="p-4 border-b border-gray-200">
-        <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
+      <div className="p-4 border-b border-gray-200 relative">
+        <Link className='absolute right-4 top-3' href={"/"} target='_blank'><FaLocationArrow className='text-indigo-600 ' size={16}/></Link>
+        <h1 className="text-xl font-black text-gray-900">ShfaqPakenaqesine</h1>
       </div>
       <nav className="p-4">
         <ul className="space-y-2">

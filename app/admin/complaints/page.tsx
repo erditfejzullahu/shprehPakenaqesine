@@ -4,7 +4,12 @@ import { getComplaints } from '@/lib/actions/admin'
 
 export default async function ComplaintsPage() {
   const complaints = await getComplaints()
-
+  
+  const transformComplaints = complaints.map((complaint) => ({
+    ...complaint,
+    reportsCount: complaint._count.reports,
+    contributionsCount: complaint._count.contributions
+  }))
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -12,8 +17,8 @@ export default async function ComplaintsPage() {
       </div>
       <DataTable 
         columns={columns} 
-        data={complaints} 
-        searchKey="title" 
+        data={transformComplaints} 
+        searchKey="ankesa" 
       />
     </div>
   )

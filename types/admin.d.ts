@@ -8,7 +8,7 @@ export type Company = Companies & {
 }
 
 export type ExtendedComplaint = Complaint & {
-  company: Companies
+  company?: Companies | null
   user: Users
   reportsCount: number
   contributionsCount: number
@@ -27,8 +27,12 @@ export type ExtendedReport = Reports & {
 
 export type ExtendedSubscriber = Subscribers
 
+export type ExtendedContributionComplaint = Complaint & {
+  company: Companies | null
+}
+
 export type ExtendedContribution = Contributions & {
-  complaint: Complaint
+  complaint: ExtendedContributionComplaint
   user: Users
 }
 

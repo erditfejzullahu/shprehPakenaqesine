@@ -17,27 +17,34 @@ import { Badge } from "@/components/ui/badge"
 export const columns: ColumnDef<ExtendedComplaint>[] = [
   {
     accessorKey: "title",
-    header: "Title",
+    header: "Titulli",
     enableGlobalFilter: true
   },
   {
     accessorKey: "company.name",
-    header: "Company",
+    header: "Kompania",
     cell: ({ row }) => {
       const company = row.original.company
       return (
-        <Link href={`/admin/companies/${company.id}`} className="text-indigo-600 hover:underline">
-          {company.name}
-        </Link>
+        company ? (
+          <Link href={`/admin/companies/${company.id}`} className="text-indigo-600 hover:underline">
+            {company.name}
+          </Link>
+        ) : (
+          <div className="text-indigo-600">
+            Ankese komunale
+          </div>
+        ) 
       )
     }
   },
   {
     accessorKey: "user.username",
-    header: "User",
+    header: "Perdoruesi",
     cell: ({ row }) => {
       const user = row.original.user
       return (
+        // TODO: INTERACTIONS
         <Link href={`/admin/users/${user.id}`} className="text-indigo-600 hover:underline">
           {user.username}
         </Link>
@@ -46,7 +53,7 @@ export const columns: ColumnDef<ExtendedComplaint>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: "Statusi",
     cell: ({ row }) => {
       const status = row.getValue("status")
       
@@ -57,14 +64,14 @@ export const columns: ColumnDef<ExtendedComplaint>[] = [
             status === 'PENDING' ? 'outline' : 'default'
           }
         >
-          {status === 'PENDING' ? 'Pending' : "Accepted" }
+          {status === 'PENDING' ? 'Ne pritje' : "E pranuar" }
         </Badge>
       )
     }
   },
   {
     accessorKey: "resolvedStatus",
-    header: "Resolved Status",
+    header: "Statusi i zgjidhur",
     cell: ({ row }) => {
       const resolvedStatus = row.getValue("resolvedStatus")
       return (
@@ -73,14 +80,14 @@ export const columns: ColumnDef<ExtendedComplaint>[] = [
             resolvedStatus === 'PENDING' ? 'outline' : 'default'
           }
         >
-          {resolvedStatus === 'PENDING' ? 'Pending' : "Resolved" }
+          {resolvedStatus === 'PENDING' ? 'Ne pritje' : "I Zgjidhur" }
         </Badge>
       )
     }
   },
   {
     accessorKey: "category",
-    header: "Category",
+    header: "Kategoria",
     cell: ({ row }) => {
       const category = row.getValue("category") as string
       const formatted = category.toLowerCase().replace(/_/g, ' ')
@@ -89,7 +96,7 @@ export const columns: ColumnDef<ExtendedComplaint>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Created",
+    header: "Krijuar me",
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"))
       return date.toLocaleDateString()
@@ -97,24 +104,25 @@ export const columns: ColumnDef<ExtendedComplaint>[] = [
   },
   {
     id: "actions",
+    size: 60,
     cell: ({ row }) => {
       const complaint = row.original
 
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger className="cursor-pointer" asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">Nderveprime</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link href={`/admin/complaints/${complaint.id}`}>View</Link>
+          <DropdownMenuContent align="end" className="flex flex-col gap-1">
+            <DropdownMenuLabel>Nderveprime</DropdownMenuLabel>
+            <DropdownMenuItem className="flex bg-gray-100 hover:bg-gray-300! cursor-pointer justify-center" asChild>
+              <Link href={`/ankesat/${complaint.id}`}>Shiko</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/ankesat/${complaint.id}`}>View Public</Link>
+              <Button variant={"destructive"} className="w-full cursor-pointer">Fshije</Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

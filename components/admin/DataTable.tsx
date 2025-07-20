@@ -77,7 +77,7 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex items-center py-4">
         <Input
-          placeholder={`Search ${searchKey}...`}
+          placeholder={`Kerko ${searchKey}...`}
           value={globalFilter ?? ''}
           onChange={(event) => setGlobalFilter(String(event.target.value))}
           className="max-w-sm"

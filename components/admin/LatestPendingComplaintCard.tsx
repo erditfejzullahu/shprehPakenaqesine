@@ -169,15 +169,15 @@ const LatestPendingComplaintCard = ({
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuLabel>Nderveprimet</DropdownMenuLabel>
         <DropdownMenuItem asChild>
-          <Button onClick={approveComplaint} className="cursor-pointer w-full mb-1" variant={"default"}>Approve</Button>
+          <Button onClick={approveComplaint} className="cursor-pointer w-full mb-1" variant={"default"}>Mirato</Button>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-        <Button onClick={deleteComplaint} variant={"destructive"} className="cursor-pointer w-full mb-1">Delete</Button>
+        <Button onClick={deleteComplaint} variant={"destructive"} className="cursor-pointer w-full mb-1">Fshije</Button>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-        <Link href={`/ankesat/${id}`} target="_blank" className="cursor-pointer w-full">View complaint</Link>
+        <Link href={`/ankesat/${id}`} target="_blank" className="cursor-pointer w-full">Shiko ankesen</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
