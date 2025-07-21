@@ -13,19 +13,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import ReportActions from "./reportActions"
 
 export const columns: ColumnDef<ExtendedReport>[] = [
   {
     accessorKey: "title",
     header: "Title",
+    size:100,
+    enableGlobalFilter: true,
   },
   {
     accessorKey: "complaint.title",
-    header: "Complaint",
+    header: "Ankesa/Raportimi",
+    enableGlobalFilter: true,
+    size:100,
     cell: ({ row }) => {
       const complaint = row.original.complaint
       return (
-        <Link href={`/admin/complaints/${complaint.id}`} className="text-indigo-600 hover:underline">
+        <Link href={`/ankesat/${complaint.id}`} target="_blank" className="text-indigo-600 hover:underline">
           {complaint.title}
         </Link>
       )
@@ -33,7 +38,8 @@ export const columns: ColumnDef<ExtendedReport>[] = [
   },
   {
     accessorKey: "category",
-    header: "Category",
+    size:100,
+    header: "Kategoria",
     cell: ({ row }) => {
       const category = row.getValue("category") as string
       const formatted = category.toLowerCase().replace(/_/g, ' ')
@@ -41,36 +47,45 @@ export const columns: ColumnDef<ExtendedReport>[] = [
     }
   },
   {
+    accessorKey: "complaint.company.name",
+    header: "Kompania",
+    cell: ({row}) => {
+      return <div>
+        {row.original.complaint.company ? (
+          <Link href={`/kompanite/${row.original.complaint.company?.id}`}>{row.original.complaint.company?.name}</Link>
+        ) : (
+          <div>Ankese komunale</div>
+        )}
+      </div>
+    }
+  },
+  {
+    accessorKey: "complaint.municipality",
+    header: "Komuna",
+    size:100
+  },
+  {
+    accessorKey: "complaint.upVotes",
+    header: "Votat",
+    size: 40,
+  },
+  {
     accessorKey: "createdAt",
-    header: "Created",
+    header: "Krjuar me",
+    size:100,
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"))
-      return date.toLocaleDateString()
+      return date.toLocaleDateString('sq-AL', {day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"})
     },
   },
   {
     id: "actions",
+    size:40,
     cell: ({ row }) => {
       const report = row.original
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link href={`/admin/reports/${report.id}`}>View Details</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/ankesat/${report.complaint.id}`}>View Complaint</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ReportActions report={report}/>
       )
     },
   },

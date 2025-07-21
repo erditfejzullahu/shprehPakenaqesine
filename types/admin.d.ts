@@ -22,7 +22,12 @@ export type ExtendedUser = Users & {
 }
 
 export type ExtendedReport = Reports & {
-  complaint: ExtendedComplaint
+  complaint: Complaint & {
+    company?: {
+      id: string;
+      name: string;
+    } | null
+  }
 }
 
 export type ExtendedSubscriber = Subscribers

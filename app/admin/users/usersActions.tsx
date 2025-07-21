@@ -120,7 +120,7 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
                 <Button variant={"default"} className="cursor-pointer w-full" onClick={() => setOpen(true)}>Ndrysho</Button>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="flex justify-center">
-                <Link className="cursor-pointer bg-gray-100 hover:bg-gray-300" target="_blank" href={`/ankesat/${users.id}`}>Vizito profilin</Link>
+                <Link className="cursor-pointer bg-gray-100 hover:bg-gray-300" target="_blank" href={`/perdoruesi/${users.id}`}>Vizito profilin</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
                 <Button onClick={handleDeleteUser} className="cursor-pointer w-full" variant={"destructive"}>Fshije</Button>

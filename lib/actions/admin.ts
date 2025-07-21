@@ -222,7 +222,16 @@ export async function getComplaints() {
   export async function getReports() {
     return await prisma.reports.findMany({
       include: {
-        complaint: true
+        complaint: {
+          include: {
+            company: {
+              select: {
+                name: true,
+                id: true
+              }
+            }
+          }
+        },
       },
       orderBy: {
         createdAt: 'desc'
