@@ -27,7 +27,7 @@ const SettingsComponent = ({session}: {session: Session}) => {
     setValue,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SettingsSchemaType>({
     resolver: zodResolver(adminSchema),
     defaultValues: {
@@ -206,7 +206,7 @@ const SettingsComponent = ({session}: {session: Session}) => {
           )}
         </div>
 
-        <Button type="submit">Ruaj te dhenat</Button>
+        <Button disabled={isSubmitting} type="submit">{isSubmitting ? "Duke ruajtur te dhenat..." : "Ruaj te dhenat"}</Button>
       </form>
     </main>
   );
