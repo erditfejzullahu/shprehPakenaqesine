@@ -8,8 +8,8 @@ export const updateProfileSchema = z.object({
         changePassword: z.boolean(),
         password: z.string().optional().nullable(), // Base field is optional
         userProfileImage: z.string()
-        .regex(/^data:image\/(png|jpeg|jpg|gif);base64,/, {
-            message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG ose GIF)"
+        .regex(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/, {
+            message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG, WEBP ose GIF)"
         })
         .optional().nullable(),
         confirmPassword: z.string().optional().nullable(),

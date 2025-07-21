@@ -99,7 +99,6 @@ export const columns: ColumnDef<ExtendedUser>[] = [
     id: "actions",
     cell: ({ row }) => {
       const user = row.original
-
       return (
         <UsersActions users={user}/>
       )

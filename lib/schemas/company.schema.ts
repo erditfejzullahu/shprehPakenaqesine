@@ -5,10 +5,8 @@ const createCompanySchema = z.object({
     message: "Emri i kompanisë duhet të përmbajë të paktën 3 karaktere"
   }),
   description: z.string().optional(),
-  logoBase64: z.string().refine((val) => {
-    return /^data:image\/(png|jpeg|jpg|gif|svg\+xml);base64,[a-zA-Z0-9+/]+={0,2}$/.test(val);
-  }, {
-    message: "Logo duhet të jetë në formatin e vlefshëm Base64 për imazhe"
+  logoBase64: z.string().regex(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/, {
+    message: "Formati i imazhit duhet të jetë PNG, JPEG, JPG, WEBP ose GIF në Base64"
   }),
   address: z.string().min(3, {
     message: "Adresa duhet të përmbajë të paktën 3 karaktere"
@@ -28,11 +26,9 @@ const createCompanySchema = z.object({
     message: "Numri i telefonit duhet të jetë në formatin kosovar (+383XXXXXXXX ose 0XXXXXXXX)"
   }),
   imagesBase64: z.array(
-    z.string().refine((val) => {
-      return /^data:image\/(png|jpeg|jpg|gif|svg\+xml);base64,[a-zA-Z0-9+/]+={0,2}$/.test(val);
-    }, {
-      message: "Imazhet duhet të jenë në formatin e vlefshëm Base64"
-    })
+    z.string().regex(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/, {
+      message: "Formati i imazhit duhet të jetë PNG, JPEG, JPG, WEBP ose GIF në Base64"
+  })
   ).optional(),
   industry: z.string().min(3, {
     message: "Industria duhet të përmbajë të paktën 3 karaktere"

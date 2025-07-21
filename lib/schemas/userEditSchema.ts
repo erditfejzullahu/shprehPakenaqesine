@@ -1,0 +1,16 @@
+import { Gender } from "@/app/generated/prisma"
+
+import {z} from "zod"
+export const userEditSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.email("Invalid email"),
+  fullName: z.string().min(2, "Name must be at least 2 characters"),
+  gender: z.enum(Gender),
+  anonimity: z.boolean(),
+  userProfileImage: z.string()
+    .regex(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/, {
+        message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG, WEBP ose GIF)"
+    }),
+  acceptedUser: z.boolean(),
+  email_verified: z.boolean()
+})
