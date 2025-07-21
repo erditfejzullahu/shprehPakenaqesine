@@ -71,7 +71,7 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
   const handleDeleteReport = useCallback(async () => {
     setIsDeletting(true)
     try {
-      const response = await api.delete(report.id)
+      const response = await api.delete(`/api/admin/reports/getReportsByComplaintId/${report.id}`)
       if(response.data.success){
         toast.success(`Sapo fshite raportin me titull ${report.title} ne lidhje me ankesen ${report.complaint.title}`)
         router.refresh();
@@ -380,7 +380,7 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
           </form>
         </DialogContent>
       </Dialog>
-      
+
       <Lightbox
         open={openLightBox}
         close={() => setOpenLightBox(false)}
