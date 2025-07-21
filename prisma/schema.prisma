@@ -59,6 +59,11 @@ enum Municipality {
   ZVECAN                // Zveçan
 }
 
+enum UserRole {
+  ADMIN
+  USER
+}
+
 
 model Users {
   id               String             @id @default(uuid())
@@ -70,6 +75,7 @@ model Users {
   email            String             @unique
   email_verified   Boolean            @default(false)
   gender           Gender
+  role UserRole @default(USER)
   username         String             @unique
   fullName         String             @default("Anonimi")
   anonimity        Boolean            @default(false)
