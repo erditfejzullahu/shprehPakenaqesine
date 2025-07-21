@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
+import UsersActions from "./usersActions"
 
 export const columns: ColumnDef<ExtendedUser>[] = [
   {
@@ -43,19 +44,22 @@ export const columns: ColumnDef<ExtendedUser>[] = [
   },
   {
     accessorKey: "fullName",
-    header: "Name",
+    header: "Emri",
   },
   {
     accessorKey: "_count.complaints",
-    header: "Complaints",
+    header: "Ankesat",
+    size:40
   },
   {
     accessorKey: "_count.contributions",
-    header: "Contributions"
+    header: "Kontribimet",
+    size: 40
   },
   {
     accessorKey: "reputation",
-    header: "Reputation",
+    size:40,
+    header: "Reputacioni",
     cell: ({ row }) => {
       const reputation = row.getValue("reputation") as number
       return (
@@ -67,35 +71,37 @@ export const columns: ColumnDef<ExtendedUser>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Joined",
+    header: "Anetar qe",
+    size:40,
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"))
       return date.toLocaleDateString()
     },
   },
   {
+    accessorKey: "acceptedUser",
+    header: "I pranuar",
+    size:40,
+    cell: info => (
+      <Badge variant={!info.getValue() ? "destructive" : "default"}>{info.getValue() ? "Pranuar" : "Ne pritje"}</Badge>
+    )
+  },
+  {
+    accessorKey: "email_verified",
+    header: "Verifikuar",
+    size: 40,
+    cell: info => (
+      <Badge variant={info.getValue() ? "default" : "destructive"}>{info.getValue() ? "Verifikuar" : "I Paverifikuar"}</Badge>
+    )
+  },
+  {
+    size:60,
     id: "actions",
     cell: ({ row }) => {
       const user = row.original
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link href={`/admin/users/${user.id}`}>View</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/profili/${user.id}`}>View Public</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <UsersActions users={user}/>
       )
     },
   },
