@@ -1,7 +1,7 @@
 import "next-auth";
 import "next-auth/jwt";
 import { AdapterUser } from "@auth/core/adapters";
-import { Gender } from "@/app/generated/prisma";
+import { Gender, UserRole } from "@/app/generated/prisma";
 
 declare module "next-auth" {
   interface User {
@@ -12,6 +12,7 @@ declare module "next-auth" {
     username: string;
     createdAt: Date;
     complaints: number;
+    role: UserRole;
     contributions: number;
     reputation: number;
     userProfileImage: string;
@@ -31,6 +32,7 @@ declare module "@auth/core/adapters" {
     gender: Gender;
     username: string;
     createdAt: Date;
+    role: UserRole;
     complaints: number;
     contributions: number;
     reputation: number;
@@ -48,6 +50,7 @@ declare module "next-auth/jwt" {
     username: string;
     createdAt: Date;
     complaints: number;
+    role: UserRole;
     contributions: number;
     reputation: number;
     userProfileImage: string;

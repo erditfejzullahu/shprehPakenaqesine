@@ -30,6 +30,7 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
                 fullName: true,
                 email: true,
                 password: true,
+                role: true,
                 createdAt: true,
                 gender: true,
                 _count: {
@@ -59,6 +60,7 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
             username: user.username,
             fullName: user.fullName,
             gender: user.gender,
+            role: user.role,
             email: user.email,
             createdAt: user.createdAt,
             complaints: user._count.complaints,
@@ -94,6 +96,7 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
                 token.gender = user.gender;
                 token.fullName = user.fullName;
                 token.username = user.username;
+                token.role = user.role;
                 token.createdAt = user.createdAt;
                 token.complaints = user.complaints;
                 token.contributions = user.contributions;
@@ -110,6 +113,7 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
                 fullName: token.fullName,
                 email: token.email,
                 gender: token.gender,
+                role: token.role,
                 username: token.username,
                 createdAt: token.createdAt,
                 complaints: token.complaints,
