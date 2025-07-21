@@ -167,7 +167,7 @@ const ContributionActions = ({ contribution }: {contribution: ExtendedContributi
                 <Link href={`mailto:${contribution.user.email}`}>Kontakto kontribuesin</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-                <Button className="w-full cursor-pointer" variant={"destructive"}>Fshije</Button>
+                <Button className="w-full cursor-pointer" variant={"destructive"} onClick={deleteContribution}>Fshije</Button>
             </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
