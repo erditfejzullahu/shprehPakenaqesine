@@ -4,7 +4,7 @@ import api from '@/lib/api'
 import { ExtendedUser } from '@/types/admin'
 import { MoreHorizontal, ImagePlus, X } from 'lucide-react'
 import Link from 'next/link'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import {
@@ -23,17 +23,10 @@ import { Gender } from '@/app/generated/prisma'
 import Image from 'next/image'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
+import { userEditSchema } from '@/lib/schemas/userEditSchema'
+import { imageUrlToBase64 } from '@/lib/utils'
 
-const userEditSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  email: z.email("Invalid email"),
-  fullName: z.string().min(2, "Name must be at least 2 characters"),
-  gender: z.enum(Gender),
-  anonimity: z.boolean(),
-  userProfileImage: z.url("Invalid image URL"),
-  acceptedUser: z.boolean(),
-  email_verified: z.boolean()
-})
+
 
 type UserEditFormValues = z.infer<typeof userEditSchema>
 
@@ -42,7 +35,7 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
     const [open, setOpen] = useState(false)
     const [imagePreview, setImagePreview] = useState(users.userProfileImage)
 
-    const { control, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<UserEditFormValues>({
+    const { control, handleSubmit, setValue, formState: { errors, isSubmitting }, reset } = useForm<UserEditFormValues>({
       resolver: zodResolver(userEditSchema),
       defaultValues: {
         username: users.username,
@@ -55,6 +48,15 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
         email_verified: users.email_verified
       }
     })
+
+    useEffect(() => {
+      if(users.userProfileImage){        
+        imageUrlToBase64(users.userProfileImage)
+            .then(base64 => setValue("userProfileImage", base64))
+            .catch(console.error)
+      }
+    }, [users.userProfileImage])
+    
 
     const handleDeleteUser = useCallback(async () => {
         try {
