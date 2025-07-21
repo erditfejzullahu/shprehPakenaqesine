@@ -26,15 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Checkbox } from './ui/checkbox';
-import {z} from "zod"
-import { Upload, X } from 'lucide-react';
-import { Button } from './ui/button';
-import Image from 'next/image';
-import { toast } from 'sonner';
-import { useSession } from 'next-auth/react'
 import UpdateProfileData from './UpdateProfileData';
 
 

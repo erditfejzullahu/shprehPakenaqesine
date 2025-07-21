@@ -322,8 +322,8 @@ const CreateComplaintForm = () => {
               )}
             </div>
             <div className="flex items-center gap-1.5">
-              <Checkbox id="changePassword" onCheckedChange={(checked) => setComunalComplaint(checked as boolean)} checked={comunalComplaint}/>
-              <Label htmlFor="changePassword">Ankese Komunale?</Label>
+              <Checkbox id="changecomplaintType" onCheckedChange={(checked) => setComunalComplaint(checked as boolean)} checked={comunalComplaint}/>
+              <Label htmlFor="changecomplaintType">Ankese Komunale?</Label>
             </div>
           </div>
           <Controller 
