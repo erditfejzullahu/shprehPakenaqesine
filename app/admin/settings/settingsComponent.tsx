@@ -15,6 +15,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { FaImage } from "react-icons/fa";
 import { imageUrlToBase64 } from "@/lib/utils";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Gender } from "@/app/generated/prisma";
 
 type SettingsSchemaType = z.infer<typeof adminSchema>
 
@@ -116,7 +118,20 @@ const SettingsComponent = ({session}: {session: Session}) => {
 
         <div>
           <Label className="mb-1" htmlFor="gender">Gjinia juaj</Label>
-          <Input id="gender" {...register("gender")} />
+          <Select value={watch("gender")} onValueChange={(val: Gender) => setValue("gender", val)}>
+            <SelectTrigger id="gender" className="w-full cursor-pointer">
+              <SelectValue placeholder="Zgjidh nje gjini" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Gjinite</SelectLabel>
+                <SelectItem value="MASHKULL">Mashkull</SelectItem>
+                <SelectItem value="FEMER">Femer</SelectItem>
+                <SelectItem value="TJETER">Tjeter</SelectItem>
+                <SelectItem value="PA_GJINI">Pa gjini</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
           {errors.gender && (
             <p className="text-red-600 text-sm mt-1">{errors.gender.message}</p>
           )}
