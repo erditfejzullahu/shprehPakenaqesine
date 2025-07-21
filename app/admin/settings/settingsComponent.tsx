@@ -65,8 +65,14 @@ const SettingsComponent = ({session}: {session: Session}) => {
         confirmPassword: data.confirmPassword ? data.confirmPassword : undefined
       });
       if(response.data.success){
-        toast.success("Profile updated");
-        await update();
+        toast.success("Sapo rifreskuat me sukses llogarine tuaj!");
+        await update({
+          username: data.username,
+          email: data.email,
+          fullName: data.fullName,
+          gender: data.gender,
+          userProfileImage: response.data.url || session.user.userProfileImage
+        });
       }
     } catch (err: any) {
       console.error(err);

@@ -75,7 +75,7 @@ export const PATCH = async (req: NextRequest) => {
             }
         })
 
-        return NextResponse.json({success: true, message: "Sapo rifreskuat me sukses llogarine tuaj."}, {status: 200})
+        return NextResponse.json({success: true, message: "Sapo rifreskuat me sukses llogarine tuaj.", url: newImage}, {status: 200})
 
     } catch (error) {
         console.error(error);
