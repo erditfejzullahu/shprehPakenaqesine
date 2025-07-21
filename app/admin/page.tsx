@@ -6,8 +6,10 @@ import Link from 'next/link'
 import { FaArrowsUpDown } from 'react-icons/fa6'
 import LatestComplaintCard from '@/components/admin/LatestPendingComplaintCard'
 import ContributionRequestCard from '@/components/admin/ContributionRequestCard'
+import { isAdmin } from '@/lib/utils/isAdmin'
 
 export default async function AdminDashboard() {
+  await isAdmin('/')
   const stats = await getDashboardStats()
 
   return (

@@ -1,12 +1,14 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { isAdminApi } from "@/lib/utils/isAdmin";
 import { existsSync, unlinkSync } from "fs";
 import { NextRequest, NextResponse } from "next/server";
 import { join } from "path";
 
 export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params;
-    const session = await auth();
+    const adminCheck = await isAdminApi();
+    if(adminCheck instanceof NextResponse) return adminCheck;
     try {
         const {searchParams} = req.nextUrl
         const fileName = searchParams.get('fileName')

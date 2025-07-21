@@ -1,13 +1,14 @@
 import { Sidebar } from '@/components/admin/Sidebar'
-import { auth } from '@/auth'
+import { isAdmin } from '@/lib/utils/isAdmin'
+import { redirect } from 'next/navigation'
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const session = await auth()
-
+  await isAdmin('/')
+    
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />

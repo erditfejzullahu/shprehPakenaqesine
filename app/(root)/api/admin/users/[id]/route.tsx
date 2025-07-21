@@ -7,6 +7,7 @@ import DOMPurify from "isomorphic-dompurify";
 import validator from "validator"
 import { UploadResult } from "@/types/types";
 import { fileUploadService } from "@/services/fileUploadService";
+import { isAdminApi } from "@/lib/utils/isAdmin";
 
 type UserType = z.infer<typeof userEditSchema>
 
@@ -26,7 +27,8 @@ const sanitizeName = (name: string): string => {
 
 export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params;
-    const session = await auth();
+    const adminCheck = await isAdminApi();
+    if(adminCheck instanceof NextResponse) return adminCheck;
     const body: UserType = await req.json();
     try {
         const user = await prisma.users.findUnique({where: {id}})

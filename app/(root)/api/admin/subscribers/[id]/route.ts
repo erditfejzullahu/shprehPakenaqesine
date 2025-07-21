@@ -1,9 +1,12 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { isAdminApi } from "@/lib/utils/isAdmin";
 import { NextRequest, NextResponse } from "next/server";
 
 export const DELETE = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
-    const session = await auth();
+    const adminCheck = await isAdminApi();
+    if(adminCheck instanceof NextResponse) return adminCheck;
+    
     const {id} = await params;
     try {
         const subscriber = await prisma.subscribers.findUnique({where: {id}})

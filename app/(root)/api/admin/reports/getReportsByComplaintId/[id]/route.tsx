@@ -1,9 +1,11 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { isAdminApi } from "@/lib/utils/isAdmin";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
-    const session = await auth()
+    const checkAdmin = await isAdminApi()
+    if(checkAdmin instanceof NextResponse) return checkAdmin;
     const {id} = await params;
     try {
         const reports = await prisma.reports.findMany({

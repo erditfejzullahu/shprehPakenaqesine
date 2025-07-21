@@ -7,6 +7,7 @@ import DOMPurify from "isomorphic-dompurify";
 import validator from "validator"
 import { UploadResult } from "@/types/types";
 import { fileUploadService } from "@/services/fileUploadService";
+import { isAdminApi } from "@/lib/utils/isAdmin";
 
 type ValidatedBodyType = z.infer<typeof createCompanySchema>
 
@@ -40,7 +41,10 @@ const sanitizeUrl = (url: string): string | null => {
 
 export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params;
-    const session = await auth();
+    const adminApi = await isAdminApi();
+
+    if(adminApi instanceof NextResponse) return adminApi;
+
     const body: ValidatedBodyType = await req.json();
     try {
         const company = await prisma.companies.findUnique({where: {id}})

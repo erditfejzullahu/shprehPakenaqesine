@@ -1,10 +1,12 @@
 import { auth } from "@/auth";
+import { isAdminApi } from "@/lib/utils/isAdmin";
 import { createReadStream, statSync } from "fs";
 import { NextRequest, NextResponse } from "next/server";
 import { join } from "path";
 
 export async function GET(req: NextRequest){
-    const session = await auth();
+    const adminCheck = await isAdminApi();
+    if(adminCheck instanceof NextResponse) return adminCheck;
     //admin check
     const {searchParams} = new URL(req.url)
     const fileName = searchParams.get('file');

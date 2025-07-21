@@ -8,6 +8,7 @@ import prisma from "@/lib/prisma";
 import * as bcrypt from "bcrypt"
 import { UploadRequest, UploadResult } from "@/types/types";
 import { fileUploadService } from "@/services/fileUploadService";
+import { isAdminApi } from "@/lib/utils/isAdmin";
 
 type ValidationSchema = z.infer<typeof adminSchema>
 
@@ -26,8 +27,10 @@ const sanitizeName = (name: string): string => {
 };
 
 export const PATCH = async (req: NextRequest) => {
-    const session = await auth();
-    if(!session) return NextResponse.json({success: false, message: "Nuk jeni te autorizuar per kete veprim"}, {status: 401})
+    const adminCheck = await isAdminApi()
+    if(adminCheck instanceof NextResponse) return adminCheck;
+    const session = adminCheck;
+    
     const body: ValidationSchema = await req.json();
     try {
         const user = await prisma.users.findUnique({where: {id: session.user.id}})

@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { isAdminApi } from "@/lib/utils/isAdmin";
 import { NextRequest, NextResponse } from "next/server";
 
 export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
@@ -7,8 +8,8 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
         const body = await req.json();
         const {id} = await params;
 
-        const session = await auth();
-        // admin check
+        const adminCheck = await isAdminApi();
+        if(adminCheck instanceof NextResponse) return adminCheck;
 
         const complaint = await prisma.complaint.update({
             where: {id},
