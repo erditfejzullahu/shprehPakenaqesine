@@ -67,7 +67,7 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
                 email_verified: validatedSchema.email_verified
             }
         })
-        return NextResponse.json({success: false, message: "Sapo perditesuat me sukses perdoruesin"}, {status: 200})
+        return NextResponse.json({success: true, message: "Sapo perditesuat me sukses perdoruesin"}, {status: 200})
     } catch (error) {
         console.error(error);
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."},{status: 500})
@@ -81,7 +81,7 @@ export const DELETE = async (req: NextRequest, {params}: {params: Promise<{id: s
         const user = await prisma.users.findUnique({where: {id}})
         if(!user) return NextResponse.json({success: false, message: "Nuk u gjet ndonje perdorues me kete numer identifikues"}, {status: 404});
         await prisma.users.delete({where: {id}})
-        return NextResponse.json({success: false, message:"Sapo fshite me sukses perdoruesin"}, {status: 200})
+        return NextResponse.json({success: true, message: "Sapo fshite me sukses perdoruesin"}, {status: 200})
     } catch (error) {
         console.error(error);
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."},{status: 500})

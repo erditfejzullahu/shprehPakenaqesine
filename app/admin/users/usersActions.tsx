@@ -35,7 +35,7 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
     const [open, setOpen] = useState(false)
     const [imagePreview, setImagePreview] = useState(users.userProfileImage)
 
-    const { control, handleSubmit, setValue, formState: { errors, isSubmitting }, reset } = useForm<UserEditFormValues>({
+    const { control, handleSubmit, setValue, getValues, formState: { errors, isSubmitting }, reset } = useForm<UserEditFormValues>({
       resolver: zodResolver(userEditSchema),
       defaultValues: {
         username: users.username,
@@ -49,18 +49,21 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
       }
     })
 
-    useEffect(() => {
-      if(users.userProfileImage){        
-        imageUrlToBase64(users.userProfileImage)
-            .then(base64 => setValue("userProfileImage", base64))
-            .catch(console.error)
-      }
-    }, [users.userProfileImage])
+    if(open && users){
+        if(users.userProfileImage){        
+          imageUrlToBase64(users.userProfileImage)
+              .then(base64 => {setValue("userProfileImage", base64); console.log(base64, ' fotooo??')})
+              .catch(console.error);
+          
+          console.log(getValues("userProfileImage"), ' foto?')
+        }
+    }
     
 
     const handleDeleteUser = useCallback(async () => {
         try {
             const response = await api.delete(`/api/admin/users/${users.id}`)
+            
             if(response.data.success){
                 toast.success('Perdoruesi u fshi me sukses!')
                 router.refresh();
@@ -91,6 +94,7 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
         
       try {
         const response = await api.patch(`/api/admin/users/${users.id}`, data)
+
         if(response.data.success) {
           toast.success('Te dhenat e perdoruesit u perditesuan me sukses!')
           router.refresh()
