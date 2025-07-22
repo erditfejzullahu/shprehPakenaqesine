@@ -197,7 +197,7 @@ model ActivityLog {
   user Users @relation(fields: [userId], references: [id])
   action ActivityAction
   entityType EntityType
-  entityId String
+  entityId String?
   metadata Json?
   ipAddress String?
   userAgent String?
