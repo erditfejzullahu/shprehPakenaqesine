@@ -39,7 +39,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
 export const DELETE = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const adminCheck = await isAdminApi();
     if(adminCheck instanceof NextResponse) return adminCheck;
-    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
     const {id} = await params;
     try {

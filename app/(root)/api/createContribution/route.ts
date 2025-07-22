@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { runWithPrismaContext } from "@/lib/prisma-context";
+import { rateLimit } from "@/lib/redis";
 import { contributionsSchema } from "@/lib/schemas/contributionsSchema";
 import { fileUploadService } from "@/services/fileUploadService";
 import { UploadResult } from "@/types/types";
@@ -14,10 +15,22 @@ type ExtendedContributionType = ValidatedContribution & {
 
 export const POST = async (req: NextRequest) => {
     const session = await auth()
-    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
+
     if(!session){
         return NextResponse.json({success: false, message: "Ju nuk jeni te autorizuar te kryeni kete veprim!"}, {status: 401})
+    }
+    const rateLimitKey = `rate_limit:contributions:${session.user.id}:${ipAddress}`
+    const ratelimiter = await rateLimit(rateLimitKey, 1, 120)
+    if(!ratelimiter.allowed){
+        return NextResponse.json({
+            success: false,
+            message: `Ju keni tejkaluar limitin e krijimit te kerkesave per kontribim. Ju mund te dergoni 1 kerkese per kontribime ne 120 sekonda. Provoni perseri pas ${ratelimiter.reset} sekondash.`
+        }, {
+            status: 429,
+            headers: ratelimiter.responseHeaders
+        })
     }
     try {
         const body: ExtendedContributionType = await req.json()
@@ -89,7 +102,7 @@ export const POST = async (req: NextRequest) => {
             })
         }) 
         
-        return NextResponse.json({success: true}, {status: 201})
+        return NextResponse.json({success: true}, {status: 201, headers: ratelimiter.responseHeaders})
 
     } catch (error) {
         console.error(error)

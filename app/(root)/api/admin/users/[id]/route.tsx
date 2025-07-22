@@ -29,7 +29,7 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
     const {id} = await params;
     const adminCheck = await isAdminApi();
     if(adminCheck instanceof NextResponse) return adminCheck;
-    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
     const body: UserType = await req.json();
     try {

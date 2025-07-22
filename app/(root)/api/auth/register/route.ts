@@ -5,6 +5,7 @@ import {z} from "zod"
 import * as bcrypt from "bcrypt"
 import DOMPurify from 'isomorphic-dompurify' // Client+server side sanitization
 import validator from "validator"
+import { rateLimit } from "@/lib/redis";
 
 type CreateUserDto = z.infer<typeof registerSchema>;
 
@@ -25,7 +26,20 @@ const sanitizeName = (name: string): string => {
 export const POST = async (req: NextRequest, res: NextResponse) => {
     try {
         const body = await req.json() as CreateUserDto
-        const ipAddress = req.headers.get('x-forwarded-for') || null
+        const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
+                
+        const rateLimitKey = `rate_limit:registerUser:${ipAddress}`
+        const ratelimiter = await rateLimit(rateLimitKey, 5, 60)
+        if(!ratelimiter.allowed){
+            return NextResponse.json({
+                success: false,
+                message: `Provoni perseri pas ${ratelimiter.reset} sekondash.`
+            }, {
+                status: 429,
+                headers: ratelimiter.responseHeaders
+            })
+        }
+
         const userAgent = req.headers.get('user-agent') || null
         const sanitizedBody = {
             username: DOMPurify.sanitize(validator.escape(body.username?.trim() || "")),
@@ -98,7 +112,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
         return NextResponse.json({
             success: true,
             message: "Perdoruesi u regjistrua me sukses",
-        }, {status: 201})
+        }, {status: 201, headers: ratelimiter.responseHeaders})
 
     } catch (error) {
         if (error instanceof z.ZodError) {

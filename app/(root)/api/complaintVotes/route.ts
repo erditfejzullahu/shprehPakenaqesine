@@ -2,15 +2,26 @@ import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../auth";
 import { runWithPrismaContext } from "@/lib/prisma-context";
+import { rateLimit } from "@/lib/redis";
 
 export const POST = async (req: NextRequest) => {
     const session = await auth()
-    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
     if(!session){
         return NextResponse.json({success: false, message: "Nuk jeni te autorizuar"}, {status: 401})
     }
-    
+    const rateLimitKey = `rate_limit:complaintVotes:${session.user.id}:${ipAddress}`
+    const ratelimiter = await rateLimit(rateLimitKey, 5, 60)
+    if(!ratelimiter.allowed){
+        return NextResponse.json({
+            success: false,
+            message: `Ju keni tejkaluar limitin e votimit te ankesave. Ju mund te dergoni 5 ndryshime votash te ankesave ne 60 sekonda. Provoni perseri pas ${ratelimiter.reset} sekondash.`
+        }, {
+            status: 429,
+            headers: ratelimiter.responseHeaders
+        })
+    }
     try {
         const body = await req.json();
         const checkExisting = await prisma.complaintUpVotes.findUnique({
@@ -39,7 +50,7 @@ export const POST = async (req: NextRequest) => {
                     }
                 })
             })
-            
+
             await prisma.complaint.update({
                 where: {id: body.complaintId},
                 data: {
@@ -50,7 +61,7 @@ export const POST = async (req: NextRequest) => {
             })
         })
 
-        return NextResponse.json({success: true, message: "Sapo keni votuar me sukses"}, {status: 201})
+        return NextResponse.json({success: true, message: "Sapo keni votuar me sukses"}, {status: 201, headers: ratelimiter.responseHeaders})
     } catch (error) {
         console.error(error)
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri"}, {status: 500})

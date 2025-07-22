@@ -7,6 +7,7 @@ import { UploadResult } from "@/types/types";
 import { fileUploadService } from "@/services/fileUploadService";
 import prisma from "@/lib/prisma";
 import { runWithPrismaContext } from "@/lib/prisma-context";
+import { rateLimit } from "@/lib/redis";
 
 type ValidatedReportType = z.infer<typeof reportsSchema>
 type ExtendValidatedReportType = ValidatedReportType & {
@@ -15,8 +16,9 @@ type ExtendValidatedReportType = ValidatedReportType & {
 
 export const POST = async (req: NextRequest) => {
     try {
-        const ipAddress = req.headers.get('x-forwarded-for') || null
+        const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
         const userAgent = req.headers.get('user-agent') || null
+
         const body: ExtendValidatedReportType = await req.json();
         const sanitizedObj = {
             title: DOMPurify.sanitize(validator.escape(body.title.trim() || "")),
@@ -29,6 +31,17 @@ export const POST = async (req: NextRequest) => {
         
         const validateObj = reportsSchema.parse(sanitizedObj);
 
+        const rateLimitKey = `rate_limit:reports:${ipAddress}`
+        const {allowed, remaining, reset, responseHeaders} = await rateLimit(rateLimitKey, 1, 120)
+        if(!allowed){
+            return NextResponse.json({
+                success: false,
+                message: `Ju keni tejkaluar limitin e raporteve. Ju mund te dergoni 1 raport ne 120 sekonda. Provoni perseri pas ${reset} sekondash.`
+            }, {
+                status: 429,
+                headers: responseHeaders
+            })
+        }
         const ctx = {
             ipAddress,
             userAgent
@@ -96,7 +109,7 @@ export const POST = async (req: NextRequest) => {
             })
         })
 
-        return NextResponse.json({success: true, message: `Sapo keni raportuar me sukses ankesen/raportimin. Do te njoftoheni vazhdimisht ne rast te ndryshimeve!`}, {status: 201})
+        return NextResponse.json({success: true, message: `Sapo keni raportuar me sukses ankesen/raportimin. Do te njoftoheni vazhdimisht ne rast te ndryshimeve!`}, {status: 201, headers: responseHeaders})
 
     } catch (error) {
         console.error(error)

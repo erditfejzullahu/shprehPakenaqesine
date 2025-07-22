@@ -8,7 +8,7 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
     try {
         const body = await req.json();
         const {id} = await params;
-        const ipAddress = req.headers.get('x-forwareded-for') || null
+        const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
         const userAgent = req.headers.get('user-agent') || null
 
         const adminCheck = await isAdminApi();
@@ -40,7 +40,7 @@ export const DELETE = async (req: NextRequest, {params}: {params: Promise<{id: s
     try {
         const {id} = await params;
         const adminCheck = await isAdminApi()
-        const ipAddress = req.headers.get('x-forwareded-for') || null
+        const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
         const userAgent = req.headers.get('user-agent') || null
         if(adminCheck instanceof NextResponse) return adminCheck;
 

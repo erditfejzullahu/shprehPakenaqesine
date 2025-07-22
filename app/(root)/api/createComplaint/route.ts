@@ -8,15 +8,27 @@ import {fileUploadService} from "@/services/fileUploadService";
 import prisma from "@/lib/prisma";
 import { UploadResult } from "@/types/types";
 import { runWithPrismaContext } from "@/lib/prisma-context";
+import { rateLimit } from "@/lib/redis";
 
 type ComplaintsSchema = z.infer<typeof createComplaintsSchema>
 
 export const POST = async (req: NextRequest) => {
-    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
     const session = await auth();
     if(!session){
         return NextResponse.json({success: false, message: "Ju nuk jeni te autorizuar per kete veprim!"}, {status: 401})
+    }
+    const rateLimitKey = `rate_limit:complaints:${session.user.id}:${ipAddress}`
+    const ratelimiter = await rateLimit(rateLimitKey, 1, 120)
+    if(!ratelimiter.allowed){
+        return NextResponse.json({
+            success: false,
+            message: `Ju keni tejkaluar limitin e krijimit te ankesave. Ju mund te dergoni 1 kerkese per krijim te ankesave ne 120 sekonda. Provoni perseri pas ${ratelimiter.reset} sekondash.`
+        }, {
+            status: 429,
+            headers: ratelimiter.responseHeaders
+        })
     }
     try {
         const body: ComplaintsSchema = await req.json();
@@ -106,7 +118,7 @@ export const POST = async (req: NextRequest) => {
             })
         })
         
-        return NextResponse.json({success: true, message: "Sapo krijuat me sukses nje ankese/raport", url: result.complaint.id}, {status: 201})
+        return NextResponse.json({success: true, message: "Sapo krijuat me sukses nje ankese/raport", url: result.complaint.id}, {status: 201, headers: ratelimiter.responseHeaders})
     } catch (error) {
         console.error(error)
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."})

@@ -8,6 +8,7 @@ import prisma from "@/lib/prisma";
 import * as bcrypt from "bcrypt"
 import { UploadResult } from "@/types/types";
 import { fileUploadService } from "@/services/fileUploadService";
+import { rateLimit } from "@/lib/redis";
 
 type ValidatedSchema = z.infer<typeof updateProfileSchema>
 
@@ -30,7 +31,20 @@ export const PATCH = async (req: NextRequest) => {
     if(!session){
         return NextResponse.json({success: false, message: "Ju nuk jeni te autorizuar per kete veprim!"}, {status: 401})
     }
-    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
+            
+    const rateLimitKey = `rate_limit:updateAuthedProfileDetails:${session.user.id}:${ipAddress}`
+    const ratelimiter = await rateLimit(rateLimitKey, 5, 60)
+    if(!ratelimiter.allowed){
+        return NextResponse.json({
+            success: false,
+            message: `Provoni perseri pas ${ratelimiter.reset} sekondash.`
+        }, {
+            status: 429,
+            headers: ratelimiter.responseHeaders
+        })
+    }
+
     const userAgent = req.headers.get('user-agent') || null
     try {
 
@@ -110,7 +124,7 @@ export const PATCH = async (req: NextRequest) => {
             }
         })
 
-        return NextResponse.json({success: true, message: "Te dhenat u perditesuan me sukses", profilePic: newProfilePicture}, {status: 200})
+        return NextResponse.json({success: true, message: "Te dhenat u perditesuan me sukses", profilePic: newProfilePicture}, {status: 200, headers: ratelimiter.responseHeaders})
     } catch (error) {
         console.error(error)
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})

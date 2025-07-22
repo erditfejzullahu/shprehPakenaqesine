@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { rateLimit } from "@/lib/redis";
 import { NextRequest, NextResponse } from "next/server";
 
 enum SortByType {
@@ -14,14 +15,25 @@ enum SortByType {
 
 export async function GET(req: NextRequest, res: NextResponse) {
     try {
+        const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
+        
+        const rateLimitKey = `rate_limit:getCompanies:${ipAddress}`
+        const ratelimiter = await rateLimit(rateLimitKey, 120, 60)
+        if(!ratelimiter.allowed){
+            return NextResponse.json({
+                success: false,
+                message: `Provoni perseri pas ${ratelimiter.reset} sekondash.`
+            }, {
+                status: 429,
+                headers: ratelimiter.responseHeaders
+            })
+        }
         const pageStr = req.nextUrl.searchParams.get('page')
         const page = pageStr ? parseInt(pageStr) : 1;
         const limitStr = req.nextUrl.searchParams.get('limit')
 
         const sortByStr = req.nextUrl.searchParams.get("sortBy") as SortByType | null
         const searchParams = req.nextUrl.searchParams.get("search")
-
-        console.log(sortByStr);
         
 
         const limit = limitStr ? parseInt(limitStr) : 6;
@@ -97,7 +109,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
         }
 
         const hasMore = page * limit < filteredOrNotFilteredCount;
-        return NextResponse.json({companies, hasMore, filteredOrNotFilteredCount})
+        return NextResponse.json({companies, hasMore, filteredOrNotFilteredCount}, {status: 200, headers: ratelimiter.responseHeaders})
         
     } catch (error) {
         console.error(error)

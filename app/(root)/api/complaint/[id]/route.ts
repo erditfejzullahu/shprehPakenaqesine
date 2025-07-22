@@ -1,14 +1,28 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { rateLimit } from "@/lib/redis";
 export const GET = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params;
     
     try {
         const session = await auth();
+        const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
+
         // if(!session){            
         //     return NextResponse.json({message: "Not authorized"}, {status: 500})
         // }
+        const rateLimitKey = `rate_limit:getSingleComplaint:${ipAddress}`
+        const ratelimiter = await rateLimit(rateLimitKey, 20, 60)
+        if(!ratelimiter.allowed){
+            return NextResponse.json({
+                success: false,
+                message: `Provoni perseri pas ${ratelimiter.reset} sekondash.`
+            }, {
+                status: 429,
+                headers: ratelimiter.responseHeaders
+            })
+        }
         let hasVoted = false;
         if(!session){
             hasVoted = false;
@@ -131,7 +145,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
         console.log(complaint.contributions);
         
 
-        return NextResponse.json({success: true, complaint}, {status: 200})
+        return NextResponse.json({success: true, complaint}, {status: 200, headers: ratelimiter.responseHeaders})
     } catch (error) {
         console.error(error)
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server. Ju lutem provoni perseri!"}, {status: 500})

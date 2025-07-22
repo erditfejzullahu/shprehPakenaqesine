@@ -9,6 +9,7 @@ import {fileUploadService} from "@/services/fileUploadService";
 import { UploadResult } from "@/types/types";
 import { Companies } from "@/app/generated/prisma";
 import { runWithPrismaContext } from "@/lib/prisma-context";
+import { rateLimit } from "@/lib/redis";
 
 type CreateCompanyType = z.infer<typeof createCompanySchema>
 
@@ -41,12 +42,25 @@ const sanitizeUrl = (url: string): string | null => {
   };
 
 export const POST = async (req: NextRequest) => {
-    const ipAddress = req.headers.get('x-forwarded-for') || null;
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
     const session = await auth();
     if(!session){
         return NextResponse.json({success: false, message: "Ju nuk jeni te autorizuar per kete veprim!"}, {status: 401})
     }
+
+    const rateLimitKey = `rate_limit:companies:${session.user.id}:${ipAddress}`
+    const ratelimiter = await rateLimit(rateLimitKey, 1, 120)
+    if(!ratelimiter.allowed){
+        return NextResponse.json({
+            success: false,
+            message: `Ju keni tejkaluar limitin e krijimit te kompanive. Ju mund te dergoni 1 kerkese per krijim te kompanive ne 120 sekonda. Provoni perseri pas ${ratelimiter.reset} sekondash.`
+        }, {
+            status: 429,
+            headers: ratelimiter.responseHeaders
+        })
+    }
+
     try {
         const body: CreateCompanyType = await req.json();            
             
@@ -122,7 +136,7 @@ export const POST = async (req: NextRequest) => {
             })
         })
 
-        return NextResponse.json({success: true, message: "Ju sapo keni shtuar nje kompani. Ju faleminderit per interesimin!", url: resultCtx.company.id}, {status: 201})
+        return NextResponse.json({success: true, message: "Ju sapo keni shtuar nje kompani. Ju faleminderit per interesimin!", url: resultCtx.company.id}, {status: 201, headers: ratelimiter.responseHeaders})
     } catch (error: any) {
         console.error(error)
         if(error.message === "Ngarkimi i imazhit nuk u realizua! Provoni perseri."){

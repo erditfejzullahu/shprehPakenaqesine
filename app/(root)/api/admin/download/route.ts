@@ -10,7 +10,7 @@ export async function GET(req: NextRequest){
     if(adminCheck instanceof NextResponse) return adminCheck;
     //admin check
     const {searchParams} = new URL(req.url)
-    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
     const fileName = searchParams.get('file');
 

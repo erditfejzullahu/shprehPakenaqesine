@@ -43,7 +43,7 @@ const sanitizeUrl = (url: string): string | null => {
 export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params;
     const adminApi = await isAdminApi();
-    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
     if(adminApi instanceof NextResponse) return adminApi;
 
@@ -126,7 +126,7 @@ export const DELETE = async (req: NextRequest, {params}: {params: Promise<{id: s
     const isAdmin = await isAdminApi();
     if(isAdmin instanceof NextResponse) return isAdmin;
 
-    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
     try {
         if(!id) return NextResponse.json({success: false, message: "Nuk eshte ardhur nje numer identifikues"}, {status:400});

@@ -55,7 +55,7 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
             return null;
         }
 
-        const ipAddress = req.headers.get('x-forwarded-for') || null
+        const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
         const userAgent = req.headers.get('user-agent') || null
 
         await prisma.activityLog.create({

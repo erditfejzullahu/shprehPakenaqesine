@@ -1,12 +1,26 @@
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
+import { rateLimit } from "@/lib/redis";
 
-export const GET = async () => {
+export const GET = async (req: NextRequest) => {
     try {        
         const session = await auth();
         if(!session){
             return NextResponse.json({success: false, message: "Nuk jeni te autorizuar per kete veprim!"}, {status: 401})
+        }
+        const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
+        
+        const rateLimitKey = `rate_limit:userAuthedProfileDetails:${session.user.id}:${ipAddress}`
+        const ratelimiter = await rateLimit(rateLimitKey, 30, 60)
+        if(!ratelimiter.allowed){
+            return NextResponse.json({
+                success: false,
+                message: `Provoni perseri pas ${ratelimiter.reset} sekondash.`
+            }, {
+                status: 429,
+                headers: ratelimiter.responseHeaders
+            })
         }
         
         const userDetails = await prisma.users.findUnique({
@@ -70,7 +84,7 @@ export const GET = async () => {
                 }))
         }
 
-        return NextResponse.json({success: true, details}, {status: 200})
+        return NextResponse.json({success: true, details}, {status: 200, headers: ratelimiter.responseHeaders})
 
     } catch (error) {
         console.error(error)
