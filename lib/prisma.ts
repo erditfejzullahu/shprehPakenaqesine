@@ -5,16 +5,7 @@ const globalForPrisma = global as unknown as {
     prisma: PrismaClient
 }
 
-type ExtensionContext = {
-  ActivityLog: PrismaClient['activityLog'],
-  __ipAddress?: string,
-  __userAgent?: string,
-  __user?: string | null,
-  metadata?: string
-}
-
-
-export const prisma = new PrismaClient().$extends(withAccelerate()).$extends({
+export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(withAccelerate()).$extends({
     name: "ActivityLogging",
     query: {
         $allModels: {
@@ -108,6 +99,6 @@ export const prisma = new PrismaClient().$extends(withAccelerate()).$extends({
     }
 })
 
-// if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 export default prisma
