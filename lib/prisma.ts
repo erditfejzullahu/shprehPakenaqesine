@@ -20,7 +20,7 @@ export const prisma = new PrismaClient().$extends(withAccelerate()).$extends({
         $allModels: {
             async $allOperations({model, operation, args, query}) {
                 
-                const result = await query(args) as {id?: string}
+                const result = await query(args) as {id?: string, complaintId?: string}
 
                 if(model === "ActivityLog") return result;
 
@@ -45,7 +45,7 @@ export const prisma = new PrismaClient().$extends(withAccelerate()).$extends({
                     case "ComplaintUpVotes":
                         action = operation === "create" ? "CREATE_COMPLAINTUPVOTES" : "DELETE_COMPLAINTUPVOTES"
                         entityType = "Complaint";
-                        entityId = operation === "create" ? args.data.complaintId : operation === "delete" ? args.where.complaintId?.toString() : null;
+                        entityId = operation === "create" ? result.complaintId : operation === "delete" ? args.where.complaintId?.toString() : null;
                         break;
                     case "Contributions":
                         if(operation === "create"){
@@ -55,7 +55,7 @@ export const prisma = new PrismaClient().$extends(withAccelerate()).$extends({
                             action = isAdminAccept ? "UPDATE_CONTRIBUTIONS_ADMIN_ACCEPT" : "UPDATE_CONTRIBUTIONS_ADMIN_UPDATE"
                         }
                         entityType = "Contributions"
-                        entityId = operation === "create" ? args.data.id : operation === "update" ? args.where.id : operation === "delete" ? args.where.id : null
+                        entityId = operation === "create" ? result.id : operation === "update" ? args.where.id : operation === "delete" ? args.where.id : null
                         break;
                     case "Companies":
                         action = operation === "create" ? "CREATE_COMPANIES" : operation === "update" ? "UPDATE_COMPANIES" : "DELETE_COMPANIES";
@@ -72,11 +72,11 @@ export const prisma = new PrismaClient().$extends(withAccelerate()).$extends({
                     case "Complaint":
                         action = operation === "create" ? "CREATE_COMPLAINT" : operation === "update" ? "UPDATE_COMPLAINT" : "DELETE_COMPLAINT";
                         entityType = "Complaint"
-                        entityId = operation === "create" ? args.data.id : operation === "update" ? args.where.id : operation === "delete" ? args.where.id : null
+                        entityId = operation === "create" ? result.id : operation === "update" ? args.where.id : operation === "delete" ? args.where.id : null
                         break;
                     case "Subscribers":
                         action = operation === "create" ? "CREATE_SUBSCRIBERS" : "DELETE_SUBSCRIBERS";
-                        entityId = operation === "create" ? args.data.id : operation === "delete" ? args.where.id : null
+                        entityId = operation === "create" ? result.id : operation === "delete" ? args.where.id : null
                         break;
                     default:
                         return result;

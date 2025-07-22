@@ -29,6 +29,8 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
     const {id} = await params;
     const adminCheck = await isAdminApi();
     if(adminCheck instanceof NextResponse) return adminCheck;
+    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const userAgent = req.headers.get('user-agent') || null
     const body: UserType = await req.json();
     try {
         const user = await prisma.users.findUnique({where: {id}})
@@ -69,6 +71,35 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
                 email_verified: validatedSchema.email_verified
             }
         })
+
+        await prisma.activityLog.create({
+            data: {
+                userId: adminCheck.user.id,
+                ipAddress,
+                userAgent,
+                entityId: user.id,
+                entityType: "Users",
+                action: "UPDATE_OTHER_USERS_DETAILS_BY_ADMIN",
+                metadata: JSON.stringify({
+                    model: "Users",
+                    operation: "update",
+                    args: {
+                        where: {id},
+                        data: {
+                            username: validatedSchema.username,
+                            email: validatedSchema.email,
+                            fullName: validatedSchema.fullName,
+                            gender: validatedSchema.gender,
+                            anonimity: validatedSchema.anonimity,
+                            userProfileImage: userImage,
+                            acceptedUser: validatedSchema.acceptedUser,
+                            email_verified: validatedSchema.email_verified
+                        }
+                    }
+                })
+            }
+        })
+        
         return NextResponse.json({success: true, message: "Sapo perditesuat me sukses perdoruesin"}, {status: 200})
     } catch (error) {
         console.error(error);

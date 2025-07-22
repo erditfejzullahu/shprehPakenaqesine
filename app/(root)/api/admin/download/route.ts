@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import prisma from "@/lib/prisma";
 import { isAdminApi } from "@/lib/utils/isAdmin";
 import { createReadStream, statSync } from "fs";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,6 +10,8 @@ export async function GET(req: NextRequest){
     if(adminCheck instanceof NextResponse) return adminCheck;
     //admin check
     const {searchParams} = new URL(req.url)
+    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const userAgent = req.headers.get('user-agent') || null
     const fileName = searchParams.get('file');
 
     if(!fileName){
@@ -24,6 +27,24 @@ export async function GET(req: NextRequest){
     try {
         const stat = statSync(filePath);
         const stream = createReadStream(filePath);
+
+        const ctx = {
+            userId: adminCheck.user.id,
+            ipAddress,
+            userAgent
+        }
+
+        await prisma.activityLog.create({
+            data: {
+                userId: ctx.userId,
+                action: "DOWNLOAD_FILE",
+                ipAddress: ctx.ipAddress,
+                userAgent: ctx.userAgent,
+                entityId: null,
+                entityType: "Other",
+                metadata: JSON.stringify({fileName})
+            }
+        })
 
         return new NextResponse(stream as any, {
             status: 200,

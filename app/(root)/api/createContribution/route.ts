@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { runWithPrismaContext } from "@/lib/prisma-context";
 import { contributionsSchema } from "@/lib/schemas/contributionsSchema";
 import { fileUploadService } from "@/services/fileUploadService";
 import { UploadResult } from "@/types/types";
@@ -13,6 +14,8 @@ type ExtendedContributionType = ValidatedContribution & {
 
 export const POST = async (req: NextRequest) => {
     const session = await auth()
+    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const userAgent = req.headers.get('user-agent') || null
     if(!session){
         return NextResponse.json({success: false, message: "Ju nuk jeni te autorizuar te kryeni kete veprim!"}, {status: 401})
     }
@@ -30,53 +33,61 @@ export const POST = async (req: NextRequest) => {
         }
         const validatedSchema = contributionsSchema.parse(body);
 
-        await prisma.$transaction(async(prisma) => {
-            
-            let attachments: string[] = []
-            let audioAttachments: string[] = []
-            let videoAttachments: string[] = []
-    
-            if(validatedSchema.attachments && validatedSchema.attachments.length > 0){
-                for(const element of validatedSchema.attachments){
-                    const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/attachments", body.complaintId)
-                    if(!result.success){
-                        return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve"}, {status: 400})
-                    }
-                    attachments.push(result.url)
-                }
-            }
-    
-            if(validatedSchema.audiosAttached && validatedSchema.audiosAttached.length > 0){
-                for(const element of validatedSchema.audiosAttached){
-                    const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/audiosAttached", body.complaintId)
-                    if(!result.success){
-                        return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te audiove/inqizimeve"}, {status: 400})
-                    }
-                    audioAttachments.push(result.url)
-                }
-            }
-    
-            if(validatedSchema.videosAttached && validatedSchema.videosAttached.length > 0){
-                for(const element of validatedSchema.videosAttached){
-                    const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/videosAttached", body.complaintId)
-                    if(!result.success){
-                        return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te videove/inqizimeve"}, {status: 400})
-                    }
-                    videoAttachments.push(result.url)
-                }
-            }
+        const ctx = {
+            userId: session.user.id,
+            ipAddress,
+            userAgent
+        }
 
-            await prisma.contributions.create({
-                data: {
-                    complaintId: body.complaintId,
-                    userId: session.user.id,
-                    attachments,
-                    audiosAttached: audioAttachments,
-                    videosAttached: videoAttachments,
-                    contributionValidated: false
+        await runWithPrismaContext(ctx, async () => {
+            await prisma.$transaction(async(prisma) => {
+                
+                let attachments: string[] = []
+                let audioAttachments: string[] = []
+                let videoAttachments: string[] = []
+        
+                if(validatedSchema.attachments && validatedSchema.attachments.length > 0){
+                    for(const element of validatedSchema.attachments){
+                        const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/attachments", body.complaintId)
+                        if(!result.success){
+                            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve"}, {status: 400})
+                        }
+                        attachments.push(result.url)
+                    }
                 }
+        
+                if(validatedSchema.audiosAttached && validatedSchema.audiosAttached.length > 0){
+                    for(const element of validatedSchema.audiosAttached){
+                        const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/audiosAttached", body.complaintId)
+                        if(!result.success){
+                            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te audiove/inqizimeve"}, {status: 400})
+                        }
+                        audioAttachments.push(result.url)
+                    }
+                }
+        
+                if(validatedSchema.videosAttached && validatedSchema.videosAttached.length > 0){
+                    for(const element of validatedSchema.videosAttached){
+                        const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/videosAttached", body.complaintId)
+                        if(!result.success){
+                            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te videove/inqizimeve"}, {status: 400})
+                        }
+                        videoAttachments.push(result.url)
+                    }
+                }
+    
+                await prisma.contributions.create({
+                    data: {
+                        complaintId: body.complaintId,
+                        userId: session.user.id,
+                        attachments,
+                        audiosAttached: audioAttachments,
+                        videosAttached: videoAttachments,
+                        contributionValidated: false
+                    }
+                })
             })
-        })
+        }) 
         
         return NextResponse.json({success: true}, {status: 201})
 

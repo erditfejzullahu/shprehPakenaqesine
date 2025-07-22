@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { runWithPrismaContext } from "@/lib/prisma-context";
 import { isAdminApi } from "@/lib/utils/isAdmin";
 import { existsSync, unlinkSync } from "fs";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,6 +10,8 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
     const {id} = await params;
     const adminCheck = await isAdminApi();
     if(adminCheck instanceof NextResponse) return adminCheck;
+    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const userAgent = req.headers.get('user-agent') || null
     try {
         const {searchParams} = req.nextUrl
         const fileName = searchParams.get('fileName')
@@ -51,14 +54,23 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
             unlinkSync(filePath);
         }
 
-        await prisma.contributions.update({
-            where: {id},
-            data: {
-                attachments,
-                audiosAttached: audioAttachments,
-                videosAttached: videoAttachments
-            }
+        const ctx = {
+            userId: adminCheck.user.id,
+            ipAddress,
+            userAgent
+        }
+
+        await runWithPrismaContext(ctx, async () => {
+            await prisma.contributions.update({
+                where: {id},
+                data: {
+                    attachments,
+                    audiosAttached: audioAttachments,
+                    videosAttached: videoAttachments
+                }
+            })
         })
+
         return NextResponse.json({success: true, message: "Larguat fajll nga kontribuimi me sukses"}, {status: 200})
     } catch (error) {
         console.error(error);

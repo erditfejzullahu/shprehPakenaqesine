@@ -212,11 +212,13 @@ enum EntityType {
   Complaint
   Reports
   Subscribers
+  Other
 }
 
 enum ActivityAction {
   LOGIN
   LOGOUT
+  REGISTER
 
   CREATE_COMPANIES
   UPDATE_COMPANIES
@@ -244,8 +246,13 @@ enum ActivityAction {
 
   UPDATE_USER_DETAILS
   UPDATE_USER_ADMIN_DETAILS
+  UPDATE_OTHER_USERS_DETAILS_BY_ADMIN
 
   CHANGE_PASSWORD
+
+  //other entity
+  DOWNLOAD_FILE
+  COPIED_FILE_URL
 }
 
 enum ResolvedStatus {

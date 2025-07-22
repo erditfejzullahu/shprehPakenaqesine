@@ -11,8 +11,6 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                 complaints: true,
             }
         })
-
-        console.log(company, ' kompajnia');
         
         if(!company){
             return NextResponse.json({success: false, message: "Nuk u gjet asnje kompani!"}, {status: 404})

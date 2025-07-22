@@ -29,11 +29,12 @@ const sanitizeName = (name: string): string => {
 export const PATCH = async (req: NextRequest) => {
     const adminCheck = await isAdminApi()
     if(adminCheck instanceof NextResponse) return adminCheck;
-    const session = adminCheck;
+    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const userAgent = req.headers.get('user-agent') || null
     
     const body: ValidationSchema = await req.json();
     try {
-        const user = await prisma.users.findUnique({where: {id: session.user.id}})
+        const user = await prisma.users.findUnique({where: {id: adminCheck.user.id}})
         if(!user) return NextResponse.json({success: false, message: "Nuk u gjet ndonje perdorues me kete number identifikues"}, {status: 404});
 
         const sanitizeObj = {
@@ -66,8 +67,9 @@ export const PATCH = async (req: NextRequest) => {
             }
         }
 
+        
         await prisma.users.update({
-            where: {id: session.user.id},
+            where: {id: adminCheck.user.id},
             data: {
                 username: validateObj.username,
                 email: validateObj.email,
@@ -75,6 +77,32 @@ export const PATCH = async (req: NextRequest) => {
                 gender: validateObj.gender,
                 password: newPassword,
                 userProfileImage: newImage
+            }
+        })
+
+        await prisma.activityLog.create({
+            data: {
+                userId: adminCheck.user.id,
+                ipAddress,
+                userAgent,
+                entityId: adminCheck.user.id,
+                entityType :"Users",
+                action: "UPDATE_USER_ADMIN_DETAILS",
+                metadata: JSON.stringify({
+                    model: "Users",
+                    operation: "update",
+                    args: {
+                        where: {id: adminCheck.user.id},
+                        data: {
+                            username: validateObj.username,
+                            email: validateObj.email,
+                            fullName: validateObj.fullName,
+                            gender: validateObj.gender,
+                            password: newPassword,
+                            userProfileImage: newImage
+                        }
+                    }
+                })
             }
         })
 

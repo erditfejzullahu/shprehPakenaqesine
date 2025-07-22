@@ -8,6 +8,7 @@ import validator from "validator"
 import { UploadResult } from "@/types/types";
 import { fileUploadService } from "@/services/fileUploadService";
 import { isAdminApi } from "@/lib/utils/isAdmin";
+import { runWithPrismaContext } from "@/lib/prisma-context";
 
 type ValidatedBodyType = z.infer<typeof createCompanySchema>
 
@@ -42,7 +43,8 @@ const sanitizeUrl = (url: string): string | null => {
 export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params;
     const adminApi = await isAdminApi();
-
+    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const userAgent = req.headers.get('user-agent') || null
     if(adminApi instanceof NextResponse) return adminApi;
 
     const body: ValidatedBodyType = await req.json();
@@ -88,21 +90,30 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
             }
         }
 
-        await prisma.companies.update({
-            where: {id},
-            data: {
-                name: validatedData.name,
-                description: validatedData.description,
-                logoUrl: logo,
-                address: validatedData.address,
-                website: validatedData.website,
-                email: validatedData.email,
-                phone: validatedData.phone,
-                industry: validatedData.industry,
-                foundedYear: validatedData.foundedYear,
-                images: newImages.length > 0 ? newImages : images
-            }
+        const ctx = {
+            userId: adminApi.user.id,
+            ipAddress,
+            userAgent
+        }
+
+        await runWithPrismaContext(ctx, async () => {
+            await prisma.companies.update({
+                where: {id},
+                data: {
+                    name: validatedData.name,
+                    description: validatedData.description,
+                    logoUrl: logo,
+                    address: validatedData.address,
+                    website: validatedData.website,
+                    email: validatedData.email,
+                    phone: validatedData.phone,
+                    industry: validatedData.industry,
+                    foundedYear: validatedData.foundedYear,
+                    images: newImages.length > 0 ? newImages : images
+                }
+            })
         })
+        
         return NextResponse.json({success: true, message: "Sapo rifreskuat me sukses kompanine"}, {status: 200})
     } catch (error) {
         console.error(error)
@@ -112,13 +123,26 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
 
 export const DELETE = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params
-    const session = await auth()
+    const isAdmin = await isAdminApi();
+    if(isAdmin instanceof NextResponse) return isAdmin;
+
+    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const userAgent = req.headers.get('user-agent') || null
     try {
         if(!id) return NextResponse.json({success: false, message: "Nuk eshte ardhur nje numer identifikues"}, {status:400});
         const company = await prisma.companies.findUnique({where: {id}})
         if(!company) return NextResponse.json({success: false, message: "Nuk u gjet ndonje kompani me ate number identifikues"}, {status:404});
+        
+        const ctx = {
+            userId: isAdmin.user.id,
+            ipAddress,
+            userAgent
+        }
 
-        await prisma.companies.delete({where: {id}})
+        await runWithPrismaContext(ctx, async () => {
+            await prisma.companies.delete({where: {id}})
+        })
+
         return NextResponse.json({success: true, message: "Kompania u fshi me sukses"}, {status: 200})
     } catch (error) {
         console.error(error)

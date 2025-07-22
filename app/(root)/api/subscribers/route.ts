@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {z} from "zod"
 import DOMPurify from 'isomorphic-dompurify' // Client+server side sanitization
 import validator from "validator"
+import { runWithPrismaContext } from "@/lib/prisma-context";
 
 type CreateSubscriberType = z.infer<typeof subscriberSchema> 
 
@@ -17,13 +18,22 @@ export const POST = async (req: NextRequest) => {
         const body: CreateSubscriberType = await req.json();        
         const sanitizedEmail = {email: DOMPurify.sanitize(validator.normalizeEmail(body.email?.trim() || "") || "")}
         const validationSchema = subscriberSchema.parse(sanitizedEmail)
+        const ipAddress = req.headers.get('x-forwarded-for') || null
+        const userAgent = req.headers.get('user-agent') || null
         
         const existingEmail = await prisma.subscribers.findFirst({where: {email: validationSchema.email}})
         if(existingEmail){
             return NextResponse.json({success: false, message: "Ju vecse jeni abonuar tashme!"}, {status: 400})
         }
-        await prisma.subscribers.create({
-            data: {email: validationSchema.email, createdAt: new Date()},
+        const ctx = {
+            ipAddress,
+            userAgent
+        }
+
+        await runWithPrismaContext(ctx, async () => {
+            await prisma.subscribers.create({
+                data: {email: validationSchema.email, createdAt: new Date()},
+            })
         })
         return NextResponse.json({success: true, message: "Ju u abonuar me sukses. Ne te ardhmen do njoftoheni per ankesat e reja permes emailit te paraqitur me larte."}, {status: 201})
     } catch (error) {

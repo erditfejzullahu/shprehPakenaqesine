@@ -25,7 +25,8 @@ const sanitizeName = (name: string): string => {
 export const POST = async (req: NextRequest, res: NextResponse) => {
     try {
         const body = await req.json() as CreateUserDto
-
+        const ipAddress = req.headers.get('x-forwarded-for') || null
+        const userAgent = req.headers.get('user-agent') || null
         const sanitizedBody = {
             username: DOMPurify.sanitize(validator.escape(body.username?.trim() || "")),
             email: DOMPurify.sanitize(validator.normalizeEmail(body.email?.trim() || "") || ""),
@@ -54,7 +55,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
         }
 
         const hashedPassword = await bcrypt.hash(validatedData.password, 10)
-        await prisma.users.create({
+        const newUser = await prisma.users.create({
             data: {
                 fullName: validatedData.fullName,
                 password: hashedPassword,
@@ -65,6 +66,33 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
                 username: validatedData.username,
                 createdAt: new Date()
             }
+        })
+
+        await prisma.activityLog.create({
+          data: {
+            userId: newUser.id,
+            ipAddress,
+            userAgent,
+            entityId: newUser.id,
+            entityType: "Users",
+            action: "REGISTER",
+            metadata: JSON.stringify({
+              model: "Users",
+              operation: 'create',
+              args: {
+                data: {
+                  fullName: validatedData.fullName,
+                  password: hashedPassword,
+                  acceptedUser: false,
+                  email_verified: false,
+                  email: validatedData.email,
+                  gender: validatedData.gender,
+                  username: validatedData.username,
+                  createdAt: new Date()
+                }
+              }
+            })
+          }
         })
 
         return NextResponse.json({

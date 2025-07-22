@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { runWithPrismaContext } from "@/lib/prisma-context";
 import { isAdminApi } from "@/lib/utils/isAdmin";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -36,14 +37,27 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
 }
 
 export const DELETE = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
-    const session = await auth()
+    const adminCheck = await isAdminApi();
+    if(adminCheck instanceof NextResponse) return adminCheck;
+    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const userAgent = req.headers.get('user-agent') || null
     const {id} = await params;
     try {
         const report = await prisma.reports.findUnique({where: {id}})
         if(!report){
             return NextResponse.json({success: false, message: "Nuk u gjend ndonje raport me kete ID"}, {status: 404})
         }
-        await prisma.reports.delete({where: {id}})
+        
+        const ctx = {
+            userId: adminCheck.user.id,
+            ipAddress,
+            userAgent
+        }
+
+        await runWithPrismaContext(ctx, async () => {
+            await prisma.reports.delete({where: {id}})
+        })
+
         return NextResponse.json({success: true, message: "Raporti eshte fshire me sukses"}, {status: 200})
     } catch (error) {
         console.error(error);

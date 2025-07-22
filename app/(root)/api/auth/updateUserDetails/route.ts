@@ -30,6 +30,8 @@ export const PATCH = async (req: NextRequest) => {
     if(!session){
         return NextResponse.json({success: false, message: "Ju nuk jeni te autorizuar per kete veprim!"}, {status: 401})
     }
+    const ipAddress = req.headers.get('x-forwarded-for') || null
+    const userAgent = req.headers.get('user-agent') || null
     try {
 
         const user = await prisma.users.findUnique({where: {id: session.user.id}});
@@ -78,6 +80,33 @@ export const PATCH = async (req: NextRequest) => {
                 password: newPassword,
                 userProfileImage: newProfilePicture,
                 email_verified: false
+            }
+        })
+
+        await prisma.activityLog.create({
+            data: {
+                userId: session.user.id,
+                ipAddress,
+                userAgent,
+                entityId: session.user.id,
+                action: "UPDATE_USER_DETAILS",
+                entityType: "Users",
+                metadata: JSON.stringify({
+                    model: "Users",
+                    operation: "update",
+                    args: {
+                        where: {id: session.user.id},
+                        data: {
+                            fullName: validatedObj.fullName,
+                            email: validatedObj.email,
+                            username: validatedObj.username,
+                            gender: validatedObj.gender,
+                            password: newPassword,
+                            userProfileImage: newProfilePicture,
+                            email_verified: false
+                        }
+                    }
+                })
             }
         })
 

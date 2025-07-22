@@ -12,11 +12,11 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
         username: { label: "Username" },
         password: { label: "Password", type: "password" },
         },
-        async authorize(credentials) {
+        async authorize(credentials, req) {
         if (!credentials?.username || !credentials?.password) {
             return null;
         }
-
+        
         const { username, password } = credentials as {
             username: string;
             password: string
@@ -54,6 +54,27 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
         if (!isValid) {
             return null;
         }
+
+        const ipAddress = req.headers.get('x-forwarded-for') || null
+        const userAgent = req.headers.get('user-agent') || null
+
+        await prisma.activityLog.create({
+            data: {
+                userId: user.id,
+                entityId: user.id,
+                entityType: "Users",
+                ipAddress,
+                userAgent,
+                action: "LOGIN",
+                metadata: JSON.stringify({
+                    model: "Users",
+                    operation: "get",
+                    args: {
+                        where: {username},
+                    }
+                })
+            }
+        })
 
         return {
             id: user.id,
