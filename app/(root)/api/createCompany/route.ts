@@ -8,6 +8,7 @@ import prisma from "@/lib/prisma";
 import {fileUploadService} from "@/services/fileUploadService";
 import { UploadResult } from "@/types/types";
 import { Companies } from "@/app/generated/prisma";
+import { runWithPrismaContext } from "@/lib/prisma-context";
 
 type CreateCompanyType = z.infer<typeof createCompanySchema>
 
@@ -40,6 +41,8 @@ const sanitizeUrl = (url: string): string | null => {
   };
 
 export const POST = async (req: NextRequest) => {
+    const ipAddress = req.headers.get('x-forwarded-for') || null;
+    const userAgent = req.headers.get('user-agent') || null
     const session = await auth();
     if(!session){
         return NextResponse.json({success: false, message: "Ju nuk jeni te autorizuar per kete veprim!"}, {status: 401})
@@ -60,60 +63,74 @@ export const POST = async (req: NextRequest) => {
             foundedYear: body.foundedYear
         }
 
+        const ctx = {
+            userId: session.user.id,
+            ipAddress,
+            userAgent
+        }
 
         const validatedCompany = createCompanySchema.parse(sanitizedBody);
 
-        const result: any = await prisma.$transaction(async (prisma) => {
-            const company = await prisma.companies.create({
-                data: {
-                    name: validatedCompany.name,
-                    description: validatedCompany.description,
-                    logoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGh5WFH8TOIfRKxUrIgJZoDCs1yvQ4hIcppw&s",
-                    address: validatedCompany.address,
-                    website: validatedCompany.website,
-                    email: validatedCompany.email,
-                    phone: validatedCompany.phone,
-                    industry: validatedCompany.industry,
-                    foundedYear: validatedCompany.foundedYear
+        const resultCtx: any = await runWithPrismaContext(ctx, async () => {
+            return await prisma.$transaction(async (prisma) => {
+    
+                const company = await prisma.companies.create({
+                    data: {
+                        name: validatedCompany.name,
+                        description: validatedCompany.description,
+                        logoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGh5WFH8TOIfRKxUrIgJZoDCs1yvQ4hIcppw&s",
+                        address: validatedCompany.address,
+                        website: validatedCompany.website,
+                        email: validatedCompany.email,
+                        phone: validatedCompany.phone,
+                        industry: validatedCompany.industry,
+                        foundedYear: validatedCompany.foundedYear
+                    }
+                })
+                
+                const logoUrlResult: UploadResult = await fileUploadService.uploadFile(validatedCompany.logoAttachment, "companys/logo", company.id)
+                if(!logoUrlResult.success){
+                    throw new Error("Ngarkimi i imazhit nuk u realizua! Provoni perseri.")
                 }
-            })
-            
-            const logoUrlResult: UploadResult = await fileUploadService.uploadFile(validatedCompany.logoAttachment, "companys/logo", company.id)
-            if(!logoUrlResult.success){
-                return NextResponse.json({success: false, message: "Ngarkimi i imazhit nuk u realizua! Provoni perseri."}, {status: 400})
-            }
-    
-            let imageAttachments: string[] = []
-    
-            if (validatedCompany.imageAttachments && validatedCompany.imageAttachments.length > 0) {
-                for (const element of validatedCompany.imageAttachments) {
-                    try {
-                        const result = await fileUploadService.uploadFile(element, "companys/images", company.id);
-                        if (result.success) {
-                            imageAttachments.push(result.url);
+        
+                let imageAttachments: string[] = []
+        
+                if (validatedCompany.imageAttachments && validatedCompany.imageAttachments.length > 0) {
+                    for (const element of validatedCompany.imageAttachments) {
+                        try {
+                            const result = await fileUploadService.uploadFile(element, "companys/images", company.id);
+                            if (result.success) {
+                                imageAttachments.push(result.url);
+                            }
+                        } catch (error) {
+                            throw new Error("Ngarkimi i galerise se imazheve te kompanise nuk u realizuan! Provoni perseri.")
                         }
-                    } catch (error) {
-                        return NextResponse.json({success: false, message: "Ngarkimi i galerise se imazheve te kompanise nuk u realizuan! Provoni perseri."}, {status: 400})
                     }
                 }
-            }
+        
+                const updatedCompany = await prisma.companies.update({
+                    where: {id: company.id},
+                    data: {
+                        logoUrl: logoUrlResult.url,
+                        images: imageAttachments
+                    }
+                })
     
-            const updatedCompany = await prisma.companies.update({
-                where: {id: company.id},
-                data: {
-                    logoUrl: logoUrlResult.url,
-                    images: imageAttachments
+                return {
+                    company: updatedCompany
                 }
             })
-
-            return {
-                company: updatedCompany
-            }
         })
 
-        return NextResponse.json({success: true, message: "Ju sapo keni shtuar nje kompani. Ju faleminderit per interesimin!", url: result.company.id}, {status: 201})
-    } catch (error) {
+        return NextResponse.json({success: true, message: "Ju sapo keni shtuar nje kompani. Ju faleminderit per interesimin!", url: resultCtx.company.id}, {status: 201})
+    } catch (error: any) {
         console.error(error)
-        return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})
+        if(error.message === "Ngarkimi i imazhit nuk u realizua! Provoni perseri."){
+            return NextResponse.json({success: false, message: "Ngarkimi i imazhit nuk u realizua! Provoni perseri."}, {status: 400})
+        }else if(error.message === "Ngarkimi i galerise se imazheve te kompanise nuk u realizuan! Provoni perseri."){
+            return NextResponse.json({success: false, message: "Ngarkimi i galerise se imazheve te kompanise nuk u realizuan! Provoni perseri."}, {status: 400})
+        }else{
+            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})
+        }
     }
 }

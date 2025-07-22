@@ -193,8 +193,8 @@ model Subscribers {
 
 model ActivityLog {
   id String @id @default(uuid())
-  userId String 
-  user Users @relation(fields: [userId], references: [id])
+  userId String? 
+  user Users? @relation(fields: [userId], references: [id])
   action ActivityAction
   entityType EntityType
   entityId String?

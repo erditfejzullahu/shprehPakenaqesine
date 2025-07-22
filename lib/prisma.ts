@@ -1,6 +1,6 @@
-import { auth } from '@/auth'
 import { ActivityAction, EntityType, Prisma, PrismaClient } from '../app/generated/prisma'
 import { withAccelerate } from '@prisma/extension-accelerate'
+import { getPrismaContext } from './prisma-context'
 const globalForPrisma = global as unknown as { 
     prisma: PrismaClient
 }
@@ -9,44 +9,17 @@ type ExtensionContext = {
   ActivityLog: PrismaClient['activityLog'],
   __ipAddress?: string,
   __userAgent?: string,
+  __user?: string | null,
   metadata?: string
 }
 
 
-export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(withAccelerate()).$extends({
+export const prisma = new PrismaClient().$extends(withAccelerate()).$extends({
     name: "ActivityLogging",
-    model: {
-        $allModels: {
-            async logActivity<T>(
-                this: T,
-                userId: string,
-                action: ActivityAction,
-                entityType: EntityType,
-                entityId: string,
-                metadata?: string,
-                ipAddress?: string,
-                userAgent?: string
-            ) {
-                const context = Prisma.getExtensionContext(this) as unknown as ExtensionContext;
-                if(!('ActivityLog' in context)) return;
-                
-                return context.ActivityLog.create({
-                    data: {
-                        userId,
-                        action,
-                        entityType,
-                        entityId,
-                        metadata,
-                        ipAddress,
-                        userAgent
-                    }
-                })
-            }
-        }
-    },
     query: {
         $allModels: {
             async $allOperations({model, operation, args, query}) {
+                
                 const result = await query(args)
 
                 if(model === "ActivityLog") return result;
@@ -63,15 +36,6 @@ export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(with
 
                 const shouldLog = loggableOperations[model]?.includes(operation);
                 if(!shouldLog) return result;
-
-                const session = await auth()
-                if(!session || !session.user){
-                    console.warn("No session available for activity logging")
-                    return result;
-                }
-                const userId = session.user.id;
-                
-                if(!userId) return result;
 
                 let action: ActivityAction | null = null;
                 let entityType = model;
@@ -118,27 +82,22 @@ export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(with
                         return result;
                 }
 
+                if(!action) return result;
+
+                const {userId, ipAddress, userAgent} = getPrismaContext();
+
                 try {
-                    if(action && Object.values(ActivityAction).includes(action)) {
-                        const context = Prisma.getExtensionContext(this) as unknown as ExtensionContext;
-                        if("ActivityLog" in context){
-                            await context.ActivityLog.create({
-                                data: {
-                                    userId,
-                                    action,
-                                    entityType,
-                                    entityId,
-                                    metadata: {
-                                    model,
-                                    operation,
-                                    args: JSON.parse(JSON.stringify(args))
-                                    },
-                                    ipAddress: context.__ipAddress,
-                                    userAgent: context.__userAgent
-                                }
-                            })
+                    await prisma.activityLog.create({
+                        data: {
+                            userId,
+                            action,
+                            entityType,
+                            entityId: entityId?.toString(),
+                            metadata: JSON.stringify({model, operation, args}),
+                            ipAddress,
+                            userAgent
                         }
-                    }
+                    })
                 } catch (error) {
                     console.log("Failed to create activity log", error)
                 }
@@ -149,6 +108,6 @@ export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(with
     }
 })
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+// if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 export default prisma
