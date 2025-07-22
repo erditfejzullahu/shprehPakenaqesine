@@ -27,12 +27,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import UpdateProfileData from './UpdateProfileData';
+import ProfileUserLogs from './ProfileUserLogs';
 
 
 
 const ITEMS_PER_PAGE = 5;
 
-type ActiveTab = "myComplaints" | "contributions" | "settings"
+type ActiveTab = "myComplaints" | "contributions" | "settings" | "userLogs"
 
 const MyProfileData = ({session}: {session: Session}) => {
   const router = useRouter();
@@ -224,6 +225,7 @@ const MyProfileData = ({session}: {session: Session}) => {
         <button type='button' onClick={() => handleTabChange("settings")} className={`cursor-pointer ${activeTab === "settings" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
             Te dhenat tua
         </button>
+        <button type='button' onClick={() => handleTabChange("userLogs")} className={`cursor-pointer ${activeTab === "userLogs" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>Regjistrat</button>
       </div>
       
       {/* Tab Content */}
@@ -443,6 +445,10 @@ const MyProfileData = ({session}: {session: Session}) => {
         )}
         {activeTab === "settings" && (
           <UpdateProfileData session={session}/>
+        )}
+
+        {activeTab === "userLogs" && (
+          <ProfileUserLogs session={session}/>
         )}
       </div>
     </>

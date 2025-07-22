@@ -1,4 +1,4 @@
-import { Companies, Complaint, Contributions, ResolvedStatus, Users } from "@/app/generated/prisma";
+import { ActivityAction, Companies, Complaint, Contributions, ResolvedStatus, Users } from "@/app/generated/prisma";
 
 export interface ComplaintCardProps extends Complaint {
     company?: Companies,
@@ -135,4 +135,12 @@ export interface UploadResult {
     fileName: string;
     filePath: string;
     mimeType: string;
-  }
+}
+
+export interface UserProfileLogs {
+    id: string;
+    userId: string;
+    action: ActivityAction;
+    ipAddress: string;
+    userAgent: string;
+}
