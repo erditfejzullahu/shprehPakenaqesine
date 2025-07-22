@@ -101,7 +101,7 @@ export default async function AdminDashboard() {
           <div className='mb-4 flex flex-row justify-between items-center'>
             <div>
               <h2 className='text-lg font-semibold'>Kërkesat për kontribut</h2>
-              <span className='text-gray-600 text-sm'>{stats.contributionsRequests.length} Contributes</span>
+              <span className='text-gray-600 text-sm'>{stats.contributionsRequests.length} Kontribime</span>
             </div>
             <Link 
               href="/admin/contributions" 

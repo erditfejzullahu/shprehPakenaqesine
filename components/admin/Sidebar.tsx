@@ -7,7 +7,7 @@ export function Sidebar() {
     <div className="w-64 bg-white border-r border-gray-200 h-full">
       <div className="p-4 border-b border-gray-200 relative">
         <Link className='absolute right-4 top-3' href={"/"} target='_blank'><FaLocationArrow className='text-indigo-600 ' size={16}/></Link>
-        <h1 className="text-xl font-black text-gray-900">ShfaqPakenaqesine</h1>
+        <Link href={'/admin'} className="text-xl font-black text-gray-900 cursor-pointer">ShfaqPakenaqesine</Link>
       </div>
       <nav className="p-4">
         <ul className="space-y-2">

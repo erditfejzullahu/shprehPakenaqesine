@@ -83,6 +83,7 @@ model Users {
   complaints       Complaint[]
   complaintUpVotes ComplaintUpVotes[]
   contributions    Contributions[]
+  userLogs ActivityLog[]
 
   @@index([username])
 }
@@ -188,6 +189,62 @@ model Subscribers {
   email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id String @id @default(uuid())
+  userId String 
+  user Users @relation(fields: [userId], references: [id])
+  action ActivityAction
+  entityType EntityType
+  entityId String
+  metadata Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+}
+
+enum EntityType {
+  Users
+  Contributions
+  Companies
+  ComplaintUpVotes
+  Complaint
+  Reports
+  Subscribers
+}
+
+enum ActivityAction {
+  LOGIN
+  LOGOUT
+
+  CREATE_COMPANIES
+  UPDATE_COMPANIES
+  DELETE_COMPANIES
+
+  CREATE_COMPLAINT
+  UPDATE_COMPLAINT
+  DELETE_COMPLAINT
+
+  CREATE_COMPLAINTUPVOTES
+  DELETE_COMPLAINTUPVOTES
+
+  CREATE_REPORTS
+  UPDATE_REPORTS
+  DELETE_REPORTS
+
+  CREATE_SUBSCRIBERS
+  DELETE_SUBSCRIBERS
+
+  CREATE_CONTRIBUTIONS
+  
+  UPDATE_CONTRIBUTIONS_ADMIN_ACCEPT
+  UPDATE_CONTRIBUTIONS_ADMIN_UPDATE
+
+  UPDATE_USER_DETAILS
+  UPDATE_USER_ADMIN_DETAILS
+
+  CHANGE_PASSWORD
 }
 
 enum ResolvedStatus {
