@@ -35,13 +35,33 @@ const ProfileUserLogs = ({session}: {session: Session}) => {
     const columns = useMemo(() => [
         columnHelper.accessor("id", {
             header: "ID Regjistrit",
-            size:100,
+            size:40,
             enableSorting: true,
-            enableGlobalFilter: true
+            enableGlobalFilter: true,
+            cell: info => (
+                <ReusableHoverCard 
+                    trigger={
+                        <div className='line-clamp-1'>{info.getValue()}</div>
+                    }
+                    content= {
+                        <div className='text-sm font-normal text-center'>{info.getValue()}</div>
+                    }
+                />
+            )
         }),
         columnHelper.accessor("userId", {
             header: "ID Juaj",
-            size: 100,
+            size: 40,
+            cell: info => (
+                <ReusableHoverCard 
+                    trigger={
+                        <div className='line-clamp-1'>{info.getValue()}</div>
+                    }
+                    content= {
+                        <div className='text-sm font-normal text-center'>{info.getValue()}</div>
+                    }
+                />
+            )
         }),
         columnHelper.accessor("action", {
             header: "Nderveprimi",
@@ -111,7 +131,7 @@ const ProfileUserLogs = ({session}: {session: Session}) => {
         }),
         columnHelper.accessor("userAgent", {
             header: "Agjenti shfletuesit",
-            size: 100,
+            size: 300,
             enableSorting: true,
             enableGlobalFilter: true
         })
