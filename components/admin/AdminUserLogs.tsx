@@ -2,7 +2,7 @@
 import api from '@/lib/api'
 import { ActivityLogExtended, AdminActivityLog } from '@/types/admin'
 import { useQuery } from '@tanstack/react-query'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { LoadingSpinner } from '../LoadingComponents'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import CTAButton from '../CTAButton'
@@ -22,41 +22,44 @@ const fuzzyFilter: FilterFn<ActivityLogExtended> = (row, columnId, value) => {
 
 const AdminUserLogs = () => {
     const [sorting, setSorting] = useState<SortingState>([])
-    const [columnResizeMode, setColumnResizeMode] = useState<ColumnResizeMode>('onChange')
+    const [columnResizeMode] = useState<ColumnResizeMode>('onChange')
     const [globalFilter, setGlobalFilter] = useState("")
     const [goFullscreen, setGoFullscreen] = useState(false)
 
     const [pagination, setPagination] = useState({
         page: 1,
-        limit: 20
+        limit: "20"
     })
 
-    
 
+    
     const {data, isLoading, isError, refetch, isRefetching} = useQuery({
-        queryKey: ['adminLogs', pagination.page, pagination.limit],
+        queryKey: ['adminLogs', pagination],
         queryFn: async () => {
             const response = await api.get<AdminActivityLog>(`/api/admin/logs?page=${pagination.page}&limit=${pagination.limit}`)
             return response.data;
         },
-        refetchOnWindowFocus: true
+        refetchOnWindowFocus: false,
+        retry:false
     })    
+    
+    const totalPages = Math.ceil((data?.allLogs || 0) / parseInt(pagination.limit));
+    
 
-    const goNext = () => {
-        if(!data?.hasMore) return;
-        setPagination((prev) => ({
+    const goToPage = (page: number) => {
+        setPagination(prev => ({
             ...prev,
-            page: prev.page + 1
-        }))
+            page: Math.max(1, Math.min(page, Math.ceil((data?.allLogs || 0) / parseInt(pagination.limit))))
+        }));
     }
 
-    const goBack = () => {
-        if(pagination.page === 1) return;
-        setPagination((prev) => ({
-            ...prev,
-            page: prev.page -1
-        }))
+    const onLimitChange = (val: string) => {
+        setPagination(prev => ({
+            page: 1, // Reset to first page
+            limit: val
+        }));
     }
+
 
     const baseColumns = [
     columnHelper.accessor("id", {
@@ -81,20 +84,24 @@ const AdminUserLogs = () => {
         enableSorting: true,
         enableGlobalFilter: true,
         cell: info => (
-            <div className='flex flex-col items-center gap-2'>
-                <div>
-                    <Image 
-                        src={info.row.original.user.userProfileImage}
-                        className='size-12 rounded-full'
-                        alt={info.row.original.user.fullName}
-                        width={42}
-                        height={42}
-                    />
+            (info.row.original.user ? (
+                <div className='flex flex-col items-center gap-2'>
+                    <div>
+                        <Image 
+                            src={info.row.original.user.userProfileImage}
+                            className='size-12 rounded-full'
+                            alt={info.row.original.user.fullName}
+                            width={42}
+                            height={42}
+                        />
+                    </div>
+                    <div className='text-center'>
+                        {info.row.original.user.fullName}
+                    </div>
                 </div>
-                <div className='text-center'>
-                    {info.row.original.user.fullName}
-                </div>
-            </div>
+            ) : (
+                <div>Veprim tjeter</div>
+            ))
         )
     }),
     columnHelper.accessor("action", {
@@ -284,51 +291,54 @@ const AdminUserLogs = () => {
             <div className={`flex items-center justify-between mt-4`}>
             <div className="flex space-x-2">
                 <button
-                    onClick={() => setPagination((prev) => ({...prev, page: 1}))}
-                    disabled={pagination.page === 1}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
+                onClick={() => goToPage(1)}
+                disabled={pagination.page === 1}
+                className="px-3 py-1 border rounded disabled:opacity-50"
                 >
-                    «
+                «
                 </button>
                 <button
-                    onClick={goBack}
-                    disabled={pagination.page === 1}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
+                onClick={() => goToPage(pagination.page - 1)}
+                disabled={pagination.page === 1}
+                className="px-3 py-1 border rounded disabled:opacity-50"
                 >
-                    ‹
+                ‹
                 </button>
                 <button
-                    onClick={goNext}
-                    disabled={!data?.hasMore}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
+                onClick={() => goToPage(pagination.page + 1)}
+                disabled={pagination.page >= totalPages}
+                className="px-3 py-1 border rounded disabled:opacity-50"
                 >
-                    ›
+                ›
                 </button>
-                {/* Note: You might want to implement a "go to last page" function if you know the total pages */}
                 <button
-                    onClick={() => {/* Implement if you know total pages */}}
-                    disabled={true} // or !data?.hasMore if you're on last page
-                    className="px-3 py-1 border rounded disabled:opacity-50"
+                onClick={() => goToPage(totalPages)}
+                disabled={pagination.page >= totalPages}
+                className="px-3 py-1 border rounded disabled:opacity-50"
                 >
-                    »
+                »
                 </button>
             </div>
             <span className="flex items-center gap-1">
                 Faqja{' '}
                 <strong>
-                    {pagination.page} {/* Show current page from state */}
+                    {pagination.page} / {totalPages} {/* Show current page from state */}
                 </strong>
             </span>
             <span>
-                <Select disabled={isLoading || isRefetching} onValueChange={(val) => {setPagination((prev) => ({...prev, limit: Number(val)}))}} value={pagination.limit.toString()}>
-                    <SelectTrigger>
-                        <SelectValue placeholder={pagination.limit.toString()} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value='20'>20</SelectItem>
-                        <SelectItem value='50'>50</SelectItem>
-                        <SelectItem value='100'>100</SelectItem>
-                    </SelectContent>
+                <Select 
+                    onValueChange={onLimitChange}
+                    value={pagination.limit}
+                    disabled={isLoading || isRefetching}
+                >
+                <SelectTrigger>
+                    <SelectValue placeholder={pagination.limit} />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value='20'>20</SelectItem>
+                    <SelectItem value='50'>50</SelectItem>
+                    <SelectItem value='100'>100</SelectItem>
+                </SelectContent>
                 </Select>
             </span>
             {/* Remove the page size selector since your API handles this */}
@@ -340,4 +350,4 @@ const AdminUserLogs = () => {
   )
 }
 
-export default AdminUserLogs
+export default memo(AdminUserLogs)

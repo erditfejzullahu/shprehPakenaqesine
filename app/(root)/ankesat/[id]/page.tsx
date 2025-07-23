@@ -26,13 +26,13 @@ export async function getStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shprehpakenaqesine.com';
-
+  const {id} = await params
   try {
     const response = await fetch(
-      `${baseUrl}/api/complaint/${params.id}`,
+      `${baseUrl}/api/complaint/${id}}`,
       { next: { revalidate: 3600 } }
     );
 

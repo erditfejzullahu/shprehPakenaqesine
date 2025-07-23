@@ -131,7 +131,7 @@ export default async function AdminDashboard() {
               <FaArrowsUpDown className="h-3.5 w-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
-        <div className='bg-white p-6 rounded-lg shadow relative'>
+        <div className='bg-white p-6 max-h-[600px] overflow-y-auto rounded-lg shadow relative'>
           <h2 className='text-lg font-semibold mb-4'>Regjistrat e përdoruesve</h2>
           <AdminUserLogs />
         </div>

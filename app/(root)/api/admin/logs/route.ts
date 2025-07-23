@@ -24,7 +24,8 @@ export const GET = async (req: NextRequest) => {
             },
             skip,
             take: limit
-        })
+        })        
+        console.log(logs, ' ????')
 
         const allLogs = await prisma.activityLog.count();
         const hasMore = page * limit < allLogs;
