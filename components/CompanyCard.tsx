@@ -33,7 +33,7 @@ const CompanyCard = ({
       aria-description="kompania" 
       className={`w-full bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative`}
     >
-      <div className="flex justify-between items-start gap-4">
+      <div className="flex justify-between items-start gap-4 flex-1">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-md overflow-hidden border border-gray-200">
             <Image
@@ -44,8 +44,8 @@ const CompanyCard = ({
               className="w-full h-full object-cover"
             />
           </div>
-          <div>
-            <h2 className="text-lg text-left font-semibold text-gray-900 line-clamp-1">{name}</h2>
+          <div className="flex-1">
+            <h2 className="text-lg text-left font-semibold text-gray-900 line-clamp-1 break-all">{name}</h2>
             {industry && (
               <p className="text-sm text-gray-600 mt-1 text-left">{industry}</p>
             )}

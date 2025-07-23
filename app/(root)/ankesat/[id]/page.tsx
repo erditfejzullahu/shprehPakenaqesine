@@ -62,7 +62,7 @@ export async function generateMetadata({
       : `Lexo ankesën rreth ${complaint.company ? complaint.company.name : 'Komunës së ' + complaint.municipality}. Shprehu dhe ndaj përvojën tënde.`;
     
     // Get first available image (from evidence, company, or user)
-    const complaintImage = complaint.company ? complaint.company.name : ""
+    const complaintImage = complaint.company ? complaint.company.logoUrl : MUNICIPALITY_IMAGES.find(item => item.municipality === complaint.municipality)?.image
 
     const keywords = [
       complaint.title?.toLowerCase(),
