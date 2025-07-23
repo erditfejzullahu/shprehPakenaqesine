@@ -24,7 +24,11 @@ export const GET = async (req: NextRequest) => {
             skip,
             take: limit
         })
-        return NextResponse.json(logs, {status: 200})
+
+        const allLogs = await prisma.activityLog.count();
+        const hasMore = page * limit < allLogs;
+
+        return NextResponse.json({logs, hasMore}, {status: 200})
     } catch (error) {
         console.error(error);
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server"}, {status: 500})

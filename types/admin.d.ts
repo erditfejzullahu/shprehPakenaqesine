@@ -1,4 +1,4 @@
-import { Reports } from "@/app/generated/prisma"
+import { ActivityLog, Reports } from "@/app/generated/prisma"
 import { Companies, Complaint, Users, Subscribers, Contributions } from "@/app/generated/prisma"
 
 export type Company = Companies & {
@@ -44,4 +44,16 @@ export type ExtendedContribution = Contributions & {
 export type ReportsGroupBy = {
   complaintId: string | null,
   _count: {complaintId: number}
+}
+
+type ActivityLogExtended = ActivityLog & {
+  user: {
+    id: string;
+    fullName: string;
+    userProfileImage: string;
+  }
+}
+export type AdminActivityLog = {
+  hasMore: boolean,
+  logs: ActivityLogExtended[]
 }

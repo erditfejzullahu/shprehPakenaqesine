@@ -7,6 +7,7 @@ import { FaArrowsUpDown } from 'react-icons/fa6'
 import LatestComplaintCard from '@/components/admin/LatestPendingComplaintCard'
 import ContributionRequestCard from '@/components/admin/ContributionRequestCard'
 import { isAdmin } from '@/lib/utils/isAdmin'
+import AdminUserLogs from '@/components/admin/AdminUserLogs'
 
 export default async function AdminDashboard() {
   await isAdmin('/')
@@ -132,6 +133,7 @@ export default async function AdminDashboard() {
         </div>
         <div className='bg-white p-6 rounded-lg shadow'>
           <h2 className='text-lg font-semibold mb-4'>Regjistrat e përdoruesve</h2>
+          <AdminUserLogs />
         </div>
       </div>
     </div>
