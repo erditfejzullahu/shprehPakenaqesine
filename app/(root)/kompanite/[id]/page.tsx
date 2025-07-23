@@ -1,9 +1,97 @@
+import { Companies } from '@/app/generated/prisma';
 import CompanyPage from '@/components/CompanyPage';
 import api from '@/lib/api';
 import { CompanyPerIdInterface } from '@/types/types';
+import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
+
+export const revalidate = 300;
+
+export async function getStaticParams() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/companies/ids`, {next: {revalidate: revalidate}, method: "GET"})
+  if(!res.ok){
+    throw new Error("Error fetching ids")
+  }
+  const ids: {id: string}[] = await res.json()
+  return ids.map((company) => ({
+    id: company.id
+  }))
+}
+
+export async function generateMetadata({params}: {params: Promise<{id: string}>}): Promise<Metadata> {
+  const {id} = await params;
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/company/${id}`, {next: {revalidate: 3600000}});
+    if(!response.ok){
+      return {
+        title: 'Kompania - ShprehPakenaqësinë',
+        description: 'Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.',
+        keywords: ['kompani', 'vlerësim', 'shqipëri', 'puna', 'shërbime', 'ankesa', 'raportime', 'kosovë', 'kosove', 'shqiperi'],
+        openGraph: {
+          title: 'Vlerëso Kompaninë - ShprehPakenaqësinë',
+          description: 'Platforma për vlerësimin e kompanive në Kosovë në bazë të ankesave',
+        },
+      };
+    }
+    const {company}: CompanyPerIdInterface = await response.json();
+    
+    const seoTitle = `${company.name} - Vlerësim i Kompanisë | ShprehPakenaqësinë`
+    const seoDescription = company.description
+      ? `${company.description.substring(0,160)}`
+      : `Vlerëso ${company.name} në platformën tone duke krijuar ankesa apo raportime. Shiko detajet, komentet dhe shprehu për përvojën tënde.`;
+  
+    const keywords = [
+      company.name?.toLowerCase(),
+      'vleresim kompanie',
+      'puna në shqiperi',
+      'puna në kosove',
+      'kompani shqiptare',
+      'kompani kosovare',
+      company.industry?.toLowerCase(),
+      company.address?.toLowerCase(),
+    ].filter(Boolean);
+
+    return {
+      title: seoTitle,
+      description: seoDescription,
+      keywords: keywords,
+      openGraph: {
+        title: seoTitle,
+        description: seoDescription,
+        type: 'website',
+        locale: 'sq_AL',
+        siteName: 'ShprehPakenaqësinë',
+        images: [
+          {
+            url: company.logoUrl,
+            secureUrl: company.logoUrl,
+            alt: `${company.name} - ShprehPakenaqësinë`
+          }
+        ]
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: seoTitle,
+        description: seoDescription,
+        images: [company.logoUrl]
+      },
+    }
+  } catch (error) {
+    console.error('Gabim në marrjen e të dhënave:', error);
+    return {
+      title: 'Kompania - ShprehPakenaqësinë',
+      description: 'Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.',
+      keywords: ['kompani', 'vlerësim', 'shqipëri', 'puna', 'shërbime', 'ankesa', 'raportime', 'kosovë', 'kosove', 'shqiperi'],
+      openGraph: {
+        title: 'Vlerëso Kompaninë - ShprehPakenaqësinë',
+        description: 'Platforma për vlerësimin e kompanive në Kosovë në bazë të ankesave',
+      },
+    };
+  }
+
+}
 
 const page = async ({params}: {params: Promise<{id: string}>}) => {    
     const {id} = await params;
