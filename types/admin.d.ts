@@ -46,7 +46,7 @@ export type ReportsGroupBy = {
   _count: {complaintId: number}
 }
 
-type ActivityLogExtended = ActivityLog & {
+export type ActivityLogExtended = ActivityLog & {
   user: {
     id: string;
     fullName: string;
@@ -55,5 +55,6 @@ type ActivityLogExtended = ActivityLog & {
 }
 export type AdminActivityLog = {
   hasMore: boolean,
-  logs: ActivityLogExtended[]
+  logs: ActivityLogExtended[],
+  allLogs: number
 }

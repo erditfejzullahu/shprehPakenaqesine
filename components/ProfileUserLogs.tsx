@@ -37,7 +37,7 @@ const ProfileUserLogs = ({session}: {session: Session}) => {
             header: "ID Regjistrit",
             size:40,
             enableSorting: true,
-            enableGlobalFilter: true,
+            // enableGlobalFilter: true,
             cell: info => (
                 <ReusableHoverCard 
                     trigger={

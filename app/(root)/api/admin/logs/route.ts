@@ -8,8 +8,9 @@ export const GET = async (req: NextRequest) => {
         if(adminCheck instanceof NextResponse) return adminCheck;
         const pageStr = req.nextUrl.searchParams.get('page')
         const page = pageStr ? parseInt(pageStr) : 1
-        const limit = 20
-        const skip = (page - 1) * limit;
+        const limitStr = req.nextUrl.searchParams.get('limit')
+        const limit = limitStr ? parseInt(limitStr) : 20
+        const skip = (page - 1) * limit;        
 
         const logs = await prisma.activityLog.findMany({
             include: {
@@ -28,7 +29,7 @@ export const GET = async (req: NextRequest) => {
         const allLogs = await prisma.activityLog.count();
         const hasMore = page * limit < allLogs;
 
-        return NextResponse.json({logs, hasMore}, {status: 200})
+        return NextResponse.json({logs, hasMore, allLogs}, {status: 200})
     } catch (error) {
         console.error(error);
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server"}, {status: 500})
