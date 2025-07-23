@@ -49,6 +49,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                 attachments: true,
                 audiosAttached: true,
                 videosAttached: true,
+                municipality: true,
                 upVotes: true,
                 resolvedStatus: true,
                 category: true,
@@ -110,6 +111,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
             audiosAttached: complaintQuery.audiosAttached,
             videosAttached: complaintQuery.videosAttached,
             upVotes: complaintQuery.upVotes,
+            municipality: complaintQuery.municipality,
             resolvedStatus: complaintQuery.resolvedStatus,
             category: complaintQuery.category,
             company: complaintQuery.company ? {

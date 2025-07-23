@@ -134,9 +134,12 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
     if(!response.ok){
       throw new Error("Dicka shkoi gabim. Ju lutem provoni perseri!")
     }
+
+    
     
     const data: ComplantPerIdInterface = await response.json();
-
+    console.log(data);
+    
     const getCategoryLabel = (category: string) => {
       // Convert enum value to readable label
       const words = category.split('_').map(word => {
@@ -184,6 +187,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                     <span className="px-3 py-1  text-xs shadow-sm font-medium bg-blue-100 text-blue-800">
                       {getCategoryLabel(data.complaint.category)}
                     </span>
+                    <span className="px-3 py-1 first-letter:uppercase lowercase text-xs shadow-sm font-medium bg-indigo-50 text-indigo-800">{data.complaint.municipality.replace("_", " ")}</span>
                   </div>
 
                   {/* Complaint Description */}
@@ -268,12 +272,19 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                   <div className="flex items-center gap-4 mb-4">
                     <img 
                       src={data.complaint.company ? data.complaint.company.logoUrl : MUNICIPALITY_IMAGES.find(img => img.municipality === data.complaint.municipality)?.image} //data.complaint.municipaltiy 
-                      alt={`${data.complaint.company ? data.complaint.company.name : data.complaint.municipality} logo`} 
+                      alt={`${data.complaint.company ? data.complaint.company.name : data.complaint.municipality.replace("_", " ")} logo`} 
                       className="h-12 w-12 rounded-md object-contain"
                     />
                     <div>
-                      <h4 className="font-medium text-gray-900">{data.complaint.company ? data.complaint.company.name : 'Komuna ' + data.complaint.municipality.replace("_", " ")}</h4>
-                      {data.complaint.company ? <p className="text-sm text-gray-500">{data.complaint.company.industry}</p> : <Link target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 text-sm" href={MUNICIPALITY_IMAGES.find(img => img.municipality === data.complaint.municipality)?.link || ""}>{data.complaint.municipality.replace("_", " ")}</Link>}
+                      <h4 className="font-medium text-gray-900 first-letter:uppercase lowercase">{data.complaint.company ? data.complaint.company.name : 'Komuna ' + data.complaint.municipality.replace("_", " ")}</h4>
+                      {data.complaint.company 
+                        ? <p className="text-sm text-gray-500">{data.complaint.company.industry}</p> 
+                        : <Link target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 text-sm" href={MUNICIPALITY_IMAGES.find(img => img.municipality === data.complaint.municipality)?.link || ""}>
+                            Vizito komunen
+                            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </Link>}
                     </div>
                   </div>
                   {data.complaint.company && data.complaint.company.website && (
