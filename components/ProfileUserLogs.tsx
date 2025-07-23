@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Session } from 'next-auth'
 import React, { useMemo, useState } from 'react'
 import { LoadingSpinner } from './LoadingComponents';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaInfoCircle } from 'react-icons/fa';
 import CTAButton from './CTAButton';
 import { UserProfileLogs } from '@/types/types';
 import { ColumnResizeMode, createColumnHelper, FilterFn, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table';
@@ -11,6 +11,7 @@ import { rankItem } from '@tanstack/match-sorter-utils';
 import { Input } from './ui/input';
 import { ActivityAction } from '@/app/generated/prisma';
 import { Badge } from './ui/badge';
+import { ReusableHoverCard } from './ReusableHoverCard';
 
 const columnHelper = createColumnHelper<UserProfileLogs>();
 const fuzzyFilter: FilterFn<UserProfileLogs> = (row, columnId, value) => {
@@ -89,7 +90,17 @@ const ProfileUserLogs = ({session}: {session: Session}) => {
             };
             
             return (
-                <Badge variant={"default"}>{actionTranslations[action] || action}</Badge>
+                <ReusableHoverCard
+                    trigger={
+                        <div className='relative w-fit cursor-pointer'>
+                            <FaInfoCircle color='#fff' size={18} className='absolute bg-indigo-600 p-0.5 rounded-full -right-2 -top-1.5'/>
+                            <Badge variant={"default"}>{actionTranslations[action] || action}</Badge>
+                        </div>
+                    }
+                    content={
+                        <div className='text-sm text-center'>Kerkoni ne hyrje: <span className='text-indigo-600'>{action}</span></div>
+                    }
+                />
             )
         }
     }),
