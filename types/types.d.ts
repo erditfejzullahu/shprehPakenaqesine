@@ -72,7 +72,7 @@ export interface ComplaintPageContributions {
 }
 
 export interface ComplaintPerIdWithCompany extends Complaint {
-    company: Companies;
+    company?: Companies;
     user: {
         userProfileImage: string;
         username: string;

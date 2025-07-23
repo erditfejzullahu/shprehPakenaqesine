@@ -9,6 +9,7 @@ import { cookies } from 'next/headers';
 import { ImageIcon } from 'lucide-react';
 import { FaFileAudio, FaFileVideo, FaImage } from 'react-icons/fa';
 import { Metadata } from 'next';
+import { MUNICIPALITY_IMAGES } from '@/data/municipalities';
 
 export const revalidate = 300;
 
@@ -55,18 +56,18 @@ export async function generateMetadata({
     const {complaint}: ComplantPerIdInterface = await response.json();
     
     // Generate SEO metadata
-    const seoTitle = `${complaint.title} - Ankesë ndaj ${complaint.company.name} | ShprehPakenaqësinë`;
+    const seoTitle = `${complaint.title} - Ankesë ndaj ${complaint.company ? complaint.company.name : 'Komunës së ' + complaint.municipality} | ShprehPakenaqësinë`;
     const seoDescription = complaint.description
       ? `${complaint.description.substring(0, 160)}...`
-      : `Lexo ankesën rreth ${complaint.company.name}. Shprehu dhe ndaj përvojën tënde.`;
+      : `Lexo ankesën rreth ${complaint.company ? complaint.company.name : 'Komunës së ' + complaint.municipality}. Shprehu dhe ndaj përvojën tënde.`;
     
     // Get first available image (from evidence, company, or user)
-    const complaintImage = complaint.company.logoUrl
+    const complaintImage = complaint.company ? complaint.company.name : ""
 
     const keywords = [
       complaint.title?.toLowerCase(),
       'ankesa',
-      complaint.company.name?.toLowerCase(),
+      complaint.company ? complaint.company.name : "",
       complaint.municipality?.toLowerCase(),
       complaint.category?.toLowerCase(),
       'shqipëri',
@@ -88,7 +89,7 @@ export async function generateMetadata({
         siteName: 'ShprehPakenaqësinë',
         images: [{
           url: `${process.env.NEXT_PUBLIC_BASE_URL}/${complaintImage}`,
-          alt: `${complaint.title} - Ankesë ndaj ${complaint.company.name}`,
+          alt: `${complaint.title} - Ankesë ndaj ${complaint.company ? complaint.company : 'Komunës së ' + complaint.municipality}`,
         }],
         publishedTime: new Date(complaint.createdAt).toISOString(),
         modifiedTime: new Date(complaint.updatedAt).toISOString(),
@@ -263,19 +264,19 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
               {/* Company Card */}
               <div className="bg-white shadow-lg overflow-hidden">
                 <div className="p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Informacione te kompanise</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">{data.complaint.company ? "Ndaj kompanisë" : "Ndaj komunës"}</h3>
                   <div className="flex items-center gap-4 mb-4">
                     <img 
-                      src={data.complaint.company.logoUrl} 
-                      alt={`${data.complaint.company.name} logo`} 
+                      src={data.complaint.company ? data.complaint.company.logoUrl : MUNICIPALITY_IMAGES.find(img => img.municipality === data.complaint.municipality)?.image} //data.complaint.municipaltiy 
+                      alt={`${data.complaint.company ? data.complaint.company.name : data.complaint.municipality} logo`} 
                       className="h-12 w-12 rounded-md object-contain"
                     />
                     <div>
-                      <h4 className="font-medium text-gray-900">{data.complaint.company.name}</h4>
-                      <p className="text-sm text-gray-500">{data.complaint.company.industry}</p>
+                      <h4 className="font-medium text-gray-900">{data.complaint.company ? data.complaint.company.name : 'Komuna ' + data.complaint.municipality.replace("_", " ")}</h4>
+                      {data.complaint.company ? <p className="text-sm text-gray-500">{data.complaint.company.industry}</p> : <Link target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 text-sm" href={MUNICIPALITY_IMAGES.find(img => img.municipality === data.complaint.municipality)?.link || ""}>{data.complaint.municipality.replace("_", " ")}</Link>}
                     </div>
                   </div>
-                  {data.complaint.company.website && (
+                  {data.complaint.company && data.complaint.company.website && (
                     <a 
                       href={data.complaint.company.website} 
                       target="_blank" 

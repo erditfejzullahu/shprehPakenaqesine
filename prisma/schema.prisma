@@ -34,13 +34,13 @@ enum Municipality {
   KACANIK               // Kaçanik
   KAMENICE              // Kamenicë
   KLINA                 // Klinë
-  KLOKOT                // Kllokot
+  KLLOKOT                // Kllokot
   LEPOSAVIQ             // Leposaviq
   LIPJAN                // Lipjan
   MALISHEVE             // Malishevë
   MITROVICE_JUG         // Mitrovicë e Jugut
   MITROVICE_VERI        // Mitrovicë e Veriut
-  NOVO_BRDO             // Novo Brdo
+  NOVOBERDE             // Novo Brdo
   OBILIQ                // Obiliq
   PARTESH               // Partesh
   PEJE                  // Pejë
@@ -52,11 +52,12 @@ enum Municipality {
   SHTERPCE              // Shtërpcë
   SKENDERAJ             // Skenderaj
   SUHAREKE              // Suharekë
-  SHARR                 // Sharr
   VITI                  // Viti
   VUSHTRRI              // Vushtrri
   ZUBIN_POTOK           // Zubin Potok
   ZVECAN                // Zveçan
+  SHTIME
+  MAMUSHE
 }
 
 enum UserRole {
