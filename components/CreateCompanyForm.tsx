@@ -167,7 +167,7 @@ const CreateCompanyForm = () => {
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                           <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                           <p className="text-sm text-muted-foreground">
-                            Klikoni për të ngarkuar logo
+                            Klikoni për të ngarkuar logo <span className='text-indigo-600'>(Maksimum: 10MB)</span>
                           </p>
                         </div>
                         <input 
@@ -253,7 +253,7 @@ const CreateCompanyForm = () => {
                       <div className="flex flex-col items-center justify-center">
                         <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
                         <p className="text-sm text-muted-foreground">
-                          Klikoni për të ngarkuar imazhe
+                          Klikoni për të ngarkuar imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                         </p>
                       </div>
                       <input 

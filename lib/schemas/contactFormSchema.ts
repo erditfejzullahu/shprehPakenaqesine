@@ -13,8 +13,11 @@ export const contactFormSchema = z.object({
         "TJERA"            // Arsye tjera
     ]),
     attachments: z.array(
-        z.string().regex(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/, {
-            message: "Formati i imazhit duhet të jetë PNG, JPEG, JPG, WEBP ose GIF në Base64"
-        })
-    ).optional()
+        z.string().regex(
+          /^data:(image\/(png|jpeg|jpg|gif|webp)|application\/(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document|vnd\.ms-excel|vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet|vnd\.ms-powerpoint|vnd\.openxmlformats-officedocument\.presentationml\.presentation));base64,/,
+          {
+            message: "Bashkëngjitjet duhet të jenë në formatin base64 dhe të jenë: imazhe (PNG, JPEG, JPG, GIF, WEBP), PDF, DOC, DOCX, XLS, XLSX, PPT ose PPTX"
+          }
+        )
+      ).optional(),
 })

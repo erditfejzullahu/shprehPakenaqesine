@@ -72,9 +72,13 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
         let logo: string = company.logoUrl
 
         if(validatedData.logoAttachment){
-            const result: UploadResult = await fileUploadService.uploadFile(validatedData.logoAttachment, "companys/logo", company.id)
-            if(result.success){
-                logo = result.url
+            try {
+                const result: UploadResult = await fileUploadService.uploadFile(validatedData.logoAttachment, "companys/logo", company.id)
+                if(result.success){
+                    logo = result.url
+                }
+            } catch (error) {
+                throw new Error("Ngarkimi i logos deshtoi. Ju lutem provoni perseri!")
             }
         }
 
@@ -83,9 +87,13 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
 
         if(validatedData.imageAttachments && validatedData.imageAttachments.length > 0){
             for(const image of validatedData.imageAttachments){
-                const result: UploadResult = await fileUploadService.uploadFile(image, "companys/images", company.id)
-                if(result.success){
-                    newImages.push(result.url)
+                try {
+                    const result: UploadResult = await fileUploadService.uploadFile(image, "companys/images", company.id)
+                    if(result.success){
+                        newImages.push(result.url)
+                    }
+                } catch (error) {
+                    throw new Error("Ngarkimi i imazheve deshtoi. Ju lutem provoni perseri!")
                 }
             }
         }
@@ -115,9 +123,15 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
         })
         
         return NextResponse.json({success: true, message: "Sapo rifreskuat me sukses kompanine"}, {status: 200})
-    } catch (error) {
+    } catch (error: any) {
         console.error(error)
-        return NextResponse.json({succes: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri"}, {status: 500})
+        if(error.message === "Ngarkimi i logos deshtoi. Ju lutem provoni perseri!"){
+            return NextResponse.json({succes: false, message: error.message}, {status: 500})
+        }else if(error.message === "Ngarkimi i imazheve deshtoi. Ju lutem provoni perseri!"){
+            return NextResponse.json({succes: false, message: error.message}, {status: 500})
+        }else{
+            return NextResponse.json({succes: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri"}, {status: 500})
+        }
     }
 }
 

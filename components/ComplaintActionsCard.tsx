@@ -349,7 +349,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               <div className="flex flex-col items-center justify-center">
                                 <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
                                 <p className="text-sm text-muted-foreground">
-                                  Klikoni për të ngarkuar dokumente/imazhe
+                                  Klikoni për të ngarkuar dokumente/imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                 </p>
                               </div>
                               <input 
@@ -405,7 +405,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               <div className="flex flex-col items-center justify-center">
                                 <AudioLinesIcon className="h-8 w-8 text-muted-foreground mb-2" />
                                 <p className="text-sm text-muted-foreground">
-                                  Klikoni për të ngarkuar audio/inqizime
+                                  Klikoni për të ngarkuar audio/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                 </p>
                               </div>
                               <input 
@@ -456,7 +456,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               <div className="flex flex-col items-center justify-center">
                                 <Video className="h-8 w-8 text-muted-foreground mb-2" />
                                 <p className="text-sm text-muted-foreground">
-                                  Klikoni për të ngarkuar video/inqizime
+                                  Klikoni për të ngarkuar video/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                 </p>
                               </div>
                               <input 
@@ -598,7 +598,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                                 <div className="flex flex-col items-center justify-center">
                                   <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
                                   <p className="text-sm text-muted-foreground">
-                                    Klikoni për të ngarkuar dokumente/imazhe
+                                    Klikoni për të ngarkuar dokumente/imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                   </p>
                                 </div>
                                 <input 
@@ -654,7 +654,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                                   <div className="flex flex-col items-center justify-center">
                                     <AudioLinesIcon className="h-8 w-8 text-muted-foreground mb-2" />
                                     <p className="text-sm text-muted-foreground">
-                                      Klikoni për të ngarkuar audio/inqizime
+                                      Klikoni për të ngarkuar audio/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                     </p>
                                   </div>
                                   <input 
@@ -705,7 +705,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                                   <div className="flex flex-col items-center justify-center">
                                     <Video className="h-8 w-8 text-muted-foreground mb-2" />
                                     <p className="text-sm text-muted-foreground">
-                                      Klikoni për të ngarkuar video/inqizime
+                                      Klikoni për të ngarkuar video/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                     </p>
                                   </div>
                                   <input 

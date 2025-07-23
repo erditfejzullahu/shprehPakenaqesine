@@ -67,7 +67,7 @@ export const POST = async (req: NextRequest) => {
                         const result: UploadResult = await fileUploadService.uploadFile(element, "reports/attachments", report.id)
                         console.log(result, '  result');
                         if(!result.success){
-                            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve"}, {status: 400})
+                            throw new Error("Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve")
                         }
                         attachments.push(result.url)
                     }
@@ -82,7 +82,7 @@ export const POST = async (req: NextRequest) => {
                         
                         
                         if(!result.success){
-                            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te audiove/inqizimeve"}, {status: 400})
+                            throw new Error("Dicka shkoi gabim ne ngarkim te audiove/inqizimeve")
                         }
                         audioAttachments.push(result.url)
                     }
@@ -92,7 +92,7 @@ export const POST = async (req: NextRequest) => {
                     for(const element of validateObj.videosAttached){
                         const result: UploadResult = await fileUploadService.uploadFile(element, "reports/videosAttached", report.id)
                         if(!result.success){
-                            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te videove/inqizimeve"}, {status: 400})
+                            throw new Error("Dicka shkoi gabim ne ngarkim te videove/inqizimeve")
                         }
                         videoAttachments.push(result.url)
                     }
@@ -111,8 +111,15 @@ export const POST = async (req: NextRequest) => {
 
         return NextResponse.json({success: true, message: `Sapo keni raportuar me sukses ankesen/raportimin. Do te njoftoheni vazhdimisht ne rast te ndryshimeve!`}, {status: 201, headers: responseHeaders})
 
-    } catch (error) {
+    } catch (error: any) {
         console.error(error)
+        if(error.message === "Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve"){
+            return NextResponse.json({success: false, message: error.message}, {status: 500})
+        }else if(error.message === "Dicka shkoi gabim ne ngarkim te audiove/inqizimeve"){
+            return NextResponse.json({success: false, message: error.message}, {status: 500})
+        }else if(error.message === "Dicka shkoi gabim ne ngarkim te videove/inqizimeve"){
+            return NextResponse.json({success: false, message: error.message}, {status: 500})
+        }
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri!"}, {status: 500})
     }
 }

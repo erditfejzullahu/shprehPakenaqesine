@@ -45,7 +45,7 @@ const ComplaintCard = ({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-row overflow-x-auto gap-2">
         <Badge
           variant={
             status === 'ACCEPTED' ? 'default' :
@@ -57,6 +57,7 @@ const ComplaintCard = ({
            status === 'ACCEPTED' ? 'Pranuar' : 'Në pritje'}
         </Badge>
         <Badge variant="outline">{getCategoryLabel(category)}</Badge>
+        <Badge variant={"destructive"}>{municipality.replace("_", " ")}</Badge>
       </div>
 
       <div className="flex items-center justify-between text-sm text-gray-500">

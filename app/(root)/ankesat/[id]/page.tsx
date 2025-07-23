@@ -204,7 +204,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         {/* Documents */}
                         {data.complaint.attachments.map((file, index) => (
-                          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/${file}`} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100">
+                          <Link href={`${file}`} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100">
                             {file.includes('application/pdf') || 
                             file.includes('application/msword') || 
                             file.includes('vnd.openxmlformats-officedocument.wordprocessingml.document') || 
@@ -227,7 +227,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
 
                         {/* Videos */}
                         {data.complaint.videosAttached?.map((file, index) => (
-                          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/${file}`} aria-description='attachment' target='_blank' key={`video-${index}`} className="shadow-md p-3 flex items-center">
+                          <Link href={`${file}`} aria-description='attachment' target='_blank' key={`video-${index}`} className="shadow-md p-3 flex items-center">
                             <FaFileVideo className='text-gray-400 w-8 h-8 mr-2' />
                             <div className="truncate">
                               <p className="text-sm font-medium text-gray-900 truncate">Video/Inqizime</p>
@@ -238,7 +238,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
 
                         {/* Audios */}
                         {data.complaint.audiosAttached?.map((file, index) => (
-                          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/${file}`} aria-description='attachment' target='_blank' key={`audio-${index}`} className="shadow-md p-3 flex items-center">
+                          <Link href={`${file}`} aria-description='attachment' target='_blank' key={`audio-${index}`} className="shadow-md p-3 flex items-center">
                             <FaFileAudio className='text-gray-400 w-8 h-8 mr-2' />
                             <div className="truncate">
                               <p className="text-sm font-medium text-gray-900 truncate">Audio/Inqizime</p>
@@ -276,7 +276,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                       className="h-12 w-12 rounded-md object-contain"
                     />
                     <div>
-                      <h4 className="font-medium text-gray-900 first-letter:uppercase lowercase">{data.complaint.company ? data.complaint.company.name : 'Komuna ' + data.complaint.municipality.replace("_", " ")}</h4>
+                      <h4 className="font-medium text-gray-900">{data.complaint.company ? data.complaint.company.name : 'Komuna ' + data.complaint.municipality.replace("_", " ")}</h4>
                       {data.complaint.company 
                         ? <p className="text-sm text-gray-500">{data.complaint.company.industry}</p> 
                         : <Link target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 text-sm" href={MUNICIPALITY_IMAGES.find(img => img.municipality === data.complaint.municipality)?.link || ""}>

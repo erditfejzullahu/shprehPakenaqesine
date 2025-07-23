@@ -44,6 +44,14 @@ class FileUploadService {
         'video/x-msvideo'
     ])
 
+    private readonly validAudioTypes: Set<string> = new Set([
+      'audio/mp3',
+      'audio/wav',
+      'audio/ogg',
+      'audio/mpeg'
+    ])
+
+
     private readonly validDocumentTypes: Set<string> = new Set([
       'application/pdf',
       'application/msword',  // .doc
@@ -83,8 +91,9 @@ class FileUploadService {
           const isValidImage = this.validImageTypes.has(mimeType);
           const isValidVideo = this.validVideoTypes.has(mimeType);
           const isValidDoc = this.validDocumentTypes.has(mimeType);
+          const isValidAudio = this.validAudioTypes.has(mimeType);
           
-          if (!isValidImage && !isValidVideo && !isValidDoc) {
+          if (!isValidImage && !isValidVideo && !isValidDoc && !isValidAudio) {
             return { valid: false, error: 'Unsupported file type' };
           }
     

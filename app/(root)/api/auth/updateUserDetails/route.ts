@@ -78,9 +78,13 @@ export const PATCH = async (req: NextRequest) => {
 
         let newProfilePicture = user.userProfileImage;
         if(validatedObj.userProfileImage){
-            const result: UploadResult = await fileUploadService.uploadFile(validatedObj.userProfileImage, "users", "profile")
-            if(result.success){
-                newProfilePicture = result.url
+            try {
+                const result: UploadResult = await fileUploadService.uploadFile(validatedObj.userProfileImage, "users", "profile")
+                if(result.success){
+                    newProfilePicture = result.url
+                }
+            } catch (error) {
+                throw new Error("Ngarkimi i imazhit te profilit deshtoi! Ju lutem provoni perseri.")
             }
         }
 
@@ -125,8 +129,12 @@ export const PATCH = async (req: NextRequest) => {
         })
 
         return NextResponse.json({success: true, message: "Te dhenat u perditesuan me sukses", profilePic: newProfilePicture}, {status: 200, headers: ratelimiter.responseHeaders})
-    } catch (error) {
+    } catch (error:any) {
         console.error(error)
-        return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})
+        if(error.message === "Ngarkimi i imazhit te profilit deshtoi! Ju lutem provoni perseri."){
+            return NextResponse.json({success: false, message: error.message}, {status: 500})
+        }else{
+            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})
+        }
     }
 }

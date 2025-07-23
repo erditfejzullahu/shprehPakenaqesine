@@ -594,7 +594,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                         <p className="text-sm text-muted-foreground">
-                          Klikoni për të ngarkuar Imazhe/Dokumente
+                          Klikoni për të ngarkuar Imazhe/Dokumente <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                         </p>
                       </div>
                       <Input 
@@ -663,7 +663,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                           <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                           <p className="text-sm text-muted-foreground">
-                            Klikoni për të ngarkuar Audio/Inqizime
+                            Klikoni për të ngarkuar Audio/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                           </p>
                         </div>
                         <Input 
@@ -732,7 +732,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                           <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                           <p className="text-sm text-muted-foreground">
-                            Klikoni për të ngarkuar Video/Inqizime
+                            Klikoni për të ngarkuar Video/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                           </p>
                         </div>
                         <Input 

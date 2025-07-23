@@ -20,7 +20,7 @@ export const POST = async (req: NextRequest) => {
         return NextResponse.json({success: false, message: "Ju nuk jeni te autorizuar per kete veprim!"}, {status: 401})
     }
     const rateLimitKey = `rate_limit:complaints:${session.user.id}:${ipAddress}`
-    const ratelimiter = await rateLimit(rateLimitKey, 1, 120)
+    const ratelimiter = await rateLimit(rateLimitKey, 5, 120)
     if(!ratelimiter.allowed){
         return NextResponse.json({
             success: false,
@@ -32,11 +32,17 @@ export const POST = async (req: NextRequest) => {
     }
     try {
         const body: ComplaintsSchema = await req.json();
+        console.log(body, " body");
+        
         const sanitizedBody = {
             companyId: body.companyId,
             title: body.title ? DOMPurify.sanitize(validator.escape(body.title.trim())) : null,
             description: DOMPurify.sanitize(validator.escape(body.description.trim() || "")),
             category: body.category,
+            municipality: body.municipality,
+            audiosAttached: body.audiosAttached,
+            videosAttached: body.videosAttached,
+            attachments: body.attachments
         }
 
         const validatedComplaint = createComplaintsSchema.parse(sanitizedBody)
@@ -74,7 +80,7 @@ export const POST = async (req: NextRequest) => {
                                 attachments.push(result.url)
                             }
                         } catch (error) {
-                            return NextResponse.json({success: false, message: "Ngarkimi i imazheve/dokumenteve te ankeses nuk u realizuan! Provoni perseri."}, {status: 400})
+                            throw new Error("Ngarkimi i imazheve/dokumenteve te ankeses nuk u realizuan! Provoni perseri.")
                         }
                     }
                 }
@@ -86,7 +92,7 @@ export const POST = async (req: NextRequest) => {
                                 audiosAttached.push(result.url)
                             }
                         } catch (error) {
-                            return NextResponse.json({success: false, message: "Ngarkimi i evidencave zerore te ankeses nuk u realizuan! Provoni perseri."}, {status: 400})
+                            throw new Error("Ngarkimi i evidencave zerore te ankeses nuk u realizuan! Provoni perseri.")
                         }
                     }
                 }
@@ -99,7 +105,7 @@ export const POST = async (req: NextRequest) => {
                                 videosAttached.push(result.url)
                             }
                         } catch (error) {
-                            return NextResponse.json({success: false, message: "Ngarkimi i evidencave te pamjeve te ankeses nuk u realizuan! Provoni perseri."}, {status: 400})
+                            throw new Error("Ngarkimi i evidencave te pamjeve te ankeses nuk u realizuan! Provoni perseri.")
                         }
                     }
                 }
@@ -119,8 +125,16 @@ export const POST = async (req: NextRequest) => {
         })
         
         return NextResponse.json({success: true, message: "Sapo krijuat me sukses nje ankese/raport", url: result.complaint.id}, {status: 201, headers: ratelimiter.responseHeaders})
-    } catch (error) {
+    } catch (error: any) {
         console.error(error)
-        return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."})
+        if(error.message === "Ngarkimi i imazheve/dokumenteve te ankeses nuk u realizuan! Provoni perseri."){
+            return NextResponse.json({success: false, message: error.message}, {status: 400})
+        }else if(error.message === "Ngarkimi i evidencave zerore te ankeses nuk u realizuan! Provoni perseri."){
+            return NextResponse.json({success: false, message: error.message}, {status: 400})
+        }else if(error.message === "Ngarkimi i evidencave te pamjeve te ankeses nuk u realizuan! Provoni perseri."){
+            return NextResponse.json({success: false, message: error.message}, {status: 400})
+        }else{
+            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."})
+        }
     }
 }

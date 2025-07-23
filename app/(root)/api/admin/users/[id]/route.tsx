@@ -52,9 +52,13 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
         let userImage = user.userProfileImage;
 
         if(validatedSchema.userProfileImage){
-            const result: UploadResult = await fileUploadService.uploadFile(validatedSchema.userProfileImage, "users", user.id)
-            if(result.success){
-                userImage = result.url
+            try {
+                const result: UploadResult = await fileUploadService.uploadFile(validatedSchema.userProfileImage, "users", user.id)
+                if(result.success){
+                    userImage = result.url
+                }
+            } catch (error) {
+                throw new Error("Ngarkimi i imazhit te profilit deshtoi! Ju lutem provoni perseri.")
             }
         }
 
@@ -101,15 +105,20 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
         })
         
         return NextResponse.json({success: true, message: "Sapo perditesuat me sukses perdoruesin"}, {status: 200})
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
-        return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."},{status: 500})
+        if(error.message === "Ngarkimi i imazhit te profilit deshtoi! Ju lutem provoni perseri."){
+            return NextResponse.json({success: false, message: error.message},{status: 500})
+        }else{
+            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."},{status: 500})
+        }
     }
 }
 
 export const DELETE = async (req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params;
-    const session = await auth()
+    const adminCheck = await isAdminApi()
+    if(adminCheck instanceof NextResponse) return adminCheck;
     try {
         const user = await prisma.users.findUnique({where: {id}})
         if(!user) return NextResponse.json({success: false, message: "Nuk u gjet ndonje perdorues me kete numer identifikues"}, {status: 404});

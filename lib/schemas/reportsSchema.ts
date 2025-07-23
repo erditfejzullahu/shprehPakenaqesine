@@ -11,8 +11,8 @@ export const reportsSchema = z.object({
       }
     )
   ).optional(),
-  audiosAttached: z.array(z.string().regex(/^data:audio\/(mp3|wav|ogg);base64,/, {
-      message: "Audiot e bashkëngjitura duhet të jenë në formatin base64 (MP3, WAV ose OGG)"
+  audiosAttached: z.array(z.string().regex(/^data:audio\/(mp3|wav|ogg|mpeg);base64,/, {
+      message: "Audiot e bashkëngjitura duhet të jenë në formatin base64 (MP3, WAV, MPEG ose OGG)"
   })).optional(),
   videosAttached: z.array(z.string().regex(/^data:video\/(mp4|webm|ogg);base64,/, {
       message: "Videot e bashkëngjitura duhet të jenë në formatin base64 (MP4, WebM ose OGG)"

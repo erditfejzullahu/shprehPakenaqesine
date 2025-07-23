@@ -41,6 +41,8 @@ const CreateComplaintForm = () => {
   const [attachmentProgress, setAttachmentProgress] = useState<number | null>(null)
   const [audioProgress, setAudioProgress] = useState<number | null>(null)
 
+  const [isUploading, setIsUploading] = useState(false)
+
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ['companiesForm'],
     queryFn: async () => {
@@ -90,7 +92,8 @@ const CreateComplaintForm = () => {
         category: data.category,
         attachments: data.attachments,
         audiosAttached: data.audiosAttached,
-        videosAttached: data.videosAttached
+        videosAttached: data.videosAttached,
+        municipality: data.municipality
       })
       if(response.data.success){
         toast.success('Ju sapo keni krijuar ankese/raportim me sukses!')
@@ -210,6 +213,9 @@ const CreateComplaintForm = () => {
       };
 
       reader.readAsDataURL(file);
+
+      console.log(reader, ' readerrr');
+      
     });
   }, []);
 
@@ -505,7 +511,7 @@ const CreateComplaintForm = () => {
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                     <p className="text-sm text-muted-foreground">
-                      Klikoni për të ngarkuar Imazhe/Dokumente
+                      Klikoni për të ngarkuar Imazhe/Dokumente <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                     </p>
                   </div>
                   <Input 
@@ -574,7 +580,7 @@ const CreateComplaintForm = () => {
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                       <p className="text-sm text-muted-foreground">
-                        Klikoni për të ngarkuar Audio/Inqizime
+                        Klikoni për të ngarkuar Audio/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                       </p>
                     </div>
                     <Input 
@@ -643,7 +649,7 @@ const CreateComplaintForm = () => {
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                       <p className="text-sm text-muted-foreground">
-                        Klikoni për të ngarkuar Video/Inqizime
+                        Klikoni për të ngarkuar Video/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                       </p>
                     </div>
                     <Input 

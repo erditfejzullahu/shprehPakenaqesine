@@ -63,7 +63,7 @@ export const POST = async (req: NextRequest) => {
                     for(const element of validatedSchema.attachments){
                         const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/attachments", body.complaintId)
                         if(!result.success){
-                            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve"}, {status: 400})
+                            throw new Error("Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve")
                         }
                         attachments.push(result.url)
                     }
@@ -73,7 +73,7 @@ export const POST = async (req: NextRequest) => {
                     for(const element of validatedSchema.audiosAttached){
                         const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/audiosAttached", body.complaintId)
                         if(!result.success){
-                            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te audiove/inqizimeve"}, {status: 400})
+                            throw new Error("Dicka shkoi gabim ne ngarkim te audiove/inqizimeve")
                         }
                         audioAttachments.push(result.url)
                     }
@@ -83,7 +83,7 @@ export const POST = async (req: NextRequest) => {
                     for(const element of validatedSchema.videosAttached){
                         const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/videosAttached", body.complaintId)
                         if(!result.success){
-                            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne ngarkim te videove/inqizimeve"}, {status: 400})
+                            throw new Error("Dicka shkoi gabim ne ngarkim te videove/inqizimeve")
                         }
                         videoAttachments.push(result.url)
                     }
@@ -104,8 +104,15 @@ export const POST = async (req: NextRequest) => {
         
         return NextResponse.json({success: true}, {status: 201, headers: ratelimiter.responseHeaders})
 
-    } catch (error) {
+    } catch (error: any) {
         console.error(error)
+        if(error.message === "Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve"){
+            return NextResponse.json({success: false, message: error.message}, {status: 500})
+        }else if (error.message === "Dicka shkoi gabim ne ngarkim te audiove/inqizimeve"){
+            return NextResponse.json({success: false, message: error.message}, {status: 500})
+        }else if(error.message === "Dicka shkoi gabim ne ngarkim te videove/inqizimeve"){
+            return NextResponse.json({success: false, message: error.message}, {status: 500})
+        }
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})
     }
 }
