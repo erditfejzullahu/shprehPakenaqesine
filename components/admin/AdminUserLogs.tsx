@@ -13,6 +13,7 @@ import Image from 'next/image'
 import { Badge } from '../ui/badge'
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { SlSizeFullscreen } from "react-icons/sl";
 
 const columnHelper = createColumnHelper<ActivityLogExtended>();
 const fuzzyFilter: FilterFn<ActivityLogExtended> = (row, columnId, value) => {
@@ -57,11 +58,81 @@ const AdminUserLogs = () => {
         }))
     }
 
-    const columns = useMemo(() => [
-        columnHelper.accessor("id", {
-            header: "ID",
+    const baseColumns = [
+    columnHelper.accessor("id", {
+        header: "ID",
+        size:40,
+        enableSorting: true,
+        cell: info => (
+            <ReusableHoverCard 
+                trigger={
+                    <div className='line-clamp-1 max-w-[50px]'>{info.getValue()}</div>
+                }
+                content= {
+                    <div className='text-sm font-normal text-center'>{info.getValue()}</div>
+                }
+            />
+        )
+    }),
+    columnHelper.display({
+        id:"user",
+        header: "Perdoruesi",
+        size:100,
+        enableSorting: true,
+        enableGlobalFilter: true,
+        cell: info => (
+            <div className='flex flex-col items-center gap-2'>
+                <div>
+                    <Image 
+                        src={info.row.original.user.userProfileImage}
+                        className='size-12 rounded-full'
+                        alt={info.row.original.user.fullName}
+                        width={42}
+                        height={42}
+                    />
+                </div>
+                <div className='text-center'>
+                    {info.row.original.user.fullName}
+                </div>
+            </div>
+        )
+    }),
+    columnHelper.accessor("action", {
+        header: "Veprimi",
+        size:70,
+        enableSorting: true,
+        enableGlobalFilter: true,
+        cell: info => (
+            <Badge variant={"default"}>{info.getValue()}</Badge>
+        )
+    }),
+    columnHelper.accessor("entityType", {
+        header: "Entiteti",
+        size:70,
+        enableSorting: true,
+        enableGlobalFilter: true,
+        cell: info => (
+            <Badge variant={"destructive"}>{info.getValue()}</Badge>
+        )
+    }),
+    columnHelper.accessor("createdAt", {
+        header: "Krijuar me",
+        size:70,
+        enableSorting: true,
+        enableGlobalFilter: true,
+        cell: info => (
+            <div>{new Date(info.getValue()).toLocaleDateString('sq-AL', {dateStyle: "full"})}</div>
+        )
+    })
+];
+
+    const fullscreenColumns = [
+        ...baseColumns,
+        columnHelper.accessor("entityId", {
+            header: "ID Entitetit",
             size:40,
             enableSorting: true,
+            enableGlobalFilter: true,
             cell: info => (
                 <ReusableHoverCard 
                     trigger={
@@ -73,57 +144,31 @@ const AdminUserLogs = () => {
                 />
             )
         }),
-        columnHelper.display({
-            id:"user",
-            header: "Perdoruesi",
-            size:100,
+        columnHelper.accessor("ipAddress", {
+            header: "IP e perforuesit",
+            size:40,
             enableSorting: true,
-            enableGlobalFilter: true,
-            cell: info => (
-                <div className='flex flex-col items-center gap-2'>
-                    <div>
-                        <Image 
-                            src={info.row.original.user.userProfileImage}
-                            className='size-12 rounded-full'
-                            alt={info.row.original.user.fullName}
-                            width={42}
-                            height={42}
-                        />
-                    </div>
-                    <div className='text-center'>
-                        {info.row.original.user.fullName}
-                    </div>
-                </div>
-            )
+            enableGlobalFilter: true
         }),
-        columnHelper.accessor("action", {
-            header: "Veprimi",
-            size:70,
+        columnHelper.accessor("userAgent", {
+            header: "Agjenti shfletuesit",
+            size:40,
             enableSorting: true,
             enableGlobalFilter: true,
             cell: info => (
-                <Badge variant={"default"}>{info.getValue()}</Badge>
-            )
-        }),
-        columnHelper.accessor("entityType", {
-            header: "Entiteti",
-            size:70,
-            enableSorting: true,
-            enableGlobalFilter: true,
-            cell: info => (
-                <Badge variant={"destructive"}>{info.getValue()}</Badge>
-            )
-        }),
-        columnHelper.accessor("createdAt", {
-            header: "Krijuar me",
-            size:70,
-            enableSorting: true,
-            enableGlobalFilter: true,
-            cell: info => (
-                <div>{new Date(info.getValue()).toLocaleDateString('sq-AL', {dateStyle: "full"})}</div>
+                <ReusableHoverCard 
+                    trigger={
+                        <div className='line-clamp-1 max-w-[50px]'>{info.getValue()}</div>
+                    }
+                    content= {
+                        <div className='text-sm font-normal text-center'>{info.getValue()}</div>
+                    }
+                />
             )
         })
-    ], [])
+    ];
+
+    const columns = goFullscreen ? fullscreenColumns : baseColumns;
 
     const table = useReactTable({
         data: data?.logs || [],
@@ -170,6 +215,10 @@ const AdminUserLogs = () => {
 
   return (
     <div className='p-4'>
+        <button type='button' className='absolute right-4 top-4 cursor-pointer' onClick={() => setGoFullscreen(true)}><SlSizeFullscreen size={24}/></button>
+
+    <div onClick={() => setGoFullscreen(false)} className={`${goFullscreen && "fixed top-0 left-0 w-full h-full flex flex-col justify-center items-center m-auto bg-black/15"}`}>
+        <div className={`${goFullscreen ? "w-[90%] p-4 h-[90vh] z-50 overflow-y-auto m-auto rounded-md" : "w-full"} overflow-x-auto bg-white`}>
         <div className="flex flex-row items-center justify-between">
             <div className="mb-4 flex-1">
             <Input
@@ -184,9 +233,7 @@ const AdminUserLogs = () => {
                 {data.allLogs} Regjistra total 
             </div>
         </div>
-
-        <div className="overflow-x-auto w-full">
-            <table className="w-full border-collapse">
+            <table className={`w-full border-collapse ${goFullscreen && "shadow-md rounded-sm overflow-hidden"}`}>
             <thead>
                 {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>
@@ -233,59 +280,61 @@ const AdminUserLogs = () => {
                 ))}
             </tbody>
             </table>
+
+            <div className={`flex items-center justify-between mt-4`}>
+            <div className="flex space-x-2">
+                <button
+                    onClick={() => setPagination((prev) => ({...prev, page: 1}))}
+                    disabled={pagination.page === 1}
+                    className="px-3 py-1 border rounded disabled:opacity-50"
+                >
+                    «
+                </button>
+                <button
+                    onClick={goBack}
+                    disabled={pagination.page === 1}
+                    className="px-3 py-1 border rounded disabled:opacity-50"
+                >
+                    ‹
+                </button>
+                <button
+                    onClick={goNext}
+                    disabled={!data?.hasMore}
+                    className="px-3 py-1 border rounded disabled:opacity-50"
+                >
+                    ›
+                </button>
+                {/* Note: You might want to implement a "go to last page" function if you know the total pages */}
+                <button
+                    onClick={() => {/* Implement if you know total pages */}}
+                    disabled={true} // or !data?.hasMore if you're on last page
+                    className="px-3 py-1 border rounded disabled:opacity-50"
+                >
+                    »
+                </button>
+            </div>
+            <span className="flex items-center gap-1">
+                Faqja{' '}
+                <strong>
+                    {pagination.page} {/* Show current page from state */}
+                </strong>
+            </span>
+            <span>
+                <Select disabled={isLoading || isRefetching} onValueChange={(val) => {setPagination((prev) => ({...prev, limit: Number(val)}))}} value={pagination.limit.toString()}>
+                    <SelectTrigger>
+                        <SelectValue placeholder={pagination.limit.toString()} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value='20'>20</SelectItem>
+                        <SelectItem value='50'>50</SelectItem>
+                        <SelectItem value='100'>100</SelectItem>
+                    </SelectContent>
+                </Select>
+            </span>
+            {/* Remove the page size selector since your API handles this */}
+            </div>
         </div>
 
-        <div className="flex items-center justify-between mt-4">
-        <div className="flex space-x-2">
-            <button
-                onClick={() => setPagination((prev) => ({...prev, page: 1}))}
-                disabled={pagination.page === 1}
-                className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-                «
-            </button>
-            <button
-                onClick={goBack}
-                disabled={pagination.page === 1}
-                className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-                ‹
-            </button>
-            <button
-                onClick={goNext}
-                disabled={!data?.hasMore}
-                className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-                ›
-            </button>
-            {/* Note: You might want to implement a "go to last page" function if you know the total pages */}
-            <button
-                onClick={() => {/* Implement if you know total pages */}}
-                disabled={true} // or !data?.hasMore if you're on last page
-                className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-                »
-            </button>
-        </div>
-        <span className="flex items-center gap-1">
-            Faqja{' '}
-            <strong>
-                {pagination.page} {/* Show current page from state */}
-            </strong>
-        </span>
-        <span>
-            <Select disabled={isLoading || isRefetching} onValueChange={(val) => {setPagination((prev) => ({...prev, limit: Number(val)}))}} value={pagination.limit.toString()}>
-                <SelectTrigger>
-                    <SelectValue placeholder={pagination.limit.toString()} />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value='20'>20</SelectItem>
-                    <SelectItem value='50'>50</SelectItem>
-                    <SelectItem value='100'>100</SelectItem>
-                </SelectContent>
-            </Select>
-        </span>
-        {/* Remove the page size selector since your API handles this */}
     </div>
     </div>
   )
