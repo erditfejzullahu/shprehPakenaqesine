@@ -60,7 +60,7 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
       openGraph: {
         title: seoTitle,
         description: seoDescription,
-        type: 'website',
+        type: 'article',
         locale: 'sq_AL',
         siteName: 'ShprehPakenaqësinë',
         images: [
@@ -69,7 +69,9 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
             secureUrl: company.logoUrl,
             alt: `${company.name} - ShprehPakenaqësinë`
           }
-        ]
+        ],
+        publishedTime: new Date(company.createdAt).toISOString(),
+        modifiedTime: new Date(company.updatedAt).toISOString(),
       },
       twitter: {
         card: 'summary_large_image',

@@ -1,6 +1,6 @@
 import ComplaintActionsCard from '@/components/ComplaintActionsCard';
 import ComplaintsPageTabs from '@/components/ComplaintsPageTabs';
-import { ComplantPerIdInterface } from '@/types/types';
+import { ComplaintPerIdWithCompany, ComplantPerIdInterface } from '@/types/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
@@ -8,6 +8,115 @@ import { auth } from '../../../../auth';
 import { cookies } from 'next/headers';
 import { ImageIcon } from 'lucide-react';
 import { FaFileAudio, FaFileVideo, FaImage } from 'react-icons/fa';
+import { Metadata } from 'next';
+
+export const revalidate = 300;
+
+export async function getStaticParams() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/complaints/ids`, {next: {revalidate: revalidate}, method: "GET"})
+  if(!res.ok){
+    throw new Error("Error fetching ids")
+  }
+  const ids: {id: string}[] = await res.json()
+  return ids.map((complaint) => ({
+    id: complaint.id
+  }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shprehpakenaqesine.com';
+
+  try {
+    const response = await fetch(
+      `${baseUrl}/api/complaint/${params.id}`,
+      { next: { revalidate: 3600 } }
+    );
+
+    // Fallback metadata if API fails
+    if (!response.ok) {
+      return {
+        title: 'Ankesa - ShprehPakenaqësinë',
+        description: 'Lexo dhe ndaj ankesa rreth kompanive në platformën tonë. Shprehu për përvojën tënde.',
+        keywords: ['ankesa', 'kompani', 'shqipëri', 'kosovë', 'raportim', 'shërbime', 'puna'],
+        openGraph: {
+          title: 'Ankesa - ShprehPakenaqësinë',
+          description: 'Platforma për shprehjen e ankesave ndaj kompanive në Shqipëri dhe Kosovë',
+        },
+        twitter: {
+          card: 'summary_large_image',
+        },
+      };
+    }
+
+    const {complaint}: ComplantPerIdInterface = await response.json();
+    
+    // Generate SEO metadata
+    const seoTitle = `${complaint.title} - Ankesë ndaj ${complaint.company.name} | ShprehPakenaqësinë`;
+    const seoDescription = complaint.description
+      ? `${complaint.description.substring(0, 160)}...`
+      : `Lexo ankesën rreth ${complaint.company.name}. Shprehu dhe ndaj përvojën tënde.`;
+    
+    // Get first available image (from evidence, company, or user)
+    const complaintImage = complaint.company.logoUrl
+
+    const keywords = [
+      complaint.title?.toLowerCase(),
+      'ankesa',
+      complaint.company.name?.toLowerCase(),
+      complaint.municipality?.toLowerCase(),
+      complaint.category?.toLowerCase(),
+      'shqipëri',
+      'kosovë',
+      'raportim kompanie',
+      'shërbime',
+      'puna',
+    ].filter(Boolean);
+
+    return {
+      title: seoTitle,
+      description: seoDescription,
+      keywords: keywords,
+      openGraph: {
+        title: seoTitle,
+        description: seoDescription,
+        type: 'article',
+        locale: 'sq_AL',
+        siteName: 'ShprehPakenaqësinë',
+        images: [{
+          url: complaintImage,
+          alt: `${complaint.title} - Ankesë ndaj ${complaint.company.name}`,
+        }],
+        publishedTime: new Date(complaint.createdAt).toISOString(),
+        modifiedTime: new Date(complaint.updatedAt).toISOString(),
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: seoTitle,
+        description: seoDescription,
+        images: [complaintImage],
+      },
+      other: {
+        'complaint:status': complaint.resolvedStatus,
+        'complaint:category': complaint.category,
+        'complaint:votes': complaint.upVotes?.toString(),
+      },
+    };
+  } catch (error) {
+    console.error('Gabim në marrjen e të dhënave të ankesës:', error);
+    return {
+      title: 'Ankesa - ShprehPakenaqësinë',
+      description: 'Lexo dhe ndaj ankesa rreth kompanive në platformën tonë',
+      openGraph: {
+        title: 'Ankesa - ShprehPakenaqësinë',
+        description: 'Platforma për shprehjen e ankesave ndaj kompanive',
+      },
+    };
+  }
+}
 
 const page = async ({params}: {params: Promise<{id: string}>}) => {
     const session = await auth()  
