@@ -1,9 +1,67 @@
+import { Metadata } from 'next';
 import Link from 'next/link'
 import React from 'react'
 
+export async function generateMetadata(): Promise<Metadata> {
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
+
+return {
+title: 'Termat e Përdorimit - ShfaqPakenaqësinë',
+description: 'Lexoni kushtet dhe rregullat e përdorimit të platformës ShfaqPakenaqësinë për raportimin e shkeljeve dhe abuzimeve',
+keywords: [
+  'terma e përdorimit',
+  'kushte shërbimi',
+  'privatësi shfaqpakenaqësinë',
+  'rregulla platformë',
+  'ligjërisht kosovë',
+  'ankesa online'
+],
+openGraph: {
+  title: 'Termat e Përdorimit - ShfaqPakenaqësinë',
+  description: 'Kushtet zyrtare të përdorimit të platformës sonë',
+  type: 'article',
+  locale: 'sq_AL', // Kosovo locale
+  url: `${baseUrl}/termat-e-perdorimit`,
+  siteName: 'ShfaqPakenaqësinë',
+  images: [{
+    url: `${baseUrl}/images/terms-og.jpg`,
+    width: 1200,
+    height: 630,
+    alt: 'Termat e Përdorimit - ShfaqPakenaqësinë',
+  }],
+},
+alternates: {
+  canonical: `${baseUrl}/termat-e-perdorimit`,
+},
+};
+}
+
 const page = () => {
+
+    const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Termat e Përdorimit",
+    "description": "Kushtet zyrtare të përdorimit të platformës ShfaqPakenaqësinë",
+    "publisher": {
+      "@type": "Organization",
+      "name": "ShfaqPakenaqësinë",
+      "url": process.env.NEXT_PUBLIC_BASE_URL,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${process.env.NEXT_PUBLIC_BASE_URL}/logo.png`
+      }
+    },
+    "datePublished": "2025-07-23", // Replace with your actual publication date
+    "dateModified": "2025-07-23"   // Replace with last modification date
+  };
+
   return (
     <div className="flex-1">
+        <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
         <main>
             <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Termat e Përdorimit</h1>

@@ -1,9 +1,95 @@
 import Link from 'next/link'
 import React from 'react'
+import { Metadata } from 'next'
 
+export async function generateMetadata(): Promise<Metadata> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
+
+  return {
+    title: 'Modal i Verifikimit - ShfaqPakenaqësinë',
+    description: 'Informacion i detajuar për procesin e verifikimit të ankesave në platformën ShfaqPakenaqësinë, kufizimet e përgjegjësisë dhe opsionet e pagesës',
+    keywords: [
+      'verifikim ankesash',
+      'shfaq pakenaqësinë',
+      'proces ankesash',
+      'rregulla platformë',
+      'ankesa online kosovë',
+      'siguria e të dhënave'
+    ],
+    openGraph: {
+      title: 'Modal i Verifikimit - ShfaqPakenaqësinë',
+      description: 'Procesi i verifikimit të ankesave dhe kufizimet e përgjegjësisë në platformën tonë',
+      type: 'article',
+      locale: 'sq_AL',
+      url: `${baseUrl}/verifikimi`,
+      siteName: 'ShfaqPakenaqësinë',
+      images: [{
+        url: `${baseUrl}/images/verification-og.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'Procesi i Verifikimit - ShfaqPakenaqësinë',
+      }],
+    },
+    alternates: {
+      canonical: `${baseUrl}/verifikimi`,
+    },
+  };
+}
+
+  
 const page = () => {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Modal i Verifikimit",
+    "description": "Procesi i verifikimit të ankesave dhe kufizimet e përgjegjësisë në platformën ShfaqPakenaqësinë",
+    "publisher": {
+      "@type": "Organization",
+      "name": "ShfaqPakenaqësinë",
+      "url": process.env.NEXT_PUBLIC_BASE_URL,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${process.env.NEXT_PUBLIC_BASE_URL}/logo.png`
+      }
+    },
+    "datePublished": "2025-07-23",
+    "dateModified": "2025-07-23",
+    "mainEntity": {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Si funksionon procesi i verifikimit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Çdo ankesë kontrollohet manualisht nga administratorët. Ata identifikojnë përmbajtje të paligjshme ose materiale që cenojnë të drejtat e të tjerëve."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Çfarë lloj ankesash janë të paguara?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ankesat për çështje të përgjithshme janë falas. Për trajtim të urgjencës ose ankesa më të thella, kërkohet pagesë prej 3€ për ankesë ose 5€ në muaj."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Ku mund të kontaktoni për pyetje?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Për çdo pyetje mund të dërgoni email në shfaqpakenaqesine@gmail.com"
+          }
+        }
+      ]
+    }
+  };
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <main className="flex-1">
         <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Modal i Verifikimit</h1>

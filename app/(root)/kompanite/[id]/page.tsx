@@ -65,7 +65,7 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
         siteName: 'ShprehPakenaqësinë',
         images: [
           {
-            url: company.logoUrl,
+            url: `${process.env.NEXT_PUBLIC_BASE_URL}/${company.logoUrl}`,
             secureUrl: company.logoUrl,
             alt: `${company.name} - ShprehPakenaqësinë`
           }
@@ -77,7 +77,7 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
         card: 'summary_large_image',
         title: seoTitle,
         description: seoDescription,
-        images: [company.logoUrl]
+        images: [`${process.env.NEXT_PUBLIC_BASE_URL}/${company.logoUrl}`]
       },
     }
   } catch (error) {

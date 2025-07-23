@@ -87,7 +87,7 @@ export async function generateMetadata({
         locale: 'sq_AL',
         siteName: 'ShprehPakenaqësinë',
         images: [{
-          url: complaintImage,
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/${complaintImage}`,
           alt: `${complaint.title} - Ankesë ndaj ${complaint.company.name}`,
         }],
         publishedTime: new Date(complaint.createdAt).toISOString(),
@@ -97,7 +97,7 @@ export async function generateMetadata({
         card: 'summary_large_image',
         title: seoTitle,
         description: seoDescription,
-        images: [complaintImage],
+        images: [`${process.env.NEXT_PUBLIC_BASE_URL}/${complaintImage}`],
       },
       other: {
         'complaint:status': complaint.resolvedStatus,

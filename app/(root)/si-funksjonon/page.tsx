@@ -1,10 +1,83 @@
+import { Metadata } from 'next';
 import React from 'react'
 import { FaCheck, FaFolder } from 'react-icons/fa'
 import { TbHexagonNumber1Filled, TbHexagonNumber2Filled } from "react-icons/tb";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shprehpakenaqesine.com';
+  
+  return {
+    title: 'Si Funksionon ShprehPakenaqësinë - Udhëzues i Plotë',
+    description: 'Mësoni si të përdorni platformën tonë për të raportuar kompani dhe të shprehni pakenaqësitë tuaja në mënyrë të sigurt',
+    keywords: [
+      'si funksionon',
+      'udhëzues shprehpakenaqësinë',
+      'raportim kompanish',
+      'si të bëj ankesë',
+      'platformë ankesash',
+      'shqipëri',
+      'kosovë'
+    ],
+    openGraph: {
+      title: 'Si Funksionon ShprehPakenaqësinë - Udhëzues i Plotë',
+      description: 'Mësoni hap pas hapi si të regjistroni kompani dhe të bëni ankesa në platformën tonë',
+      type: 'article',
+      locale: 'sq_AL',
+      url: `${baseUrl}/si-funksionon`,
+      siteName: 'ShprehPakenaqësinë',
+      images: [{
+        url: `${baseUrl}/images/how-it-works-og.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'Udhëzues për përdorimin e ShprehPakenaqësinë',
+      }],
+    },
+    alternates: {
+      canonical: `${baseUrl}/si-funksionon`,
+    },
+  };
+}
+
+
 const page = () => {
+
+    const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "Si të përdorni ShprehPakenaqësinë",
+    "description": "Udhëzues hap pas hapi për regjistrimin e kompanive dhe krijimin e ankesave",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "Shtimi i Kompanive",
+        "text": "Përdoruesit mund të regjistrojnë një kompani të re përmes një formulari të thjeshtë online.",
+        "url": `${process.env.NEXT_PUBLIC_BASE_URL}/shto-kompani`
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Shtimi i Ankesave",
+        "text": "Pasi një kompani është regjistruar, përdoruesit mund të shtojnë ankesa që lidhen me atë kompani.",
+        "url": `${process.env.NEXT_PUBLIC_BASE_URL}/krijo-ankese`
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Kategoritë e Ankesave",
+        "text": "Zgjidhni kategorinë që përshkruan më saktë problemin tuaj nga lista e kategorive të disponueshme.",
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Privatësia dhe Siguria",
+        "text": "Informacioni i raportuar është konfidencial dhe mund të mbeteni anonim nëse dëshironi.",
+      }
+    ]
+  };
+
   return (
     <div>
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <main className="flex-1">
             <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">📌 Si funksionon <span className="text-indigo-600">ShprehPakenaqesine?</span></h1>

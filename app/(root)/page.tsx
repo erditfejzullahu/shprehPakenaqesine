@@ -3,13 +3,95 @@ import ComplaintsQuery from '@/components/ComplaintsQuery'
 import CTAButton from '@/components/CTAButton'
 import FeatureCard from '@/components/FeatureCard'
 import SubscriberForm from '@/components/SubscriberForm'
+import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 import { FaArrowRight, FaChevronDown, FaPlusSquare } from 'react-icons/fa'
 
+export async function generateMetadata(): Promise<Metadata> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
+
+  return {
+    title: 'ShfaqPakenaqësinë - Platformë për Ankesa të Punës dhe Komunale',
+    description: 'Platformë anonime për raportimin e padrejtësive në vendin e punës dhe problemeve komunale. Mbrojtje e të drejtave të qytetarëve dhe punonjësve në Kosovë.',
+    keywords: [
+      'raportim pune',
+      'ankesa komunale',
+      'probleme qyteti',
+      'të drejta punonjësish',
+      'platformë anonime',
+      'shqipëri kosovë',
+      'shkelje në punë',
+      'ankesa publike'
+    ],
+    openGraph: {
+      title: 'ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve',
+      description: 'Platformë për raportimin e padrejtësive në punë dhe problemeve komunale në mënyrë të sigurt dhe anonime',
+      type: 'website',
+      locale: 'sq_AL',
+      url: baseUrl,
+      siteName: 'ShfaqPakenaqësinë',
+      images: [{
+        url: `${baseUrl}/images/home-og.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'ShfaqPakenaqësinë - Platformë për Ankesa Publike',
+      }],
+    },
+    alternates: {
+      canonical: baseUrl,
+    },
+  };
+}
+
 const page = () => {
+  const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "ShfaqPakenaqësinë",
+  "url": process.env.NEXT_PUBLIC_BASE_URL,
+  "description": "Platformë për raportimin e padrejtësive në punë dhe problemeve komunale",
+  "publisher": {
+    "@type": "Organization",
+    "name": "ShfaqPakenaqësinë",
+    "logo": {
+      "@type": "ImageObject",
+      "url": `${process.env.NEXT_PUBLIC_BASE_URL}/logo.png`
+    }
+  },
+  "inLanguage": "sq"
+};
+
+const organizationStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "ShfaqPakenaqësinë",
+  "url": process.env.NEXT_PUBLIC_BASE_URL,
+  "logo": `${process.env.NEXT_PUBLIC_BASE_URL}/logo.png`,
+  "description": "Platformë për mbrojtjen e të drejtave të punonjësve dhe zgjidhjen e problemeve komunale",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "XK"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "shfaqpakenaqesine@gmail.com",
+    "contactType": "customer service",
+    "areaServed": "XK",
+    "availableLanguage": "Albanian"
+  }
+};
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationStructuredData) }}
+      />
       <main className="flex-1">
         {/* Hero Section */}
         <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative">

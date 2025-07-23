@@ -3,6 +3,31 @@ import { redirect } from 'next/navigation';
 import MyProfileData from '@/components/MyProfileData';
 import { auth } from '@/auth';
 import AnonimityToggle from '@/components/AnonimityToggle';
+import { Metadata } from 'next';
+
+
+export async function generateMetadata(): Promise<Metadata>{
+    const session = await auth();
+    if(!session){
+        return {
+            title: 'Profili - ShprehPakenaqësinë',
+            description: 'Kyçuni për të parë profilin tuaj',
+            robots: {
+                index: false,
+                follow: true
+            }
+        };
+    }else{
+        return {
+          title: `${session?.user.fullName} | ShprehPakenaqësinë`,
+          robots: {
+            index: false,
+            follow: true
+          }
+        }
+    }
+}
+
 
 const page = async () => {
     const session = await auth();
