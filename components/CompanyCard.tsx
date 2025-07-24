@@ -9,6 +9,9 @@ import { Badge } from "./ui/badge";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { MdThumbDownAlt } from "react-icons/md";
+import CTAButton from "./CTAButton";
+import { CiImageOff } from "react-icons/ci";
+import { toast } from "sonner";
 
 const CompanyCard = ({
   id,
@@ -33,7 +36,7 @@ const CompanyCard = ({
       aria-description="kompania" 
       className={`w-full bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative`}
     >
-      <div className="flex max-[340px]:flex-col relative justify-between items-start gap-4 flex-1">
+      <div className="flex max-[340px]:flex-col relative justify-between items-start gap-4">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-md overflow-hidden border border-gray-200">
             <Image
@@ -122,7 +125,7 @@ const CompanyCard = ({
         )}
       </div>
 
-      {images && images.length > 0 && (
+      {images && images.length > 0 ? (
         <div className="mt-2">
           <div className="flex gap-2 overflow-x-auto pb-2">
             {images.slice(0, 3).map((img, index) => (
@@ -143,7 +146,13 @@ const CompanyCard = ({
             )}
           </div>
         </div>
+      ) : (
+        <div className="mx-auto flex flex-col justify-between gap-2 w-full">
+          <span className="flex flex-row items-center justify-center flex-wrap gap-1 text-gray-600 text-center text-sm">Nuk ka galeri aktuale <CiImageOff className="text-indigo-600" size={18}/></span>
+          <CTAButton text="Shto imazhe" classNames="p-2! w-full!" onClick={() => toast.warning("Se shpejti...")}/>
+        </div>
       )}
+      {}
     </Link>
   );
 }
