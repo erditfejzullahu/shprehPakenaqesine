@@ -95,14 +95,14 @@ const organizationStructuredData = {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="w-full max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
+          <h1 className="text-[32px] sm:text-5xl md:text-6xl font-bold leading-tight">
             Shpreh pakenaqesine <span className="text-indigo-600">TENDE</span>
           </h1>
-          <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="mt-6 sm:text-xl text-base  text-gray-600 max-w-3xl mx-auto">
             Platformë anonime dhe e sigurt për të raportuar padrejtësitë dhe shkeljet nga punëdhënësit, duke mbrojtur të drejtat e punonjësve.
           </p>
           <p className="text-xs text-gray-400 mx-auto mt-3 max-w-xl">Ketu do shfaqen pakenaqesite e medha apo raportimet e shumta nga indivite te ndryshem per nje punedhenes!</p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mt-8 flex sm:flex-row flex-wrap gap-4 justify-center">
             <Link aria-description='krijo raportimin' href={'/krijo-raportim'}>
               <CTAButton text="Raporto Tani" classNames='border-2 border-indigo-600' primary />
             </Link>
@@ -116,13 +116,13 @@ const organizationStructuredData = {
           </Link>
         </section>
 
-        <section className="w-full max-w-6xl mx-auto py-16 pb-20 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
+        <section className="w-full max-w-6xl mx-auto py-16 pb-20 px-4 sm:px-6 lg:px-8">
+          <div className="flex  max-[685px]:flex-col max-[685px]:items-start flex-row items-end justify-between gap-4 mb-8">
             <div className="space-y-2">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+              <h2 className="md:text-3xl text-2xl font-bold text-gray-900 tracking-tight">
                 Kompanitë
               </h2>
-              <p className="text-gray-600 max-w-2xl text-base">
+              <p className="text-gray-600 max-w-md text-base">
                 Eksploroni kompanitë e regjistruara në platformën tonë dhe shikoni vlerësimet e tyre
               </p>
             </div>
@@ -140,13 +140,13 @@ const organizationStructuredData = {
         </section>
 
 
-        <section className="w-full max-w-6xl mx-auto py-16 pb-20 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
+        <section className="w-full max-w-6xl mx-auto py-16 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 lg:px-8">
+          <div className="flex  max-[685px]:flex-col max-[685px]:items-start flex-row items-end justify-between gap-4 mb-8">
             <div className="space-y-2">
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
                 Ankesat/Raportimet
               </h2>
-              <p className="text-gray-600 max-w-2xl text-base">
+              <p className="text-gray-600 max-w-md text-base">
                 Eksploroni kompanitë e regjistruara në platformën tonë dhe shikoni vlerësimet e tyre
               </p>
             </div>
@@ -166,7 +166,7 @@ const organizationStructuredData = {
 
         {/* Features Section */}
         <section className="w-full max-w-6xl mx-auto py-16 pt-6 px-4 sm:px-6 lg:px-8 text-center ">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">Pse ne?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Pse ne?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard 
               icon="🔒" 

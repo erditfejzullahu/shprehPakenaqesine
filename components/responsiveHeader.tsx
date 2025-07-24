@@ -111,7 +111,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
           <motion.button
             onClick={toggleMenu}
             whileTap={{ scale: 0.9 }}
-            className="relative z-60 w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg"
+            className="relative z-60 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg"
             aria-label="Toggle menu"
           >
             <motion.div
@@ -122,7 +122,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
                 closed: { rotate: 0 }
               }}
               transition={{ duration: 0.5 }}
-              className="w-5 h-5 relative"
+              className={`${isOpen ? "w-4 h-4" : "w-3 h-3"} relative`}
             >
               <motion.span
                 className="absolute block w-full h-0.5 bg-white rounded-full"
@@ -159,7 +159,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/50 z-40 h-screen backdrop-blur-sm min-h-full"
               onClick={toggleMenu}
             />
             
@@ -168,13 +168,13 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed top-0 right-0 h-full w-4/5 max-w-md bg-white shadow-2xl z-50 p-8"
+              className="fixed top-0 right-0 w-4/5 h-screen max-w-md bg-white shadow-2xl z-50 p-8"
             >
               <div className="h-full flex flex-col justify-between">
                 <div>
 
-                <div className='mb-4'>
-                    <Link href="/" className="sm:text-xl text-lg font-black text-indigo-600 hover:scale-105 transition-transform">
+                <div className='my-4 mx-auto text-center'>
+                    <Link href="/" className="sm:text-xl text-center text-lg font-black text-indigo-600 hover:scale-105 transition-transform">
                         <motion.span 
                             whileHover={{ rotateY: 15 }} 
                             className="inline-block"
@@ -185,7 +185,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
                 </div>
 
                   <motion.div 
-                    className="flex flex-col gap-6 mt-12 items-center text-2xl font-medium"
+                    className="flex flex-col gap-3 mt-6 items-center text-2xl font-medium"
                     initial="hidden"
                     animate="visible"
                     variants={{
@@ -220,7 +220,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="text-gray-500 text-sm mt-8"
+                  className="text-gray-500 text-sm mt-4 max-[331px]:text-center"
                 >
                   © {new Date().getFullYear()} <Link onClick={() => setIsOpen(false)} href={"/"} className='text-indigo-600'>ShprehPakenaqesine</Link>
                 </motion.div>

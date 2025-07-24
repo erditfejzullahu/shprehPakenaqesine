@@ -3,11 +3,11 @@ import Link from "next/link";
 const Footer = () => {
     return (
       <footer className="bg-white py-8 px-6 border-t border-gray-200">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <Link href={"/"} aria-description="homepage" className="text-gray-600">
+        <div className="max-w-6xl mx-auto flex max-[1050]:flex-col flex-row justify-between items-center gap-4">
+          <Link href={"/"} aria-description="homepage" className="text-gray-600 max-[575px]:text-center">
             © {new Date().getFullYear()} <span className="text-indigo-600 font-semibold">ShprehePakenaqesine</span>. Te gjitha te drejtat e reservuara.
           </Link>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-6 max-[530px]:justify-center">
             <a href="/politika-e-privatesise" className="text-gray-600 hover:text-indigo-600 transition-colors">
               Politika e Privatesise
             </a>
