@@ -107,18 +107,18 @@ const AllComplaintsCard = () => {
 
         {/* Search and Filter Controls - Always visible */}
         <div className="flex flex-row gap-4 flex-wrap justify-between">
-          <div className="max-w-[700px] min-w-[300px]">
+          <div className="max-w-[700px] min-w-[300px] max-[584px]:min-w-full">
             <Input
               placeholder="Kërko ankesa..."
               value={inputValue}
               onChange={(e) => {debouncedSearch(e.target.value); setInputValue(e.target.value)}}
-              className="min-w-[300px] flex-1"
+              className="min-w-[300px] flex-1 max-[584px]:min-w-full!"
             />
           </div>
-          <div className="flex flex-row items-center gap-4">
-            <div>
+          <div className="flex flex-row items-center gap-4 max-[584px]:min-w-full max-[408px]:flex-col">
+            <div className="max-[584px]:min-w-[calc(50%-8px)] max-[408px]:min-w-full">
               <Select defaultValue="ALL" value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="max-[584px]:min-w-full">
                   <SelectValue placeholder="Filtro sipas statusit" />
                 </SelectTrigger>
                 <SelectContent>
@@ -128,9 +128,9 @@ const AllComplaintsCard = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div>
+            <div className="max-[584px]:min-w-[calc(50%-8px)] max-[408px]:min-w-full">
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="max-[584px]:min-w-full">
                   <SelectValue placeholder="Filtro sipas kategorisë" />
                 </SelectTrigger>
                 <SelectContent>
@@ -147,10 +147,10 @@ const AllComplaintsCard = () => {
         </div>
 
         {/* Sort Controls - Always visible */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-row gap-4 max-[260px]:flex-col max-[408px]:-mt-2">
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Rendit sipas" />
+            <SelectTrigger className="w-[180px] max-[408px]:w-full">
+              <SelectValue placeholder="Rëndit sipas" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="newest">Më të rejat</SelectItem>
@@ -185,17 +185,14 @@ const AllComplaintsCard = () => {
 
         {/* Error State */}
         {isError && !isLoading && (
-          <div className="mx-auto flex flex-col items-center right-0 left-0 my-8">
+          <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
             <div className="flex flex-row gap-1">
               <div>
-                <h3 className="text-gray-600 font-normal mb-3">Dicka shkoi gabim. Provoni perseri!</h3>
-              </div>
-              <div className="pt-2 rotate-[50deg]">
-                <FaChevronDown size={22} color='#4f46e5'/>
+                <h3 className="text-gray-600 font-normal mb-3 flex text-center flex-row items-center">Dicka shkoi gabim. Provoni përsëri! <FaChevronDown className='rotate-[50deg] mt-2' size={22} color='#4f46e5'/></h3>
               </div>
             </div>
-            <CTAButton onClick={() => refetch()} text='Provo perseri'/>
-          </div>
+            <CTAButton onClick={() => refetch()} text='Provo përsëri'/>
+          </div> 
         )}
 
         {/* Empty Data State */}
@@ -303,7 +300,7 @@ const AllComplaintsCard = () => {
                   onClick={() => fetchNextPage()}
                   classNames="mx-auto"
                   isLoading={isFetchingNextPage}
-                  text='Me shume'
+                  text={`${isFetchingNextPage ? "Ju lutem prisni..." : "Më shumë"}`}
                   primary
                 />
               </div>

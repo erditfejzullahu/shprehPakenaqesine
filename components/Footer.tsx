@@ -2,17 +2,17 @@ import Link from "next/link";
 
 const Footer = () => {
     return (
-      <footer className="bg-white py-8 px-6 border-t border-gray-200">
+      <footer className="bg-white py-8 px-6 border-gray-200">
         <div className="max-w-6xl mx-auto flex max-[1050]:flex-col flex-row justify-between items-center gap-4">
           <Link href={"/"} aria-description="homepage" className="text-gray-600 max-[575px]:text-center">
-            © {new Date().getFullYear()} <span className="text-indigo-600 font-semibold">ShprehePakenaqesine</span>. Te gjitha te drejtat e reservuara.
+            © {new Date().getFullYear()} <span className="text-indigo-600 font-semibold">ShprehePakënaqësinë</span>. Te gjitha të drejtat e reservuara.
           </Link>
           <div className="flex flex-wrap gap-6 max-[530px]:justify-center">
             <a href="/politika-e-privatesise" className="text-gray-600 hover:text-indigo-600 transition-colors">
-              Politika e Privatesise
+              Politika e Privatësisë
             </a>
             <a href="/termat-e-perdorimit" className="text-gray-600 hover:text-indigo-600 transition-colors">
-              Termat e Perdorimit
+              Termat e Përdorimit
             </a>
             <a href="/na-kontaktoni" className="text-gray-600 hover:text-indigo-600 transition-colors">
               Na kontaktoni

@@ -39,7 +39,7 @@ const page = async () => {
     
   return (
     <div className="min-h-screen bg-gray-50">
-        <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
+        <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Profili</h1>
             <p className='text-gray-600 text-center max-[420px]:text-sm'>Ketu mund te gjeni te gjitha ankesat/raportimet, kontribimet apo te dhena tuaja personale</p>
         </div>

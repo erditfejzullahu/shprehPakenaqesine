@@ -141,17 +141,14 @@ const AllCompaniesCard = () => {
 
                 {/* Error State */}
                 {isError && !isLoading && (
-                    <div className="mx-auto flex flex-col items-center right-0 left-0 my-8">
+                    <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
                         <div className="flex flex-row gap-1">
                             <div>
-                                <h3 className="text-gray-600 font-normal mb-3">Dicka shkoi gabim. Provoni perseri!</h3>
-                            </div>
-                            <div className="pt-2 rotate-[50deg]">
-                                <FaChevronDown size={22} color='#4f46e5'/>
+                            <h3 className="text-gray-600 font-normal mb-3 flex text-center flex-row items-center">Dicka shkoi gabim. Provoni përsëri! <FaChevronDown className='rotate-[50deg] mt-2' size={22} color='#4f46e5'/></h3>
                             </div>
                         </div>
-                        <CTAButton onClick={() => refetch()} text='Provo perseri'/>
-                    </div>
+                        <CTAButton onClick={() => refetch()} text='Provo përsëri'/>
+                    </div> 
                 )}
 
                 {/* Empty Data State */}
@@ -253,7 +250,7 @@ const AllCompaniesCard = () => {
                                     onClick={() => fetchNextPage()} 
                                     classNames="mx-auto" 
                                     isLoading={isFetchingNextPage} 
-                                    text='Me shume' 
+                                    text={`${isFetchingNextPage ? "Ju lutem prisni..." : "Më shumë"}`} 
                                     primary
                                 />
                             </div>

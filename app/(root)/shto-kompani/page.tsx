@@ -1,6 +1,7 @@
 import { auth } from '@/auth'
 import CreateCompanyForm from '@/components/CreateCompanyForm'
 import { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React from 'react'
@@ -73,11 +74,20 @@ const page = async () => {
     />
     <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative">
       <Link href={"/krijo-raportim"} className="top-0 absolute rounded-bl-md right-0 flex flex-row items-center gap-1 shadow-lg sm:p-2 p-1 px-2 bg-gray-50 border-b hover:bg-gray-200 transition-colors">
-        Krijo Ankese
+        Krijo Ankesë
         <FaPlusSquare size={24} color='#4f46e5'/>
       </Link>
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Krijo <span className="text-indigo-600">Kompani</span></h1>
-      <p className='text-gray-600 max-[420px]:text-sm'>Ketu mund te shtoni kompanine per te cilen mund te krijoni ankese ju apo perdoruesit e tjere te platformes <span className="text-indigo-600">ShprehPakenaqesine</span></p>
+      <h1 className="text-3xl mb-2 sm:text-4xl md:text-5xl font-bold leading-tight w-fit mx-auto relative tracking-tight">Krijo <span className="text-indigo-600">Kompani</span>
+        <Image
+          src={'/press-day.gif'}
+          width={40}
+          height={40}
+          alt='add company'
+          quality={50}
+          className='size-10 absolute -top-8 -left-7 -rotate-[30deg] max-[330px]:-top-10 max-[287px]:left-0'
+        />
+      </h1>
+      <p className='text-gray-600 max-[420px]:text-sm'>Këtu mund të shtoni kompaninë për të cilën mund të krijoni ankesë ju apo perdoruesit e tjerë te platformës <span className="text-indigo-600">ShprehPakënaqësinë</span></p>
     </div>
     <CreateCompanyForm />
     </>

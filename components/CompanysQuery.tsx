@@ -25,27 +25,21 @@ const CompanysQuery = () => {
   })      
   
   if(isLoading) return <LoadingSpinner />
-  if(!data) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
+  if(!data) return <div className="mx-auto flex flex-col items-center -mb-12 -top-6">
     <div className="flex flex-row gap-1">
       <div>
-        <h3 className="text-gray-600 font-normal mb-3">Nuk ka te dhena. Nese mendoni qe eshte gabim</h3>
-      </div>
-      <div className="pt-2 rotate-[50deg]">
-      <FaChevronDown size={22} color='#4f46e5'/>
+        <h3 className="text-gray-600 font-normal mb-3 text-center flex flex-row items-center">Nuk ka të dhëna. Nëse mendoni qe është gabim <FaChevronDown className='rotate-[50deg] mt-2' size={22} color='#4f46e5'/></h3>
       </div>
     </div>
-    <CTAButton onClick={() => refetch()} text='Provo perseri'/>
+    <CTAButton onClick={() => refetch()} text='Provo përsëri'/>
   </div> 
-  if(isError) return <div className="mx-auto flex flex-col items-center right-0 left-0 -top-6">
+  if(isError) return <div className="mx-auto flex flex-col items-center -mb-12 right-0 left-0 -top-6">
     <div className="flex flex-row gap-1">
       <div>
-        <h3 className="text-gray-600 font-normal mb-3">Dicka shkoi gabim. Provoni perseri!</h3>
-      </div>
-      <div className="pt-2 rotate-[50deg]">
-      <FaChevronDown size={22} color='#4f46e5'/>
+        <h3 className="text-gray-600 font-normal mb-3 flex text-center flex-row items-center">Dicka shkoi gabim. Provoni përsëri! <FaChevronDown className='rotate-[50deg] mt-2' size={22} color='#4f46e5'/></h3>
       </div>
     </div>
-    <CTAButton onClick={() => refetch()} text='Provo perseri'/>
+    <CTAButton onClick={() => refetch()} text='Provo përsëri'/>
   </div> 
 
   return (
@@ -57,7 +51,7 @@ const CompanysQuery = () => {
       )}
       {hasNextPage && (
         <div className="mt-1 w-full flex justify-between items-center mx-auto absolute right-0 -bottom-16 left-0">
-          <CTAButton onClick={() => fetchNextPage()} isLoading={isFetchingNextPage} text='Me shume' primary classNames='mx-auto'/>
+          <CTAButton onClick={() => fetchNextPage()} isLoading={isFetchingNextPage} text={`${isFetchingNextPage ? "Ju lutem prisni..." : "Më shumë"}`} primary classNames='mx-auto'/>
         </div>
       )}
     </div>

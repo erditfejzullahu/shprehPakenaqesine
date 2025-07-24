@@ -66,7 +66,7 @@ const CompanyCard = ({
         <p className="text-gray-600 text-sm line-clamp-3 text-left">{description}</p>
       )}
 
-      <div className="flex flex-wrap gap-2 overflow-x-auto">
+      <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
         {address && (
           <Badge variant="outline" className="flex items-center gap-1">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

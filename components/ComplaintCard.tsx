@@ -45,7 +45,7 @@ const ComplaintCard = ({
         </div>
       </div>
 
-      <div className="flex flex-row overflow-x-auto gap-2">
+      <div className="flex flex-row overflow-x-auto gap-2 pb-1">
         <Badge
           variant={
             status === 'ACCEPTED' ? 'default' :

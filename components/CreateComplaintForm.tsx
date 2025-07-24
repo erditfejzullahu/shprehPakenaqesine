@@ -244,12 +244,12 @@ const CreateComplaintForm = () => {
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-6xl mx-auto flex flex-col gap-4 my-4 shadow-lg p-4">
       <div className='flex flex-row max-[575]:flex-col gap-2 max-[575]:gap-4 justify-between'>
         <div className='flex-1'>
-          <Label htmlFor='title' className="mb-1">Titulli i ankeses/raportimit</Label>
+          <Label htmlFor='title' className="mb-1">Titulli i ankesës/raportimit</Label>
           <Controller 
             control={control}
             name="title"
             render={({field}) => (
-              <Input id='title' {...field} placeholder='Nje titull terheqes per krijimin e ankeses/raportimit...'/>
+              <Input id='title' {...field} placeholder='Një titull terheqës per krijimin e ankesës/raportimit...'/>
             )}
           />
           {errors.title && (
@@ -258,7 +258,7 @@ const CreateComplaintForm = () => {
         </div>
         <div className='flex-1'>
           <Label htmlFor='komuna' className="mb-1">
-            Zgjidhni komunen
+            Zgjidhni komunën
           </Label>
           
           <Controller 
@@ -329,7 +329,7 @@ const CreateComplaintForm = () => {
             </div>
             <div className="flex items-center gap-1.5">
               <Checkbox id="changecomplaintType" onCheckedChange={(checked) => setComunalComplaint(checked as boolean)} checked={comunalComplaint}/>
-              <Label htmlFor="changecomplaintType">Ankese Komunale?</Label>
+              <Label htmlFor="changecomplaintType">Ankesë Komunale?</Label>
             </div>
           </div>
           <Controller 
@@ -346,23 +346,23 @@ const CreateComplaintForm = () => {
                   >
                     {field.value
                       ? data?.find((company) => company.id === field.value)?.name
-                      : "Zgjidh nje kompani"}
+                      : "Zgjidh një kompani"}
                     <ChevronsUpDown className="opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="max-h-[300px] overflow-y-auto p-0">
                   <Command>
-                    <CommandInput placeholder="Kerkoni kompanite..." />
-                    <CommandEmpty>Nuk u gjet asnje kompani.</CommandEmpty>
+                    <CommandInput placeholder="Kerkoni kompanitë..." />
+                    <CommandEmpty>Nuk u gjet asnjë kompani.</CommandEmpty>
                     <CommandGroup>
                       {isLoading ? (
                         <CommandItem value="loading">Ju lutem prisni...</CommandItem>
                       ) : isError ? (
                         <CommandItem value="error" onSelect={() => refetch()}>
-                          Dicka shkoi gabim, klikoni per rifreskim.
+                          Dicka shkoi gabim, klikoni për rifreskim.
                         </CommandItem>
                       ) : !data || data.length === 0 ? (
-                        <CommandItem value="empty">Nuk u gjet ndonje kompani</CommandItem>
+                        <CommandItem value="empty">Nuk u gjet ndonjë kompani</CommandItem>
                       ) : (
                         data.map((company) => (
                           <CommandItem
@@ -394,7 +394,7 @@ const CreateComplaintForm = () => {
           )}
         </div>
         <div className="flex-1 w-full">
-          <Label className='mb-1' htmlFor='category'>Kategoria e ankeses</Label>
+          <Label className='mb-1' htmlFor='category'>Kategoria e ankesës</Label>
           <Controller
             control={control}
             name="category"
@@ -409,14 +409,14 @@ const CreateComplaintForm = () => {
                   >
                     {field.value
                       ? formatCategoryDisplay(field.value)
-                      : "Zgjidh nje arsyje kontakti"}
+                      : "Zgjidh një arsyje të ankesës"}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="max-h-[300px] overflow-y-auto p-0">
                   <Command>
                     <CommandInput placeholder="Kerkoni arsyet..." />
-                    <CommandEmpty>Nuk u gjet asnje arsye.</CommandEmpty>
+                    <CommandEmpty>Nuk u gjet asnjë arsye.</CommandEmpty>
                     <CommandGroup>
                       {/* <CommandLabel>Zgjidhni mes opsioneve me poshte</CommandLabel> */}
                       {Object.keys(Category).map((item) => (
@@ -444,18 +444,18 @@ const CreateComplaintForm = () => {
             )}
           />
           {errors.category && (
-            <p className="text-red-500 text-sm mt-1">Zgjidhni nje opsion</p>
+            <p className="text-red-500 text-sm mt-1">Zgjidhni një opsion</p>
           )}
         </div>
       </div>
 
       <div>
-        <Label htmlFor='description' className="mb-1">Pershkrimi i ankeses</Label>
+        <Label htmlFor='description' className="mb-1">Pershkrimi i ankesës</Label>
         <Controller 
           control={control}
           name="description"
           render={({field}) => (
-            <Textarea id='description' {...field} placeholder='Pershkruani ankesen ne menyrat dhe ne detajet me te mira te mundshme...' rows={10}/>
+            <Textarea id='description' {...field} placeholder='Pershkruani ankesën ne menyrat dhe në detajet më të mira të mundshme...' rows={10}/>
           )}
         />
         {errors.description && (
@@ -465,7 +465,7 @@ const CreateComplaintForm = () => {
           
       
       <div className='mx-auto w-full'>
-        <Label htmlFor='attachments' className="mb-1 flex items-center justify-center max-[800px]:justify-start">Bashkengjitjet e Imazheve</Label>
+        <Label htmlFor='attachments' className="mb-1 flex items-center justify-center max-[800px]:justify-start">Bashkëngjitjet e Imazheve</Label>
         <Controller 
           control={control}
           name="attachments"

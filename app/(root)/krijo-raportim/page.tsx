@@ -1,6 +1,7 @@
 import { auth } from '@/auth'
 import CreateComplaintForm from '@/components/CreateComplaintForm'
 import { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React from 'react'
@@ -74,8 +75,17 @@ const page = async () => {
         Shto kompani
         <FaPlusSquare size={24} color='#4f46e5'/>
       </Link>
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Krijo <span className="text-indigo-600">Ankesen</span></h1>
-      <p className='text-gray-600'>Sigurohuni qe para raportimit te jeni ne dijeni dhe ne perputhje me <Link className="text-indigo-600" href="/termat-e-perdorimit">Termat e Perdorimit</Link> dhe <Link className="text-indigo-600" href={'verifikimi'}>Procesin e Verifikimit</Link></p>
+      <h1 className="text-3xl mb-2 sm:text-4xl md:text-5xl font-bold leading-tight w-fit mx-auto relative tracking-tight">Krijo <span className="text-indigo-600">Ankesën</span>
+      <Image
+        src={'/rumor.gif'}
+        width={40}
+        height={40}
+        alt='create complaint'
+        quality={50}
+        className='size-10 absolute -top-8 -left-7 -rotate-[30deg] max-[330px]:-top-10'
+      />
+      </h1>
+      <p className='text-gray-600 max-[420px]:text-sm!'>Sigurohuni që para raportimit të jeni në dijeni dhe në përputhje me <Link className="text-indigo-600" href="/termat-e-perdorimit">Termat e Përdorimit</Link> dhe <Link className="text-indigo-600" href={'verifikimi'}>Procesin e Verifikimit</Link></p>
     </div>
 
     <CreateComplaintForm />

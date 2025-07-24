@@ -46,6 +46,14 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
       <NavLink href="/cmimore" text="Cmimore" delay={0.2} onClose={() => setIsOpen(false)}/>
       <NavLink href="/verifikimi" text="Verifikimi" delay={0.3} onClose={() => setIsOpen(false)}/>
       <NavLink href="/na-kontaktoni" text="Na kontaktoni" delay={0.4} onClose={() => setIsOpen(false)}/>
+      {isMobile && (
+        <>
+        <div className='text-center flex flex-col gap-3'>
+          <NavLink href="/kompanite" text="Kompanitë" delay={0.4} onClose={() => setIsOpen(false)}/>
+          <NavLink href="/ankesat" text="Ankesat" delay={0.4} onClose={() => setIsOpen(false)}/>
+        </div>
+        </>
+      )}
       {session ? (
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
@@ -99,7 +107,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
             whileHover={{ rotateY: 15 }} 
             className="inline-block"
           >
-            ShprehPakenaqesine
+            ShprehPakënaqësinë
           </motion.span>
         </Link>
 
@@ -159,7 +167,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black/50 z-40 h-screen backdrop-blur-sm min-h-full"
+              className="fixed inset-0 bg-black/20 z-40 h-screen backdrop-blur-sm min-h-full"
               onClick={toggleMenu}
             />
             
@@ -168,7 +176,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed top-0 right-0 w-4/5 h-screen max-w-md bg-white shadow-2xl z-50 p-8"
+              className="fixed top-0 overflow-y-auto right-0 w-4/5 h-screen max-w-md bg-white shadow-2xl z-50 p-8"
             >
               <div className="h-full flex flex-col justify-between">
                 <div>
@@ -179,7 +187,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
                             whileHover={{ rotateY: 15 }} 
                             className="inline-block"
                         >
-                            ShprehPakenaqesine
+                            ShprehPakënaqësinë
                         </motion.span>
                     </Link>
                 </div>
@@ -220,9 +228,9 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="text-gray-500 text-sm mt-4 max-[331px]:text-center mx-auto"
+                  className="text-gray-500 text-sm mt-4 max-[331px]:text-center mx-auto pb-2"
                 >
-                  © {new Date().getFullYear()} <Link onClick={() => setIsOpen(false)} href={"/"} className='text-indigo-600'>ShprehPakenaqesine</Link>
+                  © {new Date().getFullYear()} <Link onClick={() => setIsOpen(false)} href={"/"} className='text-indigo-600'>ShprehPakënaqësinë</Link>
                 </motion.div>
               </div>
             </motion.div>

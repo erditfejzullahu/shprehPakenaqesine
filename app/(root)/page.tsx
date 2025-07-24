@@ -117,7 +117,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
       />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full max-w-6xl mx-auto max-[640px]:pt-10! py-16 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative overflow-hidden">
+        <section className="w-full max-w-6xl rounded-2xl mx-auto max-[640px]:pt-10! py-16 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative overflow-hidden">
           <Image 
             src={"/output-1.webp"}
             alt='lines'
@@ -149,19 +149,19 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
           }
           )}
 
-          <h1 className="text-[32px] uppercase sm:text-5xl md:text-6xl max-[376px]:text-[30px]! max-[355px]:text-[28px]! max-[333px]:text-[26px]! font-bold leading-tight tracking-tighter">
+          <h1 className="text-[32px] uppercase sm:text-5xl md:text-6xl max-[382px]:text-[30px]! max-[360px]:text-[28px]! max-[339px]:text-[27px]! max-[328px]:text-[26px]! font-bold leading-tight tracking-tighter">
             Bashkë për të drejtat <br className="hidden sm:block"/> e <span className="text-indigo-600">komunitetit</span>
           </h1>
           <p className="mt-6 sm:text-xl text-base max-[420px]:text-sm!  text-gray-600 max-w-3xl mx-auto">
             Platformë <span className='text-indigo-600'>anonime</span> dhe e <span className='text-indigo-600'>sigurt</span> për të raportuar padrejtësi nga punëdhënësit dhe për të paraqitur ankesa ndaj komunës për shërbime publike.
           </p>
-          <p className="text-xs text-gray-400 mx-auto mt-3 max-w-xl">Ketu do shfaqen pakenaqesite e medha apo raportimet e shumta nga indivite te ndryshem per nje punedhenes ose komune!</p>
+          <p className="text-xs text-gray-400 mx-auto mt-3 max-w-xl">Këtu do shfaqen pakenaqesitë e medha apo raportimet e shumta nga indivitë të ndryshëm për një punëdhënës ose komunë!</p>
           <div className="mt-8 flex sm:flex-row flex-wrap gap-4 justify-center">
             <Link aria-description='krijo raportimin' href={'/krijo-raportim'} className='max-[390px]:w-full!'>
               <CTAButton text="Raporto Tani" classNames='border-2 border-indigo-600 max-[390px]:w-full!' primary />
             </Link>
             <Link aria-description='meso me shume' href={'/si-funksjonon'} className='max-[390px]:w-full!'>
-              <CTAButton classNames='max-[390px]:w-full!' text="Meso me shume" />
+              <CTAButton classNames='max-[390px]:w-full!' text="Mëso më shumë" />
             </Link>
           </div>
           <Link href={"/shto-kompani"} className="bottom-0 absolute rounded-tl-lg px-4 right-0 flex flex-row items-center gap-2 shadow-xl border-t p-2 bg-gray-50 hover:bg-gray-200 transition-colors">
@@ -181,7 +181,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
                 alt='underline'
                 width={700}
                 height={700}
-                className='w-full -z-50 opacity-5 absolute -top-4 indigo-mask'
+                className='w-full -z-50 opacity-5 absolute -top-4 indigo-mask max-[425px]:top-0 max-[385px]:top-2 '
               />
               <p className="text-gray-600 max-w-md text-base max-[420px]:text-sm">
                 Eksploroni kompanitë e regjistruara në platformën tonë dhe shikoni vlerësimet e tyre
@@ -208,7 +208,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
                 alt='underline'
                 width={700}
                 height={700}
-                className='w-fit -z-50 rotate-[175deg] opacity-5 absolute -top-2 right-0 indigo-mask'
+                className='w-1/2 max-[768px]:w-full -z-50 rotate-[175deg] max-[768px]:rotate-0 opacity-5 absolute -top-2 max-[768px]:-top-4 max-[490px]:top-0 max-[425px]:top-2 max-[350px]:top-4 right-0 indigo-mask'
               />
             <div className="space-y-2">
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
@@ -239,7 +239,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
             <FeatureCard 
               icon="lock.png" 
               title="Konfidencionalitet" 
-              description={<>Ankesat tuaja te thjeshta mund te mbeten totalisht anonime. Shikoni <Link className="text-indigo-600" href={"termat-e-perdorimit"}>Termat e Perdorimit</Link></>}
+              description={<>Ankesat tuaja të thjeshta mund te mbeten totalisht anonime. Shikoni <Link className="text-indigo-600" href={"termat-e-perdorimit"}>Termat e Përdorimit</Link></>}
             />
             <FeatureCard 
               icon="star.png" 
