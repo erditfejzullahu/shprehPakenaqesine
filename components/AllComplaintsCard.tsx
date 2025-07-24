@@ -106,13 +106,13 @@ const AllComplaintsCard = () => {
         </div>
 
         {/* Search and Filter Controls - Always visible */}
-        <div className="flex flex-row flex-wrap justify-between">
-          <div className="flex-1 max-w-[700px]">
+        <div className="flex flex-row gap-4 flex-wrap justify-between">
+          <div className="max-w-[700px] min-w-[300px]">
             <Input
               placeholder="Kërko ankesa..."
               value={inputValue}
               onChange={(e) => {debouncedSearch(e.target.value); setInputValue(e.target.value)}}
-              className="sm:col-span-2"
+              className="min-w-[300px] flex-1"
             />
           </div>
           <div className="flex flex-row items-center gap-4">
@@ -246,6 +246,7 @@ const AllComplaintsCard = () => {
                     <TableRow>
                       <TableHead>Titulli</TableHead>
                       <TableHead>Kompania</TableHead>
+                      <TableHead>Komuna</TableHead>
                       <TableHead>Kategoria</TableHead>
                       <TableHead>Statusi</TableHead>
                       <TableHead>Data</TableHead>
@@ -261,9 +262,15 @@ const AllComplaintsCard = () => {
                           </Link>
                         </TableCell>
                         <TableCell>
-                          <Link href={`/kompanite/${complaint.company.id}`} className="hover:underline">
+                          {complaint.company ? (<Link href={`/kompanite/${complaint.company.id}`} className="hover:underline">
                             {complaint.company.name}
-                          </Link>
+                          </Link>): (
+                            <div>Ankese ne <span className="text-indigo-600">{complaint.municipality}</span></div>
+                          )}
+                           
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={"destructive"}>{complaint.municipality}</Badge>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">

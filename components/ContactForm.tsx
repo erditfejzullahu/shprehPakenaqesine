@@ -1,23 +1,23 @@
 "use client"
 import { contactFormSchema } from '@/lib/schemas/contactFormSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {z} from "zod"
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
-import { ImagePlus, X } from 'lucide-react'
+import { ImagePlus, Upload, X } from 'lucide-react'
 import CTAButton from './CTAButton'
 import Image from 'next/image'
 
 type validationSchema = z.infer<typeof contactFormSchema>
 
 const ContactForm = () => {
+    const [attachmentPreviews, setAttachmentPreviews] = useState<string[]>([])
     const abortControllerRef = useRef<AbortController | null>(null)
 
-    const inputRef = useRef<HTMLInputElement>(null)
     const {control, handleSubmit, formState: {errors, isSubmitting, isSubmitted}, reset} = useForm<validationSchema>({
         resolver: zodResolver(contactFormSchema),
         defaultValues: useMemo(() => ({
@@ -31,6 +31,8 @@ const ContactForm = () => {
         mode: "onChange"
     }) 
 
+    
+
     useEffect(() => {
       return () => {
         if(abortControllerRef.current){
@@ -40,35 +42,56 @@ const ContactForm = () => {
     }, [])
     
 
-    const handleFileChange = useCallback(( e: React.ChangeEvent<HTMLInputElement>, onChange: (value: string[]) => void, existingImages: string[]) => {
-        const files = e.target.files;
-        if (!files) return;
-
-        const newImages: string[] = [...existingImages];
-        
+    const handleFileChange = useCallback((
+        event: React.ChangeEvent<HTMLInputElement>,
+        fieldOnChange: (value: string[]) => void
+      ) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+    
+        const newPreviews: string[] = [];
+        const fileReaders: FileReader[] = [];
+        let filesRead = 0;
+    
         Array.from(files).forEach((file) => {
-            if (!file.type.startsWith("image/")) return;
-            
-            const reader = new FileReader();
-            reader.onload = (event) => {
-            if (event.target?.result) {
-                newImages.push(event.target.result as string);
-                onChange(newImages);
+          const reader = new FileReader();
+          fileReaders.push(reader);
+    
+          reader.onloadend = () => {
+            filesRead++;
+            if (reader.result) {
+              newPreviews.push(reader.result as string);
             }
-            };
-            reader.readAsDataURL(file);
+            
+            if (filesRead === files.length) {
+              const updatedPreviews = [...attachmentPreviews, ...newPreviews];
+              setAttachmentPreviews(updatedPreviews);
+              fieldOnChange(updatedPreviews);
+            }
+          };
+          
+          reader.readAsDataURL(file);
         });
-    }, [reset])
+      }, []);
 
     const onSubmit = useCallback(async (data: validationSchema) => {
         console.log(data);
     }, [reset])
+
+    const removeImage = useCallback((
+        index: number,
+        fieldOnChange: (value: string[]) => void
+      ) => {
+        const updatedPreviews = attachmentPreviews.filter((_, i) => i !== index);
+        setAttachmentPreviews(updatedPreviews);
+        fieldOnChange(updatedPreviews);
+      }, [attachmentPreviews]);
     
 
   return (
-    <div className="max-w-6xl mx-auto mt-6">
+    <div className="max-w-6xl mx-auto mt-6 px-4">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mb-6">
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row max-[580px]:flex-col gap-2 max-[580px]:gap-4">
                 <div className="flex-1">
                     <Label htmlFor='name' className="mb-1">Emri Juaj</Label>
                     <Controller 
@@ -96,7 +119,7 @@ const ContactForm = () => {
                     )}
                 </div>
             </div>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row max-[580px]:flex-col gap-2 max-[580px]:gap-4">
                 <div className="flex-1">
                     <Label htmlFor='subject' className="mb-1">Subjekti</Label>
                     <Controller 
@@ -152,52 +175,67 @@ const ContactForm = () => {
                 )}
             </div>
             <div>
-            <Controller
-                control={control}
-                name="attachments"
-                render={({ field: { value = [], onChange } }) => (
-                    <div className="space-y-4">
-                    {/* Preview Area */}
-                    <div className="flex flex-wrap gap-2">
-                        {value.map((img, index) => (
-                        <div key={index} className="relative group">
-                            <Image
-                            src={img}
-                            width={100}
-                            height={100}
-                            alt={`Preview ${index}`}
-                            className="h-24 w-24 object-cover rounded-md"
-                            />
-                            <button
-                            type="button"
-                            onClick={() => {
-                                const updated = value.filter((_, i) => i !== index);
-                                onChange(updated);
-                            }}
-                            className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 transition-opacity"
-                            >
-                            <X className="h-4 w-4 text-white" />
-                            </button>
+            <Controller 
+                      control={control}
+                      name="attachments"
+                      render={({ field: { onChange } }) => (
+                          <div className="space-y-2">
+                          {attachmentPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
+                            display: 'flex', 
+                            flexWrap: 'wrap', 
+                            gap: '10px', 
+                          }}>
+                            {attachmentPreviews.map((preview, index) => (
+                              <div key={index} style={{ position: 'relative' }}>
+                                <Image
+                                  src={preview} 
+                                  alt={`preview ${index}`} 
+                                  width={100}
+                                  height={100}
+                                  className='h-44 w-full'
+                                />
+                                <button 
+                                  type="button"
+                                  className='flex items-center justify-center'
+                                  onClick={() => removeImage(index, onChange)}
+                                  style={{ 
+                                    position: 'absolute', 
+                                    top: -6, 
+                                    right: -6,
+                                    background: 'red',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '20px',
+                                    height: '20px',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  <X size={14}/>
+                                </button>
+                              </div>
+                              ))}
+                            </div>) : (
+                            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                                <p className="text-sm text-center text-muted-foreground">
+                                  Klikoni për të ngarkuar Imazhe/Dokumente <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                                </p>
+                              </div>
+                              <Input 
+                                id='attachments'
+                                type="file"
+                                multiple 
+                                className="hidden" 
+                                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                                onChange={(e) => handleFileChange(e, onChange)}
+                              />
+                            </label>
+                          )}
                         </div>
-                        ))}
-                    </div>
-
-                    {/* Upload Button */}
-                    <Label className="w-fit">
-                        <Input
-                            ref={inputRef}
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => handleFileChange(e, onChange, value)}
-                        />
-                        <CTAButton text='Shto Imazhe' onClick={() => inputRef.current?.click()}/>
-                        <ImagePlus className="h-4 w-4" />
-                    </Label>
-                    </div>
-                )}
-                />
+                      )}
+                    />
                 {errors.attachments && (
                     <p className="text-red-500 text-sm mt-1">{errors.attachments.message}</p>
                 )}

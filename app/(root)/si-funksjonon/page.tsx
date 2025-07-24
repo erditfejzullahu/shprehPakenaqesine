@@ -82,8 +82,8 @@ const page = () => {
             <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">📌 Si funksionon <span className="text-indigo-600">ShprehPakenaqesine?</span></h1>
             </div>
-            <div className="max-w-6xl mx-auto py-6">
-                <p className='font-light'>Aplikacioni ynë web është ndërtuar për t’i dhënë qytetarëve një mënyrë të thjeshtë, të sigurt dhe transparente për të raportuar shkelje, abuzime apo parregullsi që lidhen me kompani apo institucione të ndryshme.</p>
+            <div className="max-w-6xl mx-auto py-6 px-4">
+                <p className='font-light'>Platforma ShfaqPakenaqësinë është ndërtuar për t’i dhënë qytetarëve një mënyrë të thjeshtë, të sigurt dhe transparente për të raportuar shkelje, abuzime apo parregullsi që lidhen me kompani apo institucione të ndryshme.</p>
 
                 <div className="flex flex-row items-center gap-1.5 mt-2">
                     <div className="flex flex-row items-center ">

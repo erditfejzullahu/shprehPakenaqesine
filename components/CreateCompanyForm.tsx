@@ -166,7 +166,7 @@ const CreateCompanyForm = () => {
                       <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                           <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-center text-muted-foreground">
                             Klikoni për të ngarkuar logo <span className='text-indigo-600'>(Maksimum: 10MB)</span>
                           </p>
                         </div>
@@ -186,7 +186,7 @@ const CreateCompanyForm = () => {
             )}
           />
 
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row max-[570px]:flex-col gap-2 max-[570px]:gap-4">
                 <div className="flex-1">
                 {/* Industry */}
                 <FormField
@@ -252,7 +252,7 @@ const CreateCompanyForm = () => {
                     <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
                       <div className="flex flex-col items-center justify-center">
                         <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-center text-muted-foreground">
                           Klikoni për të ngarkuar imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                         </p>
                       </div>
@@ -294,7 +294,7 @@ const CreateCompanyForm = () => {
               </FormItem>
             )}
           />
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row max-[570px]:flex-col gap-2 max-[570px]:gap-4">
                 <div className="flex-1">
                     {/* Phone */}
                     <FormField
@@ -345,7 +345,7 @@ const CreateCompanyForm = () => {
                 </div>
             </div>
 
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row max-[570px]:flex-col gap-2 max-[570px]:gap-4">
                 <div className="flex-1">
                     {/* Website */}
                     <FormField

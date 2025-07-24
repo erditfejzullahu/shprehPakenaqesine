@@ -66,7 +66,7 @@ const page = () => {
             <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Termat e Përdorimit</h1>
             </div>
-            <div className="max-w-6xl mx-auto py-6">
+            <div className="max-w-6xl mx-auto py-6 px-4">
                 <p className="font-light">Mirë se vini në <strong>ShfaqPakenaqesine</strong>. Duke përdorur këtë platformë, ju pajtoheni me kushtet e mëposhtme:</p>
 
                 <h2 className="text-lg font-semibold mt-2">Qëllimi</h2>

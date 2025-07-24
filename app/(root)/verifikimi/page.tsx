@@ -94,7 +94,7 @@ const page = () => {
         <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Modal i Verifikimit</h1>
         </div>
-        <div className="max-w-6xl mx-auto py-6">
+        <div className="max-w-6xl mx-auto py-6 px-4">
           <h2 className="text-lg font-semibold mt-2">Procesi i Verifikimit</h2>
           <ul className='text-sm'>
             <li>Çdo ankesë kontrollohet manualisht nga administratorët.</li>

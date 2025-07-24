@@ -77,7 +77,7 @@ const page = () => {
         <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Politika e Privatesise</h1>
         </div>
-        <div className="max-w-6xl mx-auto py-6">
+        <div className="max-w-6xl mx-auto py-6 px-4">
           <p className="font-light"><strong className="font-semibold">ShfaqPakenaqesine</strong> angazhohet të mbrojë privatësinë dhe të dhënat e përdoruesve sipas ligjeve në fuqi në Republikën e Kosovës.</p>
 
           <h2 className="text-lg font-semibold mt-2">Çfarë të dhënash mblidhen</h2>

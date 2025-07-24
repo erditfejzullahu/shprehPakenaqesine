@@ -42,10 +42,10 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
 
   const navLinks = (
     <>
-      <NavLink href="/si-funksjonon" text="Si funksjonon" delay={0.1} />
-      <NavLink href="/cmimore" text="Cmimore" delay={0.2} />
-      <NavLink href="/verifikimi" text="Verifikimi" delay={0.3} />
-      <NavLink href="/na-kontaktoni" text="Na kontaktoni" delay={0.4} />
+      <NavLink href="/si-funksjonon" text="Si funksjonon" delay={0.1} onClose={() => setIsOpen(false)}/>
+      <NavLink href="/cmimore" text="Cmimore" delay={0.2} onClose={() => setIsOpen(false)}/>
+      <NavLink href="/verifikimi" text="Verifikimi" delay={0.3} onClose={() => setIsOpen(false)}/>
+      <NavLink href="/na-kontaktoni" text="Na kontaktoni" delay={0.4} onClose={() => setIsOpen(false)}/>
       {session ? (
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
@@ -55,7 +55,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
         >
             {isMobile ? (
                 <div>
-                    <NavLink href="/profili" text="Profili" delay={0.4} />
+                    <NavLink href="/profili" text="Profili" delay={0.4} onClose={() => setIsOpen(false)}/>
                 </div>
             ) : (
                 <Link href="/profili" className="hover:scale-110 transition-transform">
@@ -63,7 +63,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
                 </Link>
             )}
             {isMobile ? (
-                <div className='mx-auto'>
+                <div onClick={() => setIsOpen(false)} className='mx-auto'>
                     <LogOut />
                 </div>
             ) : (
@@ -234,7 +234,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
 }
 
 // Enhanced NavLink component with 3D tilt effect
-function NavLink({ href, text, delay = 0 }: { href: string; text: string; delay?: number }) {
+function NavLink({ href, text, delay = 0, onClose }: { href: string; text: string; delay?: number, onClose: () => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -244,6 +244,7 @@ function NavLink({ href, text, delay = 0 }: { href: string; text: string; delay?
       whileTap={{ scale: 0.95 }}
     >
       <Link
+        onClick={onClose}
         href={href}
         className="relative font-medium text-gray-600 text-lg max-[350px]:text-base hover:text-indigo-600 transition-colors group"
       >
