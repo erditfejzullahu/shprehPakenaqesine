@@ -98,7 +98,7 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
         <div className="p-6">
           <h3 className="text-lg font-medium text-gray-900">Detajet e llogarise</h3>
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
-            <div className=' flex flex-row justify-between gap-2'>
+            <div className=' flex flex-row max-[550px]:flex-col max-[550px]:gap-4 justify-between gap-2'>
               <div className='flex-1'>
                 <Label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
                   Emri i plote
@@ -148,7 +148,7 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
               </div>
             </div>
 
-            <div className='flex flex-row justify-between gap-2'>
+            <div className='flex flex-row max-[550px]:flex-col max-[550px]:gap-4 justify-between gap-2'>
               <div className='flex-1'>
                 <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email
@@ -204,8 +204,8 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                 )}
             />
 
-            {changePassword && <div className='flex flex-row justify-between gap-2'>
-              <div className={`${!password ? "flex-[0.5]" : "flex-1"}`}>
+            {changePassword && <div className='flex flex-row max-[550px]:flex-col max-[550px]:gap-3 justify-between gap-2'>
+              <div className={`${!password ? "flex-[0.5] max-[550px]:flex-1" : "flex-1"}`}>
                 <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Fjalekalimi
                 </Label>
@@ -280,7 +280,7 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                     <Label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm px-1 text-center text-muted-foreground">
                           Klikoni për të ngarkuar foton e profilit
                         </p>
                       </div>
@@ -303,6 +303,7 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                 onClick={handleSubmit(onSubmit)}
                 type="submit"
                 primary
+                classNames='max-[550px]:w-full'
                 text={`${isSubmitting ? "Duke ruajtur ndryshimet..." : "Ruaj ndryshimet"}`}
               />
             </div>

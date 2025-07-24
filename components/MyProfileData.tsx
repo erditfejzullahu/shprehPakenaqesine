@@ -215,17 +215,19 @@ const MyProfileData = ({session}: {session: Session}) => {
 
   return (
     <>      
-      <div className='flex flex-row'>
-        <button type='button' onClick={() => handleTabChange("myComplaints")} className={`cursor-pointer ${activeTab === "myComplaints" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
-            Ankesat e krijuara
-        </button>
-        <button type='button' onClick={() => handleTabChange("contributions")} className={`cursor-pointer ${activeTab === "contributions" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
-            Kontribuimet e bera
-        </button>
-        <button type='button' onClick={() => handleTabChange("settings")} className={`cursor-pointer ${activeTab === "settings" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
-            Te dhenat tua
-        </button>
-        <button type='button' onClick={() => handleTabChange("userLogs")} className={`cursor-pointer ${activeTab === "userLogs" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>Regjistrat</button>
+      <div className='relative overflow-x-auto'>
+        <div className='flex space-x-0 min-w-max'>
+          <button type='button' onClick={() => handleTabChange("myComplaints")} className={`min-w-fit cursor-pointer ${activeTab === "myComplaints" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
+              Ankesat e krijuara
+          </button>
+          <button type='button' onClick={() => handleTabChange("contributions")} className={`min-w-fit cursor-pointer ${activeTab === "contributions" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
+              Kontribimet e bera
+          </button>
+          <button type='button' onClick={() => handleTabChange("settings")} className={`min-w-fit cursor-pointer ${activeTab === "settings" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
+              Te dhenat tua
+          </button>
+          <button type='button' onClick={() => handleTabChange("userLogs")} className={`min-w-fit cursor-pointer ${activeTab === "userLogs" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r-gray-200 `}>Regjistrat</button>
+        </div>
       </div>
       
       {/* Tab Content */}
@@ -233,8 +235,8 @@ const MyProfileData = ({session}: {session: Session}) => {
         {activeTab === 'myComplaints' && (
           <div className="divide-y divide-gray-200">
             {/* Search and Sort Controls */}
-            <div className="p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
-              <div className="w-full sm:w-1/2">
+            <div className="p-4 flex flex-col min-[660px]:flex-row gap-4 max-[380px]:gap-2! items-center justify-between">
+              <div className="w-full min-[660px]:w-1/2">
                 <Input
                   type="text"
                   placeholder="Kërko ankesa..."
@@ -246,12 +248,12 @@ const MyProfileData = ({session}: {session: Session}) => {
                   className="shadow-sm"
                 />
               </div>
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex gap-2 w-full max-sm:w-[90%] sm:w-auto max-[380px]:flex-wrap!">
                 <Select
                   value={sortOrder}
                   onValueChange={(value: 'newest' | 'oldest') => setSortOrder(value)}
                 >
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-[180px] max-sm:w-full">
                     <SelectValue placeholder="Rendit sipas dates" />
                   </SelectTrigger>
                   <SelectContent>
@@ -263,7 +265,7 @@ const MyProfileData = ({session}: {session: Session}) => {
                   value={votesSort}
                   onValueChange={(value: 'most' | 'least') => setVotesSort(value)}
                 >
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-[180px] max-sm:w-full">
                     <SelectValue placeholder="Rendit sipas votes" />
                   </SelectTrigger>
                   <SelectContent>
@@ -336,7 +338,7 @@ const MyProfileData = ({session}: {session: Session}) => {
                 <h3 className="mt-2 text-lg font-medium text-gray-900">
                   {searchTerm ? "Nuk u gjet asnjë ankesë" : "Nuk ke ankesa/raportime ende"}
                 </h3>
-                <p className="mt-1 text-gray-500">
+                <p className="mt-1 text-gray-500 text-sm sm:text-base">
                   {searchTerm ? "Provoni një kërkim tjetër" : "Fillo duke krijuar/apeluar ankese/raportim per ndonje kompani te listuar."}
                 </p>
                 {!searchTerm && (
@@ -354,26 +356,26 @@ const MyProfileData = ({session}: {session: Session}) => {
         {activeTab === 'contributions' && (
           <div className="divide-y divide-gray-200">
             {/* Search and Sort Controls */}
-            <div className="p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
-              <div className="w-full sm:w-1/2">
+            <div className="p-4 flex flex-row max-[515px]:flex-col gap-4 max-[380px]:gap-2! items-start justify-between">
+              <div className="w-full max-w-[700px]">
                 <Input
                   type="text"
-                  placeholder="Kërko kontribuime..."
+                  placeholder="Kërko kontribime..."
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="shadow-sm"
+                  className="shadow-sm flex-1"
                 />
               </div>
-              <div className="w-full sm:w-auto">
+              <div className="w-auto max-[515px]:w-[90%] max-[515px]:mx-auto">
                 <Select
                   // value={sortOrder}
                   defaultValue={sortOrder}
                   onValueChange={(value: 'newest' | 'oldest') => setSortOrder(value)}
                 >
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-[180px] max-[515px]:w-full">
                     <SelectValue placeholder="Rendit sipas dates" />
                   </SelectTrigger>
                   <SelectContent>
@@ -431,7 +433,7 @@ const MyProfileData = ({session}: {session: Session}) => {
                 <h3 className="mt-2 text-lg font-medium text-gray-900">
                   {searchTerm ? "Nuk u gjet asnjë kontribuim" : "Nuk ka kontribuime ende."}
                 </h3>
-                <p className="mt-1 text-gray-500">
+                <p className="mt-1 text-gray-500 text-sm sm:text-base">
                   {searchTerm ? "Provoni një kërkim tjetër" : "Ndihmoje komunitetin tone duke kontribuar ne ankesa/raportime te ndryshme."}
                 </p>
                 {!searchTerm && (

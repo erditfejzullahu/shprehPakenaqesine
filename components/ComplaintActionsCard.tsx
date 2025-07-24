@@ -333,7 +333,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 <DialogContent className='max-h-[90vh] !w-full !max-w-[700px] max-[750px]:max-w-[calc(100%-48px)]! px-4 overflow-y-scroll'>
                   <DialogHeader>
                     <DialogTitle>Kontriboni</DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className='max-[420px]:text-sm'>
                       Ketu mund te aplikoni per kontribuim ne kete rast duke shtuar deshmi dokumentesh, zerimeve, pamjeve etj.
                     </DialogDescription>
                   </DialogHeader>
@@ -348,7 +348,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                             <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
                               <div className="flex flex-col items-center justify-center">
                                 <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                                <p className="text-sm text-center text-muted-foreground">
+                                <p className="text-sm text-center px-1 text-muted-foreground">
                                   Klikoni për të ngarkuar dokumente/imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                 </p>
                               </div>
@@ -404,7 +404,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                             <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
                               <div className="flex flex-col items-center justify-center">
                                 <AudioLinesIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                                <p className="text-sm text-center text-muted-foreground">
+                                <p className="text-sm text-center px-1 text-muted-foreground">
                                   Klikoni për të ngarkuar audio/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                 </p>
                               </div>
@@ -455,7 +455,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                             <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
                               <div className="flex flex-col items-center justify-center">
                                 <Video className="h-8 w-8 text-muted-foreground mb-2" />
-                                <p className="text-sm text-center text-muted-foreground">
+                                <p className="text-sm text-center px-1 text-muted-foreground">
                                   Klikoni për të ngarkuar video/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                 </p>
                               </div>
@@ -597,7 +597,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
                                 <div className="flex flex-col items-center justify-center">
                                   <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                                  <p className="text-sm text-center text-muted-foreground">
+                                  <p className="text-sm text-center px-1 text-muted-foreground">
                                     Klikoni për të ngarkuar dokumente/imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                   </p>
                                 </div>
@@ -653,7 +653,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                                 <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
                                   <div className="flex flex-col items-center justify-center">
                                     <AudioLinesIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                                    <p className="text-sm text-center text-muted-foreground">
+                                    <p className="text-sm text-center px-1 text-muted-foreground">
                                       Klikoni për të ngarkuar audio/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                     </p>
                                   </div>
@@ -704,7 +704,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                                 <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
                                   <div className="flex flex-col items-center justify-center">
                                     <Video className="h-8 w-8 text-muted-foreground mb-2" />
-                                    <p className="text-sm text-center text-muted-foreground">
+                                    <p className="text-sm text-center px-1 text-muted-foreground">
                                       Klikoni për të ngarkuar video/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                     </p>
                                   </div>

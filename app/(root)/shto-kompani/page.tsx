@@ -77,7 +77,7 @@ const page = async () => {
         <FaPlusSquare size={24} color='#4f46e5'/>
       </Link>
       <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Krijo <span className="text-indigo-600">Kompani</span></h1>
-      <p className='text-gray-600'>Ketu mund te shtoni kompanine per te cilen mund te krijoni ankese ju apo perdoruesit e tjere te platformes <span className="text-indigo-600">ShprehPakenaqesine</span></p>
+      <p className='text-gray-600 max-[420px]:text-sm'>Ketu mund te shtoni kompanine per te cilen mund te krijoni ankese ju apo perdoruesit e tjere te platformes <span className="text-indigo-600">ShprehPakenaqesine</span></p>
     </div>
     <CreateCompanyForm />
     </>

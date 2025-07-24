@@ -76,7 +76,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Link href="/kycuni" className="hover:scale-110 transition-transform">
+          <Link href="/kycuni" onClick={() => setIsOpen(false)} className="hover:scale-110 transition-transform">
             <FaUser size={24} color="#4f46e5" />
           </Link>
         </motion.div>
@@ -220,7 +220,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="text-gray-500 text-sm mt-4 max-[331px]:text-center"
+                  className="text-gray-500 text-sm mt-4 max-[331px]:text-center mx-auto"
                 >
                   © {new Date().getFullYear()} <Link onClick={() => setIsOpen(false)} href={"/"} className='text-indigo-600'>ShprehPakenaqesine</Link>
                 </motion.div>

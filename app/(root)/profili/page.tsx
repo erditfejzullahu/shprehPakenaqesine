@@ -41,12 +41,12 @@ const page = async () => {
     <div className="min-h-screen bg-gray-50">
         <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Profili</h1>
-            <p className='text-gray-600 text-center'>Ketu mund te gjeni te gjitha ankesat/raportimet, kontribimet apo te dhena tuaja personale</p>
+            <p className='text-gray-600 text-center max-[420px]:text-sm'>Ketu mund te gjeni te gjitha ankesat/raportimet, kontribimet apo te dhena tuaja personale</p>
         </div>
         <div className="max-w-6xl relative mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-lg">
             <AnonimityToggle session={session}/>
             <div className="p-6 sm:p-8">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <div className="flex flex-row max-[900px]:flex-col items-center gap-6">
                     <div className="relative">
                     <img 
                         className="w-24 h-24 rounded-full border-4 border-indigo-100 object-cover" 
@@ -63,14 +63,14 @@ const page = async () => {
                     </div>
 
                     <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                        <h2 className="text-2xl font-bold text-gray-900">{session.user.fullName}</h2>
+                    <div className="flex items-center max-[900px]:justify-center gap-2">
+                        <h2 className="text-2xl max-[500px]:text-xl font-bold text-gray-900 max-[900px]:text-center">{session.user.fullName}</h2>
                     </div>
-                    <p className="text-gray-600 mb-2">{session.user.email}</p>
-                    <p className="text-gray-500 text-sm">Anetar qe nga {new Date(session.user.createdAt).toLocaleDateString('sq-al', {day: "2-digit", month: "short", year: "numeric"})}</p>
+                    <p className="text-gray-600 mb-2 max-[900px]:text-center">{session.user.email}</p>
+                    <p className="text-gray-500 text-sm max-[900px]:text-center">Anetar qe nga {new Date(session.user.createdAt).toLocaleDateString('sq-al', {day: "2-digit", month: "short", year: "numeric"})}</p>
                     </div>
 
-                    <div className="flex gap-6">
+                    <div className="flex gap-6 max-[450px]:gap-3 max-[420px]:flex-wrap justify-center">
                     <div className="text-center">
                         <p className="text-2xl font-bold text-indigo-600">{session.user.reputation}</p>
                         <p className="text-gray-500 text-sm">Reputacioni</p>
@@ -81,7 +81,7 @@ const page = async () => {
                     </div>
                     <div className="text-center">
                         <p className="text-2xl font-bold text-indigo-600">{session.user.contributions}</p>
-                        <p className="text-gray-500 text-sm">Kontribuimet</p>
+                        <p className="text-gray-500 text-sm">Kontribimet</p>
                     </div>
                     </div>
                 </div>

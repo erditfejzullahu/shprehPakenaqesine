@@ -219,7 +219,7 @@ const ContactForm = () => {
                             <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
                               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                                <p className="text-sm text-center text-muted-foreground">
+                                <p className="text-sm text-center px-1 text-muted-foreground">
                                   Klikoni për të ngarkuar Imazhe/Dokumente <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                                 </p>
                               </div>

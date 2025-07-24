@@ -73,7 +73,7 @@ const CompanyPage = ({ companyData }: Props) => {
   return (
     <div className="lg:w-2/3">
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6 overflox-x-auto flex-1">
+      <div className="border-b border-gray-200 mb-6 ">
         <nav className="-mb-px flex space-x-8 max-[425px]:space-x-4 flex-row overflow-x-auto">
           <button
             onClick={() => {

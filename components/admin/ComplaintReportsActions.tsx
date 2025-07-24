@@ -25,7 +25,7 @@ const ComplaintReportsActions = ({complaintTitle, complaintId, open, onClose}: {
       <DialogContent className="!min-w-[700px] flex flex-col max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Raportimet mbi <span className='underline'>{complaintTitle}</span></DialogTitle>
-          <DialogDescription>Ketu mund te nderveproni me te gjitha raportimet e {complaintTitle}</DialogDescription>
+          <DialogDescription className='max-[420px]:text-sm'>Ketu mund te nderveproni me te gjitha raportimet e {complaintTitle}</DialogDescription>
         </DialogHeader>
         {isLoading || isRefetching ? (
             <div className="py-8 flex justify-center">

@@ -166,7 +166,7 @@ const CreateCompanyForm = () => {
                       <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                           <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                          <p className="text-sm text-center text-muted-foreground">
+                          <p className="text-sm text-center px-1 text-muted-foreground">
                             Klikoni për të ngarkuar logo <span className='text-indigo-600'>(Maksimum: 10MB)</span>
                           </p>
                         </div>
@@ -252,7 +252,7 @@ const CreateCompanyForm = () => {
                     <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
                       <div className="flex flex-col items-center justify-center">
                         <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                        <p className="text-sm text-center text-muted-foreground">
+                        <p className="text-sm text-center px-1 text-muted-foreground">
                           Klikoni për të ngarkuar imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
                         </p>
                       </div>
@@ -402,12 +402,13 @@ const CreateCompanyForm = () => {
             type="button"
             onClick={handleReset}
             isLoading={form.formState.isSubmitting}
+            classNames='max-[303px]:w-full'
             text='Pastro'
            />
           <CTAButton
             primary
             type="submit"
-            classNames='min-w-[150px]'
+            classNames='min-w-[150px] max-[303px]:w-full'
             isLoading={form.formState.isSubmitting}
             text={form.formState.isSubmitting ? 'Duke u ruajtur...' : 'Ruaj'}
            />
