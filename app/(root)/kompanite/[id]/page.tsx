@@ -119,13 +119,15 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
               Kthehu tek kompanite
             </Link>
             <div className="flex flex-row max-[400px]:flex-col items-start gap-4 max-[400px]:gap-2">
-              <img 
+              <Image 
                 src={data.company.logoUrl} 
                 alt={`${data.company.name} logo`} 
+                width={64}
+                height={64}
                 className="w-16 h-16 max-[400px]:w-24 max-[400px]:h-24 rounded-md object-contain border border-gray-200"
               />
               <div>
-                <h1 className="text-2xl text-left md:text-3xl font-bold text-gray-900">{data.company.name}</h1>
+                <h1 className="text-2xl text-left md:text-3xl font-bold text-gray-900 tracking-tight">{data.company.name}</h1>
                 <p className="text-gray-600 text-left">{data.company.industry}</p>
               </div>
             </div>

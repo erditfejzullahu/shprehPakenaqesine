@@ -12,6 +12,7 @@ import { Input } from './ui/input';
 import { ActivityAction } from '@/app/generated/prisma';
 import { Badge } from './ui/badge';
 import { ReusableHoverCard } from './ReusableHoverCard';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 const columnHelper = createColumnHelper<UserProfileLogs>();
 const fuzzyFilter: FilterFn<UserProfileLogs> = (row, columnId, value) => {
@@ -64,7 +65,7 @@ const ProfileUserLogs = ({session}: {session: Session}) => {
             )
         }),
         columnHelper.accessor("action", {
-            header: "Nderveprimi",
+            header: "Ndërveprimi",
             size:100,
             enableSorting: true,
             enableGlobalFilter: true,
@@ -176,18 +177,18 @@ const ProfileUserLogs = ({session}: {session: Session}) => {
 
   return (
     <div className='p-4'>
-        <div className="flex flex-row items-center justify-between">
-            <div className="mb-4 flex-1">
+        <div className="flex mb-4 flex-row gap-2 items-center justify-between max-[500px]:flex-wrap">
+            <div className="w-full max-w-xl">
             <Input
                 type="text"
                 value={globalFilter}
                 onChange={e => setGlobalFilter(e.target.value)}
-                placeholder="Kerkoni regjistrat..."
-                className="max-w-md"
+                placeholder="Kërkoni regjistrat..."
+                className="w-full"
             />
             </div>
-            <div>
-            <span className="font-normal">{data.length} Regjistra te gjetura</span>
+            <div className='min-w-max max-[500px]:ml-auto'>
+                <span className="font-normal text-sm max"><span className='text-indigo-600 font-semibold'>{data.length}</span> Regjistra të gjetura</span>
             </div>
         </div>
 
@@ -275,20 +276,22 @@ const ProfileUserLogs = ({session}: {session: Session}) => {
             <span className="flex items-center gap-1">
                 Faqja{' '}
             <strong>
-                {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                {table.getState().pagination.pageIndex + 1} nga {table.getPageCount()}
             </strong>
             </span>
-            <select
-                value={table.getState().pagination.pageSize}
-                onChange={e => table.setPageSize(Number(e.target.value))}
-                className="px-2 py-1 border rounded"
+            <Select
+                value={table.getState().pagination.pageSize.toString()}
+                onValueChange={val => table.setPageSize(Number(val))}
                 >
-                {[10, 20, 30, 50].map(pageSize => (
-                    <option key={pageSize} value={pageSize}>
-                    Shfaq {pageSize}
-                    </option>
-                ))}
-            </select>
+                    <SelectTrigger>
+                        <SelectValue placeholder={table.getState().pagination.pageSize.toString()}/>
+                    </SelectTrigger>
+                    <SelectContent>
+                        {[10, 20, 30, 50].map(pageSize => (
+                            <SelectItem key={pageSize} value={pageSize.toString()}>Shfaq {pageSize}</SelectItem>
+                        ))}
+                    </SelectContent>
+            </Select>
       </div>
     </div>
   )

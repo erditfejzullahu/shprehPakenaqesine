@@ -70,7 +70,7 @@ const page = async () => {
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
     />
-    <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative">
+    <div className="w-full rounded-b-2xl max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative">
       <Link href={"/shto-kompani"} className="top-0 absolute rounded-bl-md right-0 flex flex-row items-center gap-1 shadow-lg sm:p-2 p-1 px-2 bg-gray-50 border-b hover:bg-gray-200 transition-colors">
         Shto kompani
         <FaPlusSquare size={24} color='#4f46e5'/>

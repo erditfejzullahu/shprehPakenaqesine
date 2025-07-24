@@ -117,7 +117,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
       />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full max-w-6xl rounded-2xl mx-auto max-[640px]:pt-10! py-16 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative overflow-hidden">
+        <section className="w-full max-w-6xl rounded-b-2xl mx-auto max-[640px]:pt-10! py-16 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative overflow-hidden">
           <Image 
             src={"/output-1.webp"}
             alt='lines'

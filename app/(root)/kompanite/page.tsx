@@ -78,7 +78,7 @@ const page = async () => {
       />
 
       <main className="flex-1">
-          <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg">
+          <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
             <h1 className="text-3xl mb-2 sm:text-4xl md:text-5xl font-bold leading-tight w-fit mx-auto relative tracking-tight max-[328px]:text-[29px]! max-[318px]:text-[28px]! max-[309px]:text-[27px]!">Te gjithë <span className="text-indigo-600">Kompanitë</span>
               <Image 
                 src={'/enterprise-architecture.gif'}

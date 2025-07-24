@@ -98,7 +98,7 @@ const ContactForm = () => {
                         control={control}
                         name="fullName"
                         render={({field}) => (
-                            <Input id='name' {...field} placeholder='Shkruani ketu emrin tuaj te plote...'/>
+                            <Input id='name' {...field} placeholder='Shkruani këtu emrin tuaj të plotë...'/>
                         )}
                     />
                     {errors.fullName && (
@@ -111,7 +111,7 @@ const ContactForm = () => {
                         control={control}
                         name="email"
                         render={({field}) => (
-                            <Input id='email' type="email" {...field} placeholder='perdoruesi@shembull.com' {...field}/>
+                            <Input id='email' type="email" {...field} placeholder='përdoruesi@shembull.com' {...field}/>
                         )}
                     />
                     {errors.email && (
@@ -126,7 +126,7 @@ const ContactForm = () => {
                         control={control}
                         name="subject"
                         render={({field}) => (
-                            <Input id='subject' {...field} placeholder='Subjekti juaj ketu...'/>
+                            <Input id='subject' {...field} placeholder='Subjekti juaj këtu...'/>
                         )}
                     />
                     {errors.subject && (
@@ -141,11 +141,11 @@ const ContactForm = () => {
                         render={({field}) => (
                             <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                             <SelectTrigger id='reason' className="flex-1 w-full cursor-pointer">
-                                <SelectValue placeholder="Zgjidh nje arsyje kontakti" />
+                                <SelectValue placeholder="Zgjidh një arsyje kontakti" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                <SelectLabel>Zgjidhni mes opsioneve me poshte</SelectLabel>
+                                <SelectLabel>Zgjidhni mes opsioneve më poshtë</SelectLabel>
                                 <SelectItem value='NDIHMË'>NDIHMË</SelectItem>
                                 <SelectItem value='ANKESË'>ANKESË</SelectItem>
                                 <SelectItem value='FSHIRJE'>FSHIRJE</SelectItem>
@@ -167,7 +167,7 @@ const ContactForm = () => {
                     control={control}
                     name="description"
                     render={({field}) => (
-                        <Textarea id='description' {...field} placeholder='Shkruani detajisht arsyjen e deshires se komunikimit me ShprehePakenaqesine...' rows={8}/>
+                        <Textarea id='description' {...field} placeholder='Shkruani detajisht arsyjen e dëshires së komunikimit me ShprehePakënaqesinë...' rows={14}/>
                     )}
                 />
                 {errors.description && (
@@ -240,8 +240,8 @@ const ContactForm = () => {
                     <p className="text-red-500 text-sm mt-1">{errors.attachments.message}</p>
                 )}
             </div>
-            <div className="mx-auto w-[200px]">
-                <CTAButton primary type='submit' text={isSubmitted ? "Duke u derguar" : "Dergo"} classNames="!w-full !flex-1"/>
+            <div className="mx-auto w-[200px] max-[580px]:w-full">
+                <CTAButton primary type='submit' text={isSubmitted ? "Duke u derguar" : "Dërgo"} classNames="!w-full !flex-1 "/>
             </div>
         </form>
     </div>

@@ -164,7 +164,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
               </svg>
               Kthehu tek ankesat/raportimet
             </Link>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{data.complaint.title}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">{data.complaint.title}</h1>
           </div>
         </div>
 

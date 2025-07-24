@@ -34,7 +34,7 @@ const CompanyCard = ({
     <Link 
       href={`/kompanite/${id}`} 
       aria-description="kompania" 
-      className={`w-full bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative`}
+      className={`w-full bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative rounded-b-2xl`}
     >
       <div className="flex max-[340px]:flex-col relative justify-between items-start gap-4">
         <div className="flex items-center gap-4">

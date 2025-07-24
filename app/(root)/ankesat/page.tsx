@@ -83,7 +83,7 @@ const page = async () => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <main className="flex-1">
-          <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg">
+          <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
             <h1 className="text-3xl sm:text-4xl mb-2 md:text-5xl font-bold leading-tight w-fit mx-auto relative tracking-tight">Te gjithë <span className="text-indigo-600">Ankesat</span>
             <Image 
               src={'/speech-bubble.gif'}

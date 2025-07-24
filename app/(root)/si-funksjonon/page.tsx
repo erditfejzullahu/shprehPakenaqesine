@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Image from 'next/image';
 import React from 'react'
 import { FaCheck, FaFolder } from 'react-icons/fa'
 import { TbHexagonNumber1Filled, TbHexagonNumber2Filled } from "react-icons/tb";
@@ -76,11 +77,16 @@ const page = () => {
     <div>
         <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
         <main className="flex-1">
-            <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-xl">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">📌 Si funksionon <span className="text-indigo-600">ShprehPakenaqesine?</span></h1>
+            <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-tight hyphens-manual relative w-fit mx-auto">
+                  <Image src={'/pin.png'} alt='pin' width={30} height={30} className='size-8 absolute -top-8 mx-auto -right-8 max-[955px]:-right-0'/> Si funksionon{" "}
+                  <span className="text-indigo-600">
+                    Shpreh&shy;Pakenaqesine
+                  </span>
+                </h1>
             </div>
             <div className="max-w-6xl mx-auto py-6 px-4">
                 <p className='font-light'>Platforma ShfaqPakenaqësinë është ndërtuar për t’i dhënë qytetarëve një mënyrë të thjeshtë, të sigurt dhe transparente për të raportuar shkelje, abuzime apo parregullsi që lidhen me kompani apo institucione të ndryshme.</p>

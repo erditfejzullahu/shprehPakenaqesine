@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
+import Image from 'next/image';
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
@@ -89,8 +90,8 @@ const PaymentInstructionsPage = () => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <main className="flex-1">
-        <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Udhëzime për Pagesë</h1>
+        <div className="w-full rounded-b-2xl max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight relative w-fit mx-auto">Udhëzime për <span className='text-indigo-600'>Pagesë</span> <Image src={'/pin.png'} alt='pin' width={30} height={30} className='size-8 absolute -top-8 mx-auto -right-8 max-[425px]:right-0'/></h1>
         </div>
         <div className="max-w-6xl mx-auto py-6 px-4">
           <p className="font-light"><strong className='font-semibold'>ShfaqPakenaqesine</strong> ofron mundësi pagesash për trajtim më të shpejtë dhe më të thellë të ankesave tuaja.</p>

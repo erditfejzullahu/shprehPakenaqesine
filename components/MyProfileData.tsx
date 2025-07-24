@@ -221,10 +221,10 @@ const MyProfileData = ({session}: {session: Session}) => {
               Ankesat e krijuara
           </button>
           <button type='button' onClick={() => handleTabChange("contributions")} className={`min-w-fit cursor-pointer ${activeTab === "contributions" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
-              Kontribimet e bera
+              Kontribimet e bëra
           </button>
           <button type='button' onClick={() => handleTabChange("settings")} className={`min-w-fit cursor-pointer ${activeTab === "settings" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
-              Te dhenat tua
+              Të dhënat tua
           </button>
           <button type='button' onClick={() => handleTabChange("userLogs")} className={`min-w-fit cursor-pointer ${activeTab === "userLogs" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r-gray-200 `}>Regjistrat</button>
         </div>
@@ -297,19 +297,19 @@ const MyProfileData = ({session}: {session: Session}) => {
                     <div className='bg-indigo-100 rounded-lg bottom-1 right-1 absolute text-indigo-600 text-xs font-semibold px-2 py-0.5'>
                       {complaint.municipality}
                     </div>
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start gap-1">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">{complaint.title}</h3>
                         {complaint.companyId && complaint.companyName ? (
                           <p className="text-gray-600 mt-1">
-                            Kunder <span onClick={() => router.push(`/kompanite/${complaint.companyId}`)} className="font-medium hover:text-indigo-600">{complaint.companyName}</span> • {new Date(complaint.createdAt).toLocaleDateString('sq-AL', {day: "2-digit", month: "short" ,year: "numeric"})}
+                            Kundër <span onClick={() => router.push(`/kompanite/${complaint.companyId}`)} className="font-medium hover:text-indigo-600">{complaint.companyName}</span> • {new Date(complaint.createdAt).toLocaleDateString('sq-AL', {dateStyle: "full"})}
                           </p>
                         ) : (
-                          <p className="text-gray-600 mt-1">Ankese komunale ne {complaint.municipality}</p>
+                          <p className="text-gray-600 mt-1">Ankesë komunale në {complaint.municipality}</p>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      <div className="flex items-center justify-end gap-2 flex-wrap">
+                        <span className={`px-2 min-w-max py-1 rounded-full text-xs font-medium ${
                           complaint.resolvedStatus === "RESOLVED" ? 'bg-green-100 text-green-800' :
                           complaint.resolvedStatus === "PENDING" ? 'bg-yellow-100 text-yellow-800' :
                           'bg-gray-100 text-gray-800'

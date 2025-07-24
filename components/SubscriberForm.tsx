@@ -57,7 +57,7 @@ const SubscriberForm = () => {
     }, [reset])
 
   return (
-    <div className='max-w-6xl relative mx-auto flex items-center justify-center shadow-md p-2 flex-col gap-3 py-8 overflow-hidden'>
+    <div className='max-w-6xl relative mx-auto flex items-center justify-center shadow-md p-2 flex-col gap-3 py-8 rounded-b-2xl overflow-hidden'>
         <Image 
             src={'/underline-1.webp'}
             alt='underline'

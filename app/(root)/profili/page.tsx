@@ -4,6 +4,7 @@ import MyProfileData from '@/components/MyProfileData';
 import { auth } from '@/auth';
 import AnonimityToggle from '@/components/AnonimityToggle';
 import { Metadata } from 'next';
+import Image from 'next/image';
 
 
 export async function generateMetadata(): Promise<Metadata>{
@@ -39,9 +40,18 @@ const page = async () => {
     
   return (
     <div className="min-h-screen bg-gray-50">
-        <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">Profili</h1>
-            <p className='text-gray-600 text-center max-[420px]:text-sm'>Ketu mund te gjeni te gjitha ankesat/raportimet, kontribimet apo te dhena tuaja personale</p>
+        <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 leading-tight w-fit mx-auto relative tracking-tight">Profili <span className='text-indigo-600'>Juaj</span>
+                <Image
+                    src={'/social-page.gif'}
+                    width={40}
+                    height={40}
+                    alt='complaint'
+                    quality={50}
+                    className='size-10 absolute -top-7 -right-9 rotate-[30deg]'
+                />
+            </h1>
+            <p className='text-gray-600 text-center max-[420px]:text-sm'>Këtu mund të gjeni të gjitha ankesat/raportimet, kontribimet apo të dhëna tuaja personale</p>
         </div>
         <div className="max-w-6xl relative mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-lg">
             <AnonimityToggle session={session}/>
@@ -67,7 +77,7 @@ const page = async () => {
                         <h2 className="text-2xl max-[500px]:text-xl font-bold text-gray-900 max-[900px]:text-center">{session.user.fullName}</h2>
                     </div>
                     <p className="text-gray-600 mb-2 max-[900px]:text-center">{session.user.email}</p>
-                    <p className="text-gray-500 text-sm max-[900px]:text-center">Anetar qe nga {new Date(session.user.createdAt).toLocaleDateString('sq-al', {day: "2-digit", month: "short", year: "numeric"})}</p>
+                    <p className="text-gray-500 text-sm max-[900px]:text-center">Anëtar që nga {new Date(session.user.createdAt).toLocaleDateString('sq-al', {day: "2-digit", month: "short", year: "numeric"})}</p>
                     </div>
 
                     <div className="flex gap-6 max-[450px]:gap-3 max-[420px]:flex-wrap justify-center">

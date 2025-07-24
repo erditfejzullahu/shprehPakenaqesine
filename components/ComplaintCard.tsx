@@ -31,7 +31,7 @@ const ComplaintCard = ({
   };
 
   return (
-    <Link href={`/ankesat/${id}`} aria-description="ankesa" className={`${pathname === "/ankesat" ? "w-full" : "w-[400px]"} bg-white shadow-lg p-6 flex flex-col gap-4 hover:shadow-md transition relative`}>
+    <Link href={`/ankesat/${id}`} aria-description="ankesa" className={`${pathname === "/ankesat" ? "w-full" : "w-[400px]"} bg-white shadow-lg rounded-b-2xl p-6 flex flex-col gap-4 hover:shadow-md transition relative`}>
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-lg font-semibold text-gray-900 line-clamp-1">{title}</h2>

@@ -28,7 +28,7 @@ export default async function RootLayout({
 }>) {
   const session = await auth()
   return (
-    <html lang="en">
+    <html lang="sq-AL">
       <body
         className={`${poppins.variable} antialiased`}
       >
