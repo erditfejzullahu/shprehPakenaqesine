@@ -12,6 +12,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Label } from "./ui/label";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
 
 interface Props {
   companyData: CompanyPerIdInterface;
@@ -71,8 +73,8 @@ const CompanyPage = ({ companyData }: Props) => {
   return (
     <div className="lg:w-2/3">
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
-        <nav className="-mb-px flex space-x-8">
+      <div className="border-b border-gray-200 mb-6 overflox-x-auto flex-1">
+        <nav className="-mb-px flex space-x-8 max-[425px]:space-x-4 flex-row overflow-x-auto">
           <button
             onClick={() => {
               setActiveTab("overview");
@@ -106,7 +108,7 @@ const CompanyPage = ({ companyData }: Props) => {
       {activeTab === "overview" && (
         <div className="bg-white shadow-md overflow-hidden p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">
-            About {companyData.company.name}
+            Rreth {companyData.company.name}
           </h3>
           {companyData.company.description ? (
             <p className="text-gray-700">{companyData.company.description}</p>
@@ -153,27 +155,33 @@ const CompanyPage = ({ companyData }: Props) => {
       {activeTab === "complaints" && (
         <div className="bg-white shadow-md overflow-hidden">
           {/* Sort Options */}
-          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <div className="px-6 py-4 border-b border-gray-200 flex flex-row flex-wrap gap-2 justify-between items-center">
             <h3 className="text-lg font-medium text-gray-900">
               Ankesat/Raportimet
             </h3>
             <div className="flex items-center">
-              <label htmlFor="sort" className="mr-2 text-sm text-gray-500">
+              <Label htmlFor="sort" className="mr-2 text-sm text-gray-500">
                 Rendit sipas:
-              </label>
-              <select
-                id="sort"
+              </Label>
+              <Select
                 value={sortOption}
-                onChange={(e) => {
-                  setSortOption(e.target.value);
+                onValueChange={(val) => {
+                  setSortOption(val);
                   setCurrentPage(1);
                 }}
-                className="border-gray-300 shadow-sm px-2 focus:border-indigo-500 focus:ring-indigo-500 text-sm"
               >
-                <option value="newest">Më të rejat</option>
-                <option value="oldest">Më të vjetrat</option>
-                <option value="popular">Më së shumti vota</option>
-              </select>
+                <SelectTrigger id="sort">
+                  <SelectValue placeholder="Zgjidh opsione"/>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Opsionet</SelectLabel>
+                    <SelectItem value="newest">Më të rejat</SelectItem>
+                    <SelectItem value="oldest">Më të vjetrat</SelectItem>
+                    <SelectItem value="popular">Më së shumti vota</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

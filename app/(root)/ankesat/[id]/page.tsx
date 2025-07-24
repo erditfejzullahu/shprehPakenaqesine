@@ -176,7 +176,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
               <div className="bg-white shadow-lg overflow-hidden mb-6">
                 <div className="p-6 sm:p-8">
                   {/* Status Badges */}
-                  <div className="flex gap-3 mb-6">
+                  <div className="flex flex-row flex-wrap gap-3 mb-6">
                     <span className={`px-3 py-1  shadow-sm text-xs font-medium ${
                       data.complaint.resolvedStatus === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
                       data.complaint.resolvedStatus === 'RESOLVED' ? 'bg-green-100 text-green-800' :
@@ -192,7 +192,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
 
                   {/* Complaint Description */}
                   <div className="prose max-w-none text-gray-700 mb-8">
-                    <p className="whitespace-pre-line">{data.complaint.description}</p>
+                    <p className="whitespace-pre-line max-[380px]:text-sm">{data.complaint.description}</p>
                   </div>
 
                   {/* Attachments */}

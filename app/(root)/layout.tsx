@@ -8,7 +8,9 @@ const layout = async ({children}: {children: ReactNode}) => {
   return ( 
     <> 
     <Header session={session}/>
+    <div className='mt-[60px]'>
     {children}
+    </div>
     <Footer />
     </>
   )

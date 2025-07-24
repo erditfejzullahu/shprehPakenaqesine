@@ -245,7 +245,7 @@ function NavLink({ href, text, delay = 0 }: { href: string; text: string; delay?
     >
       <Link
         href={href}
-        className="relative font-medium text-gray-600 md:text-2xl sm:text-xl text-lg max-[350px]:text-base hover:text-indigo-600 transition-colors group"
+        className="relative font-medium text-gray-600 text-lg max-[350px]:text-base hover:text-indigo-600 transition-colors group"
       >
         <motion.span 
           className="block relative z-10  py-1"

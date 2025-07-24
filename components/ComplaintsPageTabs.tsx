@@ -40,7 +40,7 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
     return (
         <>
         <div className="border-b border-gray-200 mb-6">
-            <nav className="-mb-px flex space-x-8">
+            <nav className="-mb-px flex space-x-8 max-[425px]:space-x-4 flex-row overflow-x-auto">
                 <button
                 onClick={() => {
                     setActiveTab('details')
@@ -48,7 +48,7 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                 }}
                 className={`whitespace-nowrap cursor-pointer py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'details' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
                 >
-                Details
+                Detajet
                 </button>
                 <button
                 onClick={() => {
@@ -57,7 +57,7 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                 }}
                 className={`whitespace-nowrap py-4 px-1 cursor-pointer border-b-2 font-medium text-sm ${activeTab === 'contributions' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
                 >
-                Contributions ({complaintsData.complaint.contributions.length || 0})
+                Kontribimet ({complaintsData.complaint.contributions.length || 0})
                 </button>
                 <button
                 onClick={() => {
@@ -66,7 +66,7 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                 }}
                 className={`whitespace-nowrap py-4 px-1 border-b-2 cursor-pointer font-medium text-sm ${activeTab === 'discussion' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
                 >
-                Discussion
+                Diskutimet
                 </button>
             </nav>
             </div>
@@ -95,7 +95,7 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                                         />
                                     </div>
                                     <div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center flex-wrap gap-2 max-[380px]:gap-1">
                                         <h4 className="text-sm font-medium text-gray-900">
                                             {contribution.user.fullName}
                                         </h4>
@@ -104,7 +104,7 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                                             Rep: {contribution.user.reputation}
                                         </span>
                                         </div>
-                                        <p className="mt-1 text-sm text-gray-600">Ka kontribuar ne kete ankese/raportim</p>
+                                        <p className="mt-1 text-sm text-gray-600 max-[380px]:text-sm">Ka kontribuar ne kete ankese/raportim</p>
                                         <div className='flex flex-wrap gap-2 items-center mt-1'>
                                             {contribution.evidencesGiven.attachments !== 0 && <ReusableHoverCard 
                                                 trigger={
@@ -225,7 +225,7 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <h3 className="mt-2 text-lg font-medium text-gray-900">Nuk ka kontribuime ende.</h3>
-                    <p className="mt-1 text-gray-500">Behu i pari te kontribuosh ne kete ankese/raportim.</p>
+                    <p className="mt-1 text-gray-500 max-[380px]:text-sm">Behu i pari te kontribuosh ne kete ankese/raportim.</p>
                 </div>
                 )}
             </div>

@@ -118,14 +118,14 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
               </svg>
               Kthehu tek kompanite
             </Link>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex flex-row max-[400px]:flex-col items-start gap-4 max-[400px]:gap-2">
               <img 
                 src={data.company.logoUrl} 
                 alt={`${data.company.name} logo`} 
-                className="w-16 h-16 rounded-md object-contain border border-gray-200"
+                className="w-16 h-16 max-[400px]:w-24 max-[400px]:h-24 rounded-md object-contain border border-gray-200"
               />
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{data.company.name}</h1>
+                <h1 className="text-2xl text-left md:text-3xl font-bold text-gray-900">{data.company.name}</h1>
                 <p className="text-gray-600 text-left">{data.company.industry}</p>
               </div>
             </div>
