@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { subscriberSchema } from '@/lib/schemas/createSubscriptionSchema'
 import api from '@/lib/api'
 import { toast } from 'sonner'
+import Image from 'next/image'
 
 
 
@@ -56,7 +57,21 @@ const SubscriberForm = () => {
     }, [reset])
 
   return (
-    <div className='max-w-6xl mx-auto flex items-center justify-center shadow-xl p-2 flex-col gap-3 py-8'>
+    <div className='max-w-6xl relative mx-auto flex items-center justify-center shadow-xl p-2 flex-col gap-3 py-8 overflow-hidden'>
+        <Image 
+            src={'/underline-1.webp'}
+            alt='underline'
+            width={700}
+            height={700}
+            className='w-fit -z-50 opacity-5 absolute top-8 left-0 indigo-mask'
+        />
+        <Image 
+            src={'/underline-1.webp'}
+            alt='underline'
+            width={700}
+            height={700}
+            className='w-fit -z-50 opacity-5 absolute -top-0 right-0 rotate-[180deg] indigo-mask'
+        />
         <div>
             <h2 className='font-semibold text-2xl sm:text-3xl text-center'>Behuni pjese e <span className='text-indigo-600'>Buletinit</span> tone</h2>
             <p className="text-center text-gray-600 text-sm mt-2">Nga abonimi permes kesaj forme, ju informoheni ne lidhje me ankesat e krijuara edhe nese nuk jeni pjese e platformes tone</p>

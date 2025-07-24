@@ -168,3 +168,7 @@ ul {
 *::-webkit-scrollbar-corner {
   background: var(--scrollbar-track);
 }
+
+.indigo-mask{
+  filter: brightness(0) saturate(100%) invert(20%) sepia(72%) saturate(3643%) hue-rotate(241deg) brightness(95%) contrast(89%);
+}
