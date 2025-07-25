@@ -68,7 +68,8 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
           audiosAttached: data.audiosAttached,
           videosAttached: data.videosAttached,
           complaintId: complaintsData.complaint.id,
-          category: data.category
+          category: data.category,
+          email: data.email
         })
         if(response.data.success){
           toast.success(`Sapo keni krijuar raportimin me sukses! Do te njoftoheni vazhdimisht per cdo ndryshim ne lidhje me kete raportim.`)
@@ -554,6 +555,20 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                           />
                           {reportErrors.description && (
                             <p className="text-red-500 text-sm mt-1">{reportErrors.description.message}</p>
+                          )}
+                        </div>
+                        <div>
+                          <Label className='mb-1' htmlFor='reportEmail'>Email</Label>
+                          <Controller 
+                            control={reportControl}
+                            name="email"
+                            render={({field}) => (
+                              <Input placeholder='user@shembull.com' id='reportEmail' {...field}/>
+                              
+                            )}
+                          />
+                          {reportErrors.email && (
+                            <p className="text-red-500 text-sm mt-1">{reportErrors.email.message}</p>
                           )}
                         </div>
                         <div>

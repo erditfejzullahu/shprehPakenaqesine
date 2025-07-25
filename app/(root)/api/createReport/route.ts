@@ -26,7 +26,8 @@ export const POST = async (req: NextRequest) => {
             audiosAttached: body.audiosAttached,
             attachments: body.attachments,
             videosAttached: body.videosAttached,
-            category: body.category
+            category: body.category,
+            email: DOMPurify.sanitize(validator.normalizeEmail(body.email.trim() || "") || "")
         }
         
         const validateObj = reportsSchema.parse(sanitizedObj);
@@ -54,7 +55,8 @@ export const POST = async (req: NextRequest) => {
                         title: validateObj.title,
                         description: validateObj.description,
                         complaintId: body.complaintId,
-                        category: validateObj.category
+                        category: validateObj.category,
+                        email: validateObj.email
                     }
                 })
                 

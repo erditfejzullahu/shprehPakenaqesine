@@ -3,6 +3,7 @@ import {z} from "zod"
 export const reportsSchema = z.object({
   title: z.string().min(6, "Duhen te pakten 6 karaktere"),
   description: z.string().min(20, "Duhen te pakten 20 karaktere"),
+  email: z.email("Duhet nje email i vlefshem"),
   attachments: z.array(
     z.string().regex(
       /^data:(image\/(png|jpeg|jpg|gif|webp)|application\/(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document|vnd\.ms-excel|vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet|vnd\.ms-powerpoint|vnd\.openxmlformats-officedocument\.presentationml\.presentation));base64,/,

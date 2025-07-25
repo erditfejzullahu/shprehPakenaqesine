@@ -362,6 +362,17 @@ const LoginForm = () => {
               type="submit"
               text={`${isLoginSubmitting ? "Duke bërë kërkesën..." : "Bëni kërkesë"}`}
             />
+            <div>
+              <p className="text-sm mt-3 text-gray-600 text-left">
+              Dëshironi të indentifikoheni?
+              <span 
+                  onClick={() => {setIsLogin(true); setIsRegister(false); setIsPasswordForgotten(false)}} 
+                  className="text-indigo-600 cursor-pointer transition-all ease-in-out hover:font-bold ml-1"
+              >
+                  Kycuni tani!
+              </span>
+              </p>
+            </div>
           </div>
         </form>
       )}

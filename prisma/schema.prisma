@@ -177,6 +177,7 @@ model Reports {
   id String @id @default(uuid())
   title String
   description String
+  email String
   attachments String[] @default([])
   audioAttachments String[] @default([])
   videoAttachments String[] @default([])
