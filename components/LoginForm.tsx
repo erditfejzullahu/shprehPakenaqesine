@@ -124,8 +124,8 @@ const LoginForm = () => {
       const response = await api.post(`/api/auth/changePassword/forgotPassword`, {email: data.email})
       console.log(response.data);
       if(response.data.success){
-        
         toast.success(response.data.message)
+        router.refresh();
       }
     } catch (error: any) {
       console.error(error);
