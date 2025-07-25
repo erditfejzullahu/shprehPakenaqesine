@@ -46,6 +46,9 @@ export const GET = async (req: NextRequest) => {
                                 id: true,
                             }
                         }
+                    },
+                    orderBy: {
+                        createdAt: "desc"
                     }
                 },
                 contributions: {
@@ -68,8 +71,11 @@ export const GET = async (req: NextRequest) => {
                         },
                         createdAt: true
                     },
+                    orderBy: {
+                        createdAt: "desc"
+                    }
                 }
-            }
+            },
         })        
 
         if(!userDetails){

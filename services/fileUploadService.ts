@@ -13,7 +13,8 @@ type EntityType =
     | 'users' 
     | 'reports/attachments'
     | 'reports/audiosAttached' 
-    | 'reports/videosAttached';
+    | 'reports/videosAttached'
+    | 'contactUs';
 
 interface FileValidationResult {
   valid: boolean;

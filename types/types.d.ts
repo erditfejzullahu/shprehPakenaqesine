@@ -107,7 +107,8 @@ declare module '@/services/fileUploadService' {
     | 'users' 
     | 'reports/attachments'
     | 'reports/audiosAttached' 
-    | 'reports/videosAttached';
+    | 'reports/videosAttached'
+    | 'contactUs';
     
     interface IFileUploadService {
       uploadFile(

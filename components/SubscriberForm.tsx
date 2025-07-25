@@ -73,7 +73,7 @@ const SubscriberForm = () => {
             className='w-fit -z-50 opacity-5 absolute -top-0 right-0 rotate-[180deg] indigo-mask'
         />
         <div>
-            <h2 className='font-semibold text-2xl sm:text-3xl text-center'>Behuni pjesë e <span className='text-indigo-600'>Buletinit</span> tonë</h2>
+            <h2 className='font-semibold text-2xl sm:text-3xl text-center'>Bëhuni pjesë e <span className='text-indigo-600'>Buletinit</span> tonë</h2>
             <p className="text-center text-gray-600 text-sm mt-2">Nga abonimi përmes kësaj forme, ju informoheni në lidhje me ankesat e krijuara edhe nëse nuk jeni pjesë e platformës.</p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>

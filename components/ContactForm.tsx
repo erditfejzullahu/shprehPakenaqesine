@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { ImagePlus, Upload, X } from 'lucide-react'
 import CTAButton from './CTAButton'
 import Image from 'next/image'
+import api from '@/lib/api'
+import { toast } from 'sonner'
 
 type validationSchema = z.infer<typeof contactFormSchema>
 
@@ -75,7 +77,20 @@ const ContactForm = () => {
       }, []);
 
     const onSubmit = useCallback(async (data: validationSchema) => {
-        console.log(data);
+      if(abortControllerRef.current){
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController()
+
+      try {
+        const response = await api.post('/api/contactUs', data)
+        if(response.data.success){
+          toast.success('Kërkesa e kontaktimit shkoi me sukses! Do të ndëgjoni shumë shpejt nga ne.')
+        }     
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.response.data.message)
+      }
     }, [reset])
 
     const removeImage = useCallback((
