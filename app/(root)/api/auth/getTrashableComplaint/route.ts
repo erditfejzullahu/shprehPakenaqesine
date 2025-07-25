@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
     const searchParams = req.nextUrl.searchParams
-    const complaintId = searchParams.get('complaintId')
+    const complaintId = searchParams.get('complaintId')    
 
     if(!complaintId){
         return NextResponse.json({success: false}, {status: 400})
@@ -17,7 +17,7 @@ export const GET = async (req: NextRequest) => {
     }
     try {
         const complaint = await prisma.complaint.findUnique({where: {id: complaintId}})
-        if(!complaint){
+        if(!complaint || complaint.deleted){
             return NextResponse.json({success: false}, {status: 404})
         }
         if(complaint.userId !== session.user.id){
@@ -43,7 +43,7 @@ export const DELETE = async (req: NextRequest) => {
     }
     try {
         const complaint = await prisma.complaint.findUnique({where: {id: complaintId}})
-        if(!complaint) return NextResponse.json({success: false, message: "Nuk u gjet ndonje ankese me kete numer identifikues."}, {status: 404});
+        if(!complaint || complaint.deleted) return NextResponse.json({success: false, message: "Nuk u gjet ndonje ankese me kete numer identifikues."}, {status: 404});
 
         await prisma.complaint.update({
             where: {id: complaintId},

@@ -4,6 +4,12 @@ import { NextResponse } from "next/server";
 export const GET = async () => {
     try {
         const complaintIds = await prisma.complaint.findMany({
+            where: {
+                AND: [
+                    {status: "ACCEPTED"},
+                    {deleted: false}
+                ]
+            },
             select: {
                 id: true
             }

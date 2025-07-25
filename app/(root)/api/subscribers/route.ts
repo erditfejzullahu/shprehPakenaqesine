@@ -10,9 +10,9 @@ import { rateLimit } from "@/lib/redis";
 
 type CreateSubscriberType = z.infer<typeof subscriberSchema> 
 
-export const GET = async (req: NextRequest) => {
-    const session = await auth()
-} 
+// export const GET = async (req: NextRequest) => {
+//     const session = await auth()
+// } 
 
 export const POST = async (req: NextRequest) => {
     try {

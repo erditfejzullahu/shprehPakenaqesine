@@ -46,48 +46,54 @@ export const POST = async (req: NextRequest) => {
         }
         const validatedSchema = contributionsSchema.parse(body);
 
+        const complaintExists = await prisma.complaint.findUnique({where: {id: body.complaintId}})
+        if(!complaintExists || complaintExists.deleted){
+            return NextResponse.json({success: false, message: "Nuk u gjet ndonje ankese/raportim me kete numer identifikues"}, {status: 404})
+        } 
+
         const ctx = {
             userId: session.user.id,
             ipAddress,
             userAgent
         }
 
+        let attachments: string[] = []
+        let audioAttachments: string[] = []
+        let videoAttachments: string[] = []
+
+        if(validatedSchema.attachments && validatedSchema.attachments.length > 0){
+            for(const element of validatedSchema.attachments){
+                const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/attachments", body.complaintId)
+                if(!result.success){
+                    throw new Error("Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve")
+                }
+                attachments.push(result.url)
+            }
+        }
+
+        if(validatedSchema.audiosAttached && validatedSchema.audiosAttached.length > 0){
+            for(const element of validatedSchema.audiosAttached){
+                const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/audiosAttached", body.complaintId)
+                if(!result.success){
+                    throw new Error("Dicka shkoi gabim ne ngarkim te audiove/inqizimeve")
+                }
+                audioAttachments.push(result.url)
+            }
+        }
+
+        if(validatedSchema.videosAttached && validatedSchema.videosAttached.length > 0){
+            for(const element of validatedSchema.videosAttached){
+                const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/videosAttached", body.complaintId)
+                if(!result.success){
+                    throw new Error("Dicka shkoi gabim ne ngarkim te videove/inqizimeve")
+                }
+                videoAttachments.push(result.url)
+            }
+        }
+
         await runWithPrismaContext(ctx, async () => {
             await prisma.$transaction(async(prisma) => {
                 
-                let attachments: string[] = []
-                let audioAttachments: string[] = []
-                let videoAttachments: string[] = []
-        
-                if(validatedSchema.attachments && validatedSchema.attachments.length > 0){
-                    for(const element of validatedSchema.attachments){
-                        const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/attachments", body.complaintId)
-                        if(!result.success){
-                            throw new Error("Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve")
-                        }
-                        attachments.push(result.url)
-                    }
-                }
-        
-                if(validatedSchema.audiosAttached && validatedSchema.audiosAttached.length > 0){
-                    for(const element of validatedSchema.audiosAttached){
-                        const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/audiosAttached", body.complaintId)
-                        if(!result.success){
-                            throw new Error("Dicka shkoi gabim ne ngarkim te audiove/inqizimeve")
-                        }
-                        audioAttachments.push(result.url)
-                    }
-                }
-        
-                if(validatedSchema.videosAttached && validatedSchema.videosAttached.length > 0){
-                    for(const element of validatedSchema.videosAttached){
-                        const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/videosAttached", body.complaintId)
-                        if(!result.success){
-                            throw new Error("Dicka shkoi gabim ne ngarkim te videove/inqizimeve")
-                        }
-                        videoAttachments.push(result.url)
-                    }
-                }
     
                 await prisma.contributions.create({
                     data: {

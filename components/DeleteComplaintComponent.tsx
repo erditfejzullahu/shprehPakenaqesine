@@ -28,6 +28,9 @@ const DeleteComplaintComponent = ({complaint, session}: {complaint: Complaint; s
         refetchOnWindowFocus: false
     })
 
+    console.log(data);
+    
+
     const handleDeleteComplaint = async () => {
         setIsDeletting(true)
         try {

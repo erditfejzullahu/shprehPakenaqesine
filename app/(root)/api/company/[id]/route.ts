@@ -20,7 +20,14 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
         const company = await prisma.companies.findUnique({
             where: {id},
             include: {
-                complaints: true,
+                complaints: {
+                    where: {
+                        AND: [
+                            {status: "ACCEPTED"},
+                            {deleted: false}
+                        ]
+                    }
+                },
             }
         })
         

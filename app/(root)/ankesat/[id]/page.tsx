@@ -11,6 +11,7 @@ import { FaFileAudio, FaFileVideo, FaImage, FaThumbsDown } from 'react-icons/fa'
 import { Metadata } from 'next';
 import { MUNICIPALITY_IMAGES } from '@/data/municipalities';
 import DeleteComplaintComponent from '@/components/DeleteComplaintComponent';
+import { redirect } from 'next/navigation';
 
 export const revalidate = 300;
 
@@ -132,12 +133,16 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
         Cookie: cookieStore
       }
     })
+
+    if(response.status === 404){
+      redirect('/404')
+    }
+    
     if(!response.ok){
       throw new Error("Dicka shkoi gabim. Ju lutem provoni perseri!")
     }    
     
     const data: ComplantPerIdInterface = await response.json();
-    
     const getCategoryLabel = (category: string) => {
       // Convert enum value to readable label
       const words = category.split('_').map(word => {
@@ -172,7 +177,9 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
             {/* Left Column - Complaint Content */}
             <div className="lg:w-2/3">
               <div className="bg-white shadow-lg overflow-hidden mb-6 relative">
+
                 <DeleteComplaintComponent complaint={data.complaint} session={session}/>
+                
                 <div className="p-6 sm:p-8">
                   {/* Status Badges */}
                   <div className="flex flex-row flex-wrap gap-3 mb-6">

@@ -64,6 +64,8 @@ export const GET = async (req: NextRequest) => {
 
         const and: any[] = []
 
+        and.push({deleted: false})
+
         if (category && category !== "ALL") {
             and.push({ category })
         }

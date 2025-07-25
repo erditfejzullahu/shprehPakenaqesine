@@ -12,7 +12,7 @@ export const GET = async (req: NextRequest) => {
         const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
         
         const rateLimitKey = `rate_limit:userAuthedProfileDetails:${session.user.id}:${ipAddress}`
-        const ratelimiter = await rateLimit(rateLimitKey, 60, 60)
+        const ratelimiter = await rateLimit(rateLimitKey, 100, 60)
         if(!ratelimiter.allowed){
             return NextResponse.json({
                 success: false,
@@ -27,6 +27,12 @@ export const GET = async (req: NextRequest) => {
             where: {id: session.user.id},
             select: {
                 complaints: {
+                    where: {
+                        AND: [
+                            {status: "ACCEPTED"},
+                            {deleted: false}
+                        ]
+                    },
                     select: {
                         title: true,
                         createdAt: true,
@@ -43,6 +49,14 @@ export const GET = async (req: NextRequest) => {
                     }
                 },
                 contributions: {
+                    where: {
+                        AND: [
+                            {complaint: {
+                                status: "ACCEPTED",
+                                deleted: false
+                            }},
+                        ]
+                    },
                     select: {
                         complaint: {
                             select: {

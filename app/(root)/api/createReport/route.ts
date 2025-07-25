@@ -73,10 +73,7 @@ export const POST = async (req: NextRequest) => {
                         }
                         attachments.push(result.url)
                     }
-                }
-    
-                console.log(attachments, '  asdasdasdasdasdasdasd');
-                
+                }                
         
                 if(validateObj.audiosAttached && validateObj.audiosAttached.length > 0){
                     for(const element of validateObj.audiosAttached){

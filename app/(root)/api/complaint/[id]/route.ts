@@ -13,7 +13,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
         //     return NextResponse.json({message: "Not authorized"}, {status: 500})
         // }
         const rateLimitKey = `rate_limit:getSingleComplaint:${ipAddress}`
-        const ratelimiter = await rateLimit(rateLimitKey, 60, 60)
+        const ratelimiter = await rateLimit(rateLimitKey, 120, 60)
         if(!ratelimiter.allowed){
             return NextResponse.json({
                 success: false,
@@ -38,8 +38,13 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
             hasVoted = !!vote;
         }
         
-        const complaintQuery = await prisma.complaint.findUnique({
-            where: {id},
+        const complaintQuery = await prisma.complaint.findFirst({
+            where: {
+                AND: [
+                    {id},
+                    {deleted: false}
+                ]
+            },
             select: {
                 id: true,
                 title: true,
@@ -98,8 +103,6 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
         if(!complaintQuery){
             return NextResponse.json({success: false, message: "Nuk u gjet asnje ankese/raportim"}, {status: 404})
         }
-
-        
 
         const complaint = {
             id: complaintQuery.id,

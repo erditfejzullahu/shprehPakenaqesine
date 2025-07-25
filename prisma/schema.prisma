@@ -173,6 +173,9 @@ model Complaint {
   @@index([title])
   @@index([userId])
   @@index([updatedAt])
+  @@index([id, deleted])
+  @@index([status, deleted])
+  @@index([deleted])
 }
 
 model Reports {

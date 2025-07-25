@@ -92,7 +92,14 @@ export async function GET(req: NextRequest, res: NextResponse) {
             include: {
                 _count: {
                     select: {
-                        complaints: true
+                        complaints: {
+                            where: {
+                                AND: [
+                                    {status: "ACCEPTED"},
+                                    {deleted: false}
+                                ]
+                            }
+                        }
                     }
                 }
             }

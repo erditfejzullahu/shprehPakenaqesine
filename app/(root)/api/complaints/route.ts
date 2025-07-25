@@ -22,7 +22,12 @@ export const GET = async (req: NextRequest, res: NextResponse) => {
         }
 
         const complaints = await prisma.complaint.findMany({
-            where: {status: "ACCEPTED"},
+            where: {
+                AND: [
+                    {status: "ACCEPTED"},
+                    {deleted: false}
+                ]
+            },
             include: {company: {
                 select: {
                     name: true,

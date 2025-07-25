@@ -24,13 +24,25 @@ export const POST = async (req: NextRequest) => {
     }
     try {
         const body = await req.json();
+        if(!body.complaintId){
+            return NextResponse.json({success: false, message: "Nevojiten te gjithat e dhenat e duhura per te kryer kete veprim"}, {status: 400})
+        }
+
+        const isDeleted = await prisma.complaint.findFirst({
+            where: {id: body.complaintId}
+        })
+
+        if(!isDeleted || isDeleted.deleted){
+            return NextResponse.json({success: false, message: "Nuk u gjet ndonje ankese/raportim me kete numer identifikues"}, {status: 404})
+        }
+
         const checkExisting = await prisma.complaintUpVotes.findUnique({
             where: {
                 userId_complaintId: {
                     userId: session.user.id,
                     complaintId: body.complaintId
                 }
-            }
+            },
         })
 
         const ctx = {

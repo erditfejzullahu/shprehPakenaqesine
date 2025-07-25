@@ -34,7 +34,7 @@ export const PATCH = async (req: NextRequest) => {
     const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
             
     const rateLimitKey = `rate_limit:updateAuthedProfileDetails:${session.user.id}:${ipAddress}`
-    const ratelimiter = await rateLimit(rateLimitKey, 5, 60)
+    const ratelimiter = await rateLimit(rateLimitKey, 30, 60)
     if(!ratelimiter.allowed){
         return NextResponse.json({
             success: false,
