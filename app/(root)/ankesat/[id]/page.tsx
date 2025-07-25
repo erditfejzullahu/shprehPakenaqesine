@@ -10,6 +10,7 @@ import { ImageIcon } from 'lucide-react';
 import { FaFileAudio, FaFileVideo, FaImage, FaThumbsDown } from 'react-icons/fa';
 import { Metadata } from 'next';
 import { MUNICIPALITY_IMAGES } from '@/data/municipalities';
+import DeleteComplaintComponent from '@/components/DeleteComplaintComponent';
 
 export const revalidate = 300;
 
@@ -170,7 +171,8 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left Column - Complaint Content */}
             <div className="lg:w-2/3">
-              <div className="bg-white shadow-lg overflow-hidden mb-6">
+              <div className="bg-white shadow-lg overflow-hidden mb-6 relative">
+                <DeleteComplaintComponent complaint={data.complaint} session={session}/>
                 <div className="p-6 sm:p-8">
                   {/* Status Badges */}
                   <div className="flex flex-row flex-wrap gap-3 mb-6">

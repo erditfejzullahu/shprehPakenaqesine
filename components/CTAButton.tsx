@@ -3,10 +3,10 @@ import React, { memo } from 'react';
 interface CTAButtonProps {
   text: string;
   primary?: boolean;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isLoading?: boolean;
   classNames?: string;
-  type?: "button" | "submit"
+  type?: "button" | "submit" | "reset"
 }
 
 const CTAButton: React.FC<CTAButtonProps> = ({ text, primary = false, onClick, isLoading, classNames, type = "button" }) => {
@@ -19,7 +19,7 @@ const CTAButton: React.FC<CTAButtonProps> = ({ text, primary = false, onClick, i
       onClick={onClick}
       disabled={isLoading}
       type={type}
-      className={`${baseClasses} cursor-pointer ${primary ? primaryClasses : secondaryClasses} ${classNames}`}
+      className={`${baseClasses} cursor-pointer disabled:cursor-not-allowed ${primary ? primaryClasses : secondaryClasses} ${classNames}`}
     >
       {text}
     </button>

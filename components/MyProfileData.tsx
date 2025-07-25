@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { MyProfileComplaintsContributions } from '@/types/types';
 import { LoadingSpinner } from './LoadingComponents';
-import { FaChevronDown } from 'react-icons/fa';
+import { FaChevronDown, FaTrash } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import {
   Pagination,
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select"
 import UpdateProfileData from './UpdateProfileData';
 import ProfileUserLogs from './ProfileUserLogs';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 
 
 
@@ -294,9 +295,11 @@ const MyProfileData = ({session}: {session: Session}) => {
               <>
                 {currentComplaints.map((complaint) => (
                   <div onClick={() => router.push(`/ankesat/${complaint.id}`)} key={`ankesat-${complaint.id}`} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150 relative">
+
                     <div className='bg-indigo-100 rounded-lg bottom-6 right-6 absolute text-indigo-600 text-xs font-semibold px-2 py-0.5'>
                       {complaint.municipality}
                     </div>
+
                     <div className="flex justify-between items-start gap-1">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">{complaint.title}</h3>

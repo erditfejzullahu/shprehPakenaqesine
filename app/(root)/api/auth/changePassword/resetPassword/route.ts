@@ -4,6 +4,9 @@ import * as bcrypt from "bcrypt"
 
 export const POST = async (req: NextRequest) => {
     const {token, password} = await req.json();
+
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
+    const userAgent = req.headers.get('user-agent') || null
     try {
         const user = await prisma.users.findUnique({
             where: {
@@ -24,6 +27,18 @@ export const POST = async (req: NextRequest) => {
                 password: hashedPassword,
                 passwordResetExpires: null,
                 passwordResetToken: null
+            }
+        })
+
+        await prisma.activityLog.create({
+            data: {
+                userId: user.id,
+                action: "CHANGE_PASSWORD",
+                entityType: "Users",
+                entityId: user.id,
+                ipAddress,
+                userAgent,
+                metadata: "From RESET PASSWORD SERVICE"
             }
         })
 

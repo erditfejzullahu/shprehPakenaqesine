@@ -157,6 +157,8 @@ model Complaint {
   resolvedStatus  ResolvedStatus     @default(PENDING)
   upVotes         Int                @default(0)
   userId          String
+  deleted Boolean @default(false)
+  deletedAt DateTime?
   company         Companies?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
   user            Users              @relation(fields: [userId], references: [id], onDelete: Cascade)
   complaintUpVote ComplaintUpVotes[]
@@ -227,6 +229,7 @@ enum ActivityAction {
   LOGIN
   LOGOUT
   REGISTER
+  FORGOT_PASSWORD
 
   CREATE_COMPANIES
   UPDATE_COMPANIES
