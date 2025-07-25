@@ -48,14 +48,35 @@ export const POST = async (req: NextRequest) => {
                             complaintId: body.complaintId
                         }}
                     })
-                    await prisma.complaint.update({
-                        where: {id: body.complaintId},
-                        data: {
-                            upVotes: {
-                                decrement: 1
-                            }
+                })
+                await prisma.complaint.update({
+                    where: {id: body.complaintId},
+                    data: {
+                        upVotes: {
+                            decrement: 1
                         }
-                    })
+                    }
+                })
+                await prisma.activityLog.create({
+                    data: {
+                        userId: session.user.id,
+                        entityId: body.complaintId,
+                        entityType: "Complaint",
+                        action: "UPDATE_COMPLAINT",
+                        ipAddress,
+                        userAgent,
+                        metadata: JSON.stringify({
+                            model: "Complaint",
+                            operation: 'update',
+                            args: {
+                                data: {
+                                    upVotes: {
+                                        decrement: 1
+                                    }
+                                }
+                            }
+                        })
+                    }
                 })
             })
             return NextResponse.json({success: true, message: "Sapo keni larguar votën me sukses!", hasUpVoted: false}, {status: 200})
@@ -69,16 +90,36 @@ export const POST = async (req: NextRequest) => {
                     userId: session.user.id
                     }
                 })
-                await prisma.complaint.update({
-                    where: {id: body.complaintId},
-                    data: {
-                        upVotes: {
-                            increment: 1
-                        }
-                    }
-                })
             })
-
+            await prisma.complaint.update({
+                where: {id: body.complaintId},
+                data: {
+                    upVotes: {
+                        increment: 1
+                    }
+                }
+            })
+            await prisma.activityLog.create({
+                data: {
+                    userId: session.user.id,
+                    entityId: body.complaintId,
+                    entityType: "Complaint",
+                    action: "UPDATE_COMPLAINT",
+                    ipAddress,
+                    userAgent,
+                    metadata: JSON.stringify({
+                        model: "Complaint",
+                        operation: 'update',
+                        args: {
+                            data: {
+                                upVotes: {
+                                    increment: 1
+                                }
+                            }
+                        }
+                    })
+                }
+            })
         })
 
         return NextResponse.json({success: true, message: "Sapo keni votuar me sukses!", hasUpVoted: true}, {status: 201, headers: ratelimiter.responseHeaders})

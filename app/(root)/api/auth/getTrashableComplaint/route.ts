@@ -44,16 +44,35 @@ export const DELETE = async (req: NextRequest) => {
     try {
         const complaint = await prisma.complaint.findUnique({where: {id: complaintId}})
         if(!complaint) return NextResponse.json({success: false, message: "Nuk u gjet ndonje ankese me kete numer identifikues."}, {status: 404});
-    
-        const ctx = {
-            userId: session.user.id,
-            ipAddress,
-            userAgent
-        }
 
-    await runWithPrismaContext(ctx, async () => {
-        await prisma.complaint.delete({where: {id: complaintId}})
-    })
+        await prisma.complaint.update({
+            where: {id: complaintId},
+            data: {
+                deleted: true,
+                deletedAt: new Date()
+            }
+        })
+        await prisma.activityLog.create({
+            data: {
+                userId: session.user.id,
+                ipAddress,
+                userAgent,
+                entityId: complaintId,
+                action: "DELETE_COMPLAINT",
+                entityType: "Complaint",
+                metadata: JSON.stringify({
+                    model: "Complaint",
+                    operation: "update",
+                    args: {
+                        where: {id: complaintId},
+                        data: {
+                            deleted: true,
+                            deletedAt: new Date()
+                        }
+                    }
+                })
+            }
+        })
     
     return NextResponse.json({success: true, message: "Sapo fshite ankesen me sukses!"}, {status: 200})
 

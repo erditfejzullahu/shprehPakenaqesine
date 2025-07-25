@@ -14,22 +14,40 @@ export const PATCH = async (req: NextRequest, {params}: {params: Promise<{id: st
         const adminCheck = await isAdminApi();
         if(adminCheck instanceof NextResponse) return adminCheck;
 
-        const ctx = {
-            userId: adminCheck.user.id,
-            ipAddress,
-            userAgent
+        const complaint = await prisma.complaint.findUnique({where: {id}})
+        if(!complaint){
+            return NextResponse.json({success: false, message: "Nuk u gjet ndonje ankese me ate numer identifikues"}, {status: 404})
         }
 
-        const complaint: any = runWithPrismaContext(ctx, async () => {
-            return await prisma.complaint.update({
-                where: {id},
-                data: {
-                    status: body.status
-                }
-            })
+        const updatedComplaint = await prisma.complaint.update({
+            where: {id},
+            data: {
+                status: body.status
+            }
         })
 
-        return NextResponse.json({success: true, message: `Sapo ndryshuar statusin e ${complaint.title} ne ${complaint.status}`}, {status: 200})
+        await prisma.activityLog.create({
+            data: {
+                userId: adminCheck.user.id,
+                ipAddress,
+                userAgent,
+                entityId: id,
+                entityType: "Complaint",
+                action: "UPDATE_COMPLAINT",
+                metadata: JSON.stringify({
+                    model: "Complaint",
+                    operation: "update",
+                    args: {
+                        where: {id},
+                        data: {
+                            status: body.status
+                        }
+                    }
+                })
+            }
+        })
+
+        return NextResponse.json({success: true, message: `Sapo ndryshuar statusin e ${updatedComplaint.title} ne ${updatedComplaint.status}`}, {status: 200})
     } catch (error) {
         console.error(error);
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})

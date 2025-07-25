@@ -18,12 +18,13 @@ export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(with
 
                 const loggableOperations: Record<string, string[]> = {
                     Companies: ['create', "update", 'delete'],
-                    Complaint: ['create', 'update', 'delete'],
+                    Complaint: ['create', 'delete'],
                     ComplaintUpVotes: ['create', 'delete'],
                     Reports: ['update', 'delete'],
                     Subscribers: ['create', 'delete'],
                     Contributions: ['create', 'update'],
-                    Users: []
+                    Users: [],
+                    ContactedUs: ['create']
                 }
 
                 const shouldLog = loggableOperations[model]?.includes(operation);
@@ -70,14 +71,16 @@ export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(with
                         action = operation === "create" ? "CREATE_SUBSCRIBERS" : "DELETE_SUBSCRIBERS";
                         entityId = operation === "create" ? result.id : operation === "delete" ? args.where.id : null
                         break;
+                    case "ContactedUs":
+                        action = operation === "create" && "CREATE_CONTACTUS" || null
+                        entityId = operation === "create" && result.id?.toString() || null
                     default:
                         return result;
                 }
 
                 if(!action) return result;
 
-                const {userId, ipAddress, userAgent} = getPrismaContext();
-                console.log(`userID: ${userId}, ipAddress:${ipAddress}`);                
+                const {userId, ipAddress, userAgent} = getPrismaContext();        
 
                 try {
                     await prisma.activityLog.create({

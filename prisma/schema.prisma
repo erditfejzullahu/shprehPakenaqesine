@@ -197,6 +197,26 @@ model Subscribers {
   updatedAt DateTime @updatedAt
 }
 
+model ContactedUs { 
+  id String @id @default(uuid())
+  fullName String
+  email String
+  subject String
+  description String
+  reason ContactReason
+  attachments String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ContactReason {
+  NDIHMË
+  ANKESË
+  FSHIRJE
+  KËRKESË_E_RE
+  TJERA
+}
+
 model ActivityLog {
   id String @id @default(uuid())
   userId String? 
@@ -222,6 +242,7 @@ enum EntityType {
   Complaint
   Reports
   Subscribers
+  ContactedUs
   Other
 }
 
@@ -249,6 +270,8 @@ enum ActivityAction {
 
   CREATE_SUBSCRIBERS
   DELETE_SUBSCRIBERS
+
+  CREATE_CONTACTUS
 
   CREATE_CONTRIBUTIONS
   
