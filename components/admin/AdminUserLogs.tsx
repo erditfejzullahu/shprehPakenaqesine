@@ -14,6 +14,7 @@ import { Badge } from '../ui/badge'
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { SlSizeFullscreen } from "react-icons/sl";
+import { LuRefreshCcw } from "react-icons/lu";
 
 const columnHelper = createColumnHelper<ActivityLogExtended>();
 const fuzzyFilter: FilterFn<ActivityLogExtended> = (row, columnId, value) => {
@@ -222,7 +223,10 @@ const AdminUserLogs = () => {
 
   return (
     <div className='p-4'>
-        <button type='button' className='absolute right-4 top-4 cursor-pointer' onClick={() => setGoFullscreen(true)}><SlSizeFullscreen size={24}/></button>
+        <div className='absolute right-4 top-4 flex flex-row gap-2'>
+            <button type='button' className=' cursor-pointer' onClick={() => setGoFullscreen(true)}><SlSizeFullscreen className='hover:text-indigo-600' size={24}/></button>
+            <button type='button' className=' cursor-pointer' onClick={() => refetch()}><LuRefreshCcw className='hover:text-red-500' size={28}/></button>
+        </div>
 
     <div onClick={() => setGoFullscreen(false)} className={`${goFullscreen && "fixed top-0 left-0 w-full h-full flex flex-col justify-center items-center m-auto bg-black/15"}`}>
         <div className={`${goFullscreen ? "w-[90%] p-4 h-[90vh] z-50 overflow-y-auto m-auto rounded-md" : "w-full"} overflow-x-auto bg-white`}>
