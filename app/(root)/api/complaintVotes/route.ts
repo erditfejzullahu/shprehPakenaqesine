@@ -12,7 +12,7 @@ export const POST = async (req: NextRequest) => {
         return NextResponse.json({success: false, message: "Nuk jeni te autorizuar"}, {status: 401})
     }
     const rateLimitKey = `rate_limit:complaintVotes:${session.user.id}:${ipAddress}`
-    const ratelimiter = await rateLimit(rateLimitKey, 5, 60)
+    const ratelimiter = await rateLimit(rateLimitKey, 30, 60)
     if(!ratelimiter.allowed){
         return NextResponse.json({
             success: false,
@@ -32,15 +32,35 @@ export const POST = async (req: NextRequest) => {
                 }
             }
         })
-        if(checkExisting){
-            return NextResponse.json({success: false, message: "Ju vecse keni votuar per kete ankese/raportim"}, {status: 400})
-        }
 
         const ctx = {
             userId: session.user.id,
             ipAddress,
             userAgent
         }
+
+        if(checkExisting){
+            await prisma.$transaction(async (prisma) => {
+                await runWithPrismaContext(ctx, async () => {
+                    await prisma.complaintUpVotes.delete({
+                        where: {userId_complaintId: {
+                            userId: session.user.id,
+                            complaintId: body.complaintId
+                        }}
+                    })
+                    await prisma.complaint.update({
+                        where: {id: body.complaintId},
+                        data: {
+                            upVotes: {
+                                decrement: 1
+                            }
+                        }
+                    })
+                })
+            })
+            return NextResponse.json({success: true, message: "Sapo keni larguar votën me sukses!", hasUpVoted: false}, {status: 200})
+        }
+
         await prisma.$transaction(async (prisma) => {
             await runWithPrismaContext(ctx, async () => {
                 await prisma.complaintUpVotes.create({
@@ -49,19 +69,19 @@ export const POST = async (req: NextRequest) => {
                     userId: session.user.id
                     }
                 })
+                await prisma.complaint.update({
+                    where: {id: body.complaintId},
+                    data: {
+                        upVotes: {
+                            increment: 1
+                        }
+                    }
+                })
             })
 
-            await prisma.complaint.update({
-                where: {id: body.complaintId},
-                data: {
-                    upVotes: {
-                        increment: 1
-                    }
-                }
-            })
         })
 
-        return NextResponse.json({success: true, message: "Sapo keni votuar me sukses"}, {status: 201, headers: ratelimiter.responseHeaders})
+        return NextResponse.json({success: true, message: "Sapo keni votuar me sukses!", hasUpVoted: true}, {status: 201, headers: ratelimiter.responseHeaders})
     } catch (error) {
         console.error(error)
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri"}, {status: 500})

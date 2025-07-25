@@ -107,7 +107,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
   return (
     <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <div className="bg-white shadow-sm">
+        <div className="bg-white shadow-sm max-[1152px]:shadow-none">
           <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
             <Link 
               href={'/kompanite'}
@@ -116,7 +116,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
               <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              Kthehu tek kompanite
+              Kthehu tek kompanitë
             </Link>
             <div className="flex flex-row max-[400px]:flex-col items-start gap-4 max-[400px]:gap-2">
               <Image 
@@ -142,17 +142,17 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
               {/* Company Details Card */}
               <div className="bg-white shadow-md overflow-hidden">
                 <div className="p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Detajet e kompanise</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Detajet e kompanisë</h3>
                   <div className="space-y-4">
                     {data.company.description && (
                       <div>
-                        <h4 className="text-sm font-medium text-gray-500">Pershkrimi</h4>
+                        <h4 className="text-sm font-medium text-gray-500">Përshkrimi</h4>
                         <p className="mt-1 text-sm text-gray-900">{data.company.description}</p>
                       </div>
                     )}
 
                     {data.company.foundedYear && <div>
-                      <h4 className="text-sm font-medium text-gray-500">Krijuar me</h4>
+                      <h4 className="text-sm font-medium text-gray-500">Krijuar më</h4>
                       <p className="mt-1 text-sm text-gray-900">{data.company.foundedYear || 'Unknown'}</p>
                     </div>}
 
@@ -206,7 +206,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
               {data.company.images && data.company.images.length > 0 && (
                 <div className="bg-white shadow-md overflow-hidden">
                   <div className="p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Imazhet e kompanise</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Imazhet e kompanisë</h3>
                     <div className="grid grid-cols-2 gap-3">
                       {data.company.images.length > 0 ? data.company.images.map((image, index) => (
                         <div key={index} className="aspect-square bg-gray-100 shadow-md overflow-hidden">
@@ -220,7 +220,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                         </div>
                       )) : (
                         <div>
-                          Nuk ka imazhe te kompanise ende.
+                          Nuk ka imazhe të kompanisë ende.
                         </div>
                       )}
                     </div>

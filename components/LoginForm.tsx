@@ -65,9 +65,8 @@ const LoginForm = () => {
         username: data.username,
         password: data.password  
     })
-    console.log(res, ' resi');
-    
-    if(res?.ok){
+        // CredentialsSignin
+    if(!res?.error){
         toast.success("Sapo jeni kycur me sukes!")
         setErrorMessage("")
         router.replace(redirectTo || "/profili")

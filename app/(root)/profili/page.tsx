@@ -53,7 +53,7 @@ const page = async () => {
             </h1>
             <p className='text-gray-600 text-center max-[420px]:text-sm'>Këtu mund të gjeni të gjitha ankesat/raportimet, kontribimet apo të dhëna tuaja personale</p>
         </div>
-        <div className="max-w-6xl relative mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-lg">
+        <div className="max-w-6xl relative mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
             <AnonimityToggle session={session}/>
             <div className="p-6 sm:p-8">
                 <div className="flex flex-row max-[900px]:flex-col items-center gap-6">

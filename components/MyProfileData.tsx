@@ -294,18 +294,18 @@ const MyProfileData = ({session}: {session: Session}) => {
               <>
                 {currentComplaints.map((complaint) => (
                   <div onClick={() => router.push(`/ankesat/${complaint.id}`)} key={`ankesat-${complaint.id}`} className="p-6 hover:bg-gray-50 cursor-pointer transition-colors duration-150 relative">
-                    <div className='bg-indigo-100 rounded-lg bottom-1 right-1 absolute text-indigo-600 text-xs font-semibold px-2 py-0.5'>
+                    <div className='bg-indigo-100 rounded-lg bottom-6 right-6 absolute text-indigo-600 text-xs font-semibold px-2 py-0.5'>
                       {complaint.municipality}
                     </div>
                     <div className="flex justify-between items-start gap-1">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">{complaint.title}</h3>
                         {complaint.companyId && complaint.companyName ? (
-                          <p className="text-gray-600 mt-1">
+                          <p className="text-gray-600 mt-1 pr-1">
                             Kundër <span onClick={() => router.push(`/kompanite/${complaint.companyId}`)} className="font-medium hover:text-indigo-600">{complaint.companyName}</span> • {new Date(complaint.createdAt).toLocaleDateString('sq-AL', {dateStyle: "full"})}
                           </p>
                         ) : (
-                          <p className="text-gray-600 mt-1">Ankesë komunale në {complaint.municipality}</p>
+                          <p className="text-gray-600 mt-1 pr-1">Ankesë komunale në {complaint.municipality}</p>
                         )}
                       </div>
                       <div className="flex items-center justify-end gap-2 flex-wrap">

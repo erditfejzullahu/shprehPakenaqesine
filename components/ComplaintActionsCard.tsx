@@ -25,7 +25,7 @@ type ReportsValidationSchema = z.infer<typeof reportsSchema>;
 const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: ComplantPerIdInterface, session: Session | null}) => {
     const router = useRouter();
     const [isUpvoting, setIsUpvoting] = useState(false)
-    const [upvoteCount, setUpvoteCount] = useState(0)
+    const [upvoteCount, setUpvoteCount] = useState(complaintsData.complaint.upVotes)
     const [hasUpvoted, setHasUpvoted] = useState(complaintsData.complaint.hasVoted)
 
     const [attachmentPreviews, setAttachmentPreviews] = useState<string[]>([]);
@@ -59,9 +59,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
       }), [])
     })
 
-    const reportsOnSubmit = useCallback(async (data: ReportsValidationSchema) => {
-      console.log(data);
-      
+    const reportsOnSubmit = useCallback(async (data: ReportsValidationSchema) => {      
       try {
         const response = await api.post(`/api/createReport`, {
           title: data.title,
@@ -242,13 +240,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
 
     const handleUpvote = useCallback(async () => {
         if (!session) {
-          toast.error('Ju duhet te jeni te kycur per votim te ankeses/raportimit!', {action: {label: "Kycuni", onClick: () => router.push('/kycuni')}})
+          toast.error('Ju duhet të jeni të kycur për votim të ankesës/raportimit!', {action: {label: "Kycuni", onClick: () => router.push('/kycuni')}})
           return;
         }
-        if (hasUpvoted) {
-          toast.error('Ju vecse keni votuar ne kete ankese/raportim!')
-          return;
-        };
         
         setIsUpvoting(true);
         try {
@@ -256,25 +250,30 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
           if(response.data.success){
             toast.success(response.data.message)
           }
-          setUpvoteCount(prev => prev + 1);
-          setHasUpvoted(true);
+          if(response.data.hasUpVoted){
+            setUpvoteCount(prev => prev + 1);
+          }else{
+            setUpvoteCount(prev => prev - 1);
+          }
+          router.refresh();
+          setHasUpvoted(response.data.hasUpVoted);
         } catch (error: any) {
           console.error('Failed to upvote:', error);
           toast.error(error.response.data.message)
         } finally {
           setIsUpvoting(false);
         }
-      }, []);
+      }, [router]);
 
       
 
   return (
     <div className="bg-white shadow-lg overflow-hidden">
         <div className="p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Nderveprime</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Ndërveprime</h3>
             <button
             onClick={handleUpvote}
-            disabled={isUpvoting || hasUpvoted}
+            disabled={isUpvoting}
             className={`w-full cursor-pointer flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${hasUpvoted ? 'bg-green-600' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mb-3`}
             >
             {isUpvoting ? (
@@ -284,14 +283,14 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                E votuar
+                E votuar ({upvoteCount})
                 </>
             ) : (
                 <>
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
                 </svg>
-                Voto larte ({upvoteCount})
+                Voto lartë ({upvoteCount})
                 </>
             )}
             </button>
@@ -334,7 +333,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                   <DialogHeader>
                     <DialogTitle>Kontriboni</DialogTitle>
                     <DialogDescription className='max-[420px]:text-sm'>
-                      Ketu mund te aplikoni per kontribuim ne kete rast duke shtuar deshmi dokumentesh, zerimeve, pamjeve etj.
+                      Këtu mund të aplikoni për kontribim në këtë rast duke shtuar dëshmi dokumentesh, zërimeve, pamjeve etj.
                     </DialogDescription>
                   </DialogHeader>
                   <div className='flex flex-col gap-4  relative'>
@@ -395,7 +394,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                       )}
                     </div>
                     <div>
-                      <Label htmlFor='audiosAttached' className='mb-2'>Ngarkoni audio/zerime</Label>
+                      <Label htmlFor='audiosAttached' className='mb-2'>Ngarkoni audio/zërime</Label>
                       <Controller 
                         control={contributeControl}
                         name="audiosAttached"
@@ -446,7 +445,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                       )}
                     </div>
                     <div>
-                      <Label htmlFor='videosAttached' className='mb-2'>Ngarkoni video/zerime</Label>
+                      <Label htmlFor='videosAttached' className='mb-2'>Ngarkoni video/zërime</Label>
                       <Controller 
                         control={contributeControl}
                         name="videosAttached"
@@ -497,7 +496,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                       )}
                     </div>
                     <div>
-                      <CTAButton type='button' onClick={contributeHandleSubmit(contributeOnSubmit)} isLoading={contributeIsSubmitting} text={`${contributeIsSubmitting ? "Duke shtuar..." : "Shto kontribuim"}`} primary classNames='w-full'/>
+                      <CTAButton type='button' onClick={contributeHandleSubmit(contributeOnSubmit)} isLoading={contributeIsSubmitting} text={`${contributeIsSubmitting ? "Duke shtuar..." : "Shto kontribim"}`} primary classNames='w-full'/>
                     </div>
                   </div>
                 </DialogContent>
@@ -528,11 +527,11 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 <DialogContent className='max-h-[90vh] !w-full !max-w-[700px] max-[750px]:max-w-[calc(100%-48px)]! px-4 overflow-y-scroll'>
                     <DialogHeader>
                       <DialogTitle>Krijo Raportim</DialogTitle>
-                      <DialogDescription>Ne rast se ankesa/raportimi nuk eshte valid, ju mund ta raportoni ketu duke shtuar detaje relevante ne lidhje me ankesen/raportim.</DialogDescription>
+                      <DialogDescription>Në rast se ankesa/raportimi nuk është valid, ju mund ta raportoni këtu duke shtuar detaje relevante në lidhje me ankesën/raportim.</DialogDescription>
                     </DialogHeader>
                     <div className='flex flex-col gap-4  relative'>
                         <div>
-                          <Label className='mb-1' htmlFor='title'>Titulli Raportimit</Label>
+                          <Label className='mb-1' htmlFor='title'>Titulli raportimit</Label>
                           <Controller 
                             control={reportControl}
                             name="title"
@@ -550,7 +549,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                             control={reportControl}
                             name="description"
                             render={({field}) => (
-                              <Textarea id='description' {...field} placeholder='Pershkruani detajisht arsyjen e raportimit' rows={5}/>
+                              <Textarea id='description' {...field} placeholder='Përshkruani detajisht arsyjen e raportimit' rows={5}/>
                             )}
                           />
                           {reportErrors.description && (
@@ -565,26 +564,26 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                             render={({field}) => (
                               <Select value={field.value} onValueChange={field.onChange}>
                                 <SelectTrigger className='w-full'>
-                                  <SelectValue placeholder="Zgjidhni nje kategori"/>
+                                  <SelectValue placeholder="Zgjidhni një kategori"/>
                                 </SelectTrigger>
                                 <SelectContent className='w-full'>
                                   <SelectGroup>
-                                    <SelectLabel>Kategorite</SelectLabel>
-                                    <SelectItem value='LAJMERIM_I_RREMSHEM'>Lajmerim i rrejshem</SelectItem>
+                                    <SelectLabel>Kategoritë</SelectLabel>
+                                    <SelectItem value='LAJMERIM_I_RREMSHEM'>Lajmërim i rrejshëm</SelectItem>
                                     <SelectItem value='SHPIFJE'>Shpifje</SelectItem>
-                                    <SelectItem value='GJUHE_URREJTJE'>Gjuhe urrejtje</SelectItem>
+                                    <SelectItem value='GJUHE_URREJTJE'>Gjuhë urrejtje</SelectItem>
                                     <SelectItem value='PERVERSE_OSE_ABUZIVE'>Perverse ose abuzive</SelectItem>
-                                    <SelectItem value='SPAM_OSE_DUPLIKAT'>Span ose duplikat</SelectItem>
+                                    <SelectItem value='SPAM_OSE_DUPLIKAT'>Spam ose duplikat</SelectItem>
                                     <SelectItem value='JO_RELAVANT'>Jo relevant</SelectItem>
-                                    <SelectItem value='SHKELJE_PRIVATESIE'>Shkelje privatesie</SelectItem>
-                                    <SelectItem value='TJETER'>Tjeter</SelectItem>
+                                    <SelectItem value='SHKELJE_PRIVATESIE'>Shkelje privatësie</SelectItem>
+                                    <SelectItem value='TJETER'>Tjetër</SelectItem>
                                   </SelectGroup>
                                 </SelectContent>
                               </Select>
                             )}
                           />
                           {reportErrors.category && (
-                            <p className="text-red-500 text-sm mt-1">Zgjidhni nje opsion</p>
+                            <p className="text-red-500 text-sm mt-1">Zgjidhni një opsion</p>
                           )}
                         </div>
                         <div>
@@ -644,7 +643,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                           )}
                         </div>
                         <div>
-                          <Label htmlFor='audiosAttached' className='mb-2'>Ngarkoni audio/zerime</Label>
+                          <Label htmlFor='audiosAttached' className='mb-2'>Ngarkoni audio/zërime</Label>
                           <Controller 
                             control={contributeControl}
                             name="audiosAttached"
@@ -695,7 +694,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                           )}
                         </div>
                         <div>
-                          <Label htmlFor='videosAttached' className='mb-2'>Ngarkoni video/zerime</Label>
+                          <Label htmlFor='videosAttached' className='mb-2'>Ngarkoni video/zërime</Label>
                           <Controller 
                             control={contributeControl}
                             name="videosAttached"

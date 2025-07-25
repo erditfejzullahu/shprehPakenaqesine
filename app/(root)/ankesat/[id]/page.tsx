@@ -7,7 +7,7 @@ import React from 'react'
 import { auth } from '../../../../auth';
 import { cookies } from 'next/headers';
 import { ImageIcon } from 'lucide-react';
-import { FaFileAudio, FaFileVideo, FaImage } from 'react-icons/fa';
+import { FaFileAudio, FaFileVideo, FaImage, FaThumbsDown } from 'react-icons/fa';
 import { Metadata } from 'next';
 import { MUNICIPALITY_IMAGES } from '@/data/municipalities';
 
@@ -153,7 +153,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
   return (
     <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <div className="bg-white shadow-sm">
+        <div className="bg-white shadow-sm max-[1152px]:shadow-none">
           <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
             <Link
               href={'/ankesat'}
@@ -188,6 +188,10 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                       {getCategoryLabel(data.complaint.category)}
                     </span>
                     <span className="px-3 py-1 first-letter:uppercase lowercase text-xs shadow-sm font-medium bg-indigo-50 text-indigo-800">{data.complaint.municipality.replace("_", " ")}</span>
+                    <span className='px-3 py-1 first-letter:uppercase lowercase text-xs shadow-sm font-medium bg-red-100 text-red-800 flex flex-row items-end gap-1'>
+                      {data.complaint.upVotes}
+                      <FaThumbsDown size={14} className='text-red-400'/>
+                    </span>
                   </div>
 
                   {/* Complaint Description */}
@@ -220,7 +224,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                             )}
                             <div className="truncate">
                               <p className="text-sm font-medium text-gray-900 truncate">Imazhe/Dokumente</p>
-                              <p className="text-xs text-gray-500">Klikoni per hapje</p>
+                              <p className="text-xs text-gray-500">Klikoni për hapje</p>
                             </div>
                           </Link>
                         ))}
@@ -231,7 +235,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                             <FaFileVideo className='text-gray-400 w-8 h-8 mr-2' />
                             <div className="truncate">
                               <p className="text-sm font-medium text-gray-900 truncate">Video/Inqizime</p>
-                              <p className="text-xs text-gray-500">Klikoni per hapje</p>
+                              <p className="text-xs text-gray-500">Klikoni për hapje</p>
                             </div>
                           </Link>
                         ))}
@@ -242,7 +246,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                             <FaFileAudio className='text-gray-400 w-8 h-8 mr-2' />
                             <div className="truncate">
                               <p className="text-sm font-medium text-gray-900 truncate">Audio/Inqizime</p>
-                              <p className="text-xs text-gray-500">Klikoni per hapje</p>
+                              <p className="text-xs text-gray-500">Klikoni për hapje</p>
                             </div>
                           </Link>
                         ))}
@@ -252,9 +256,9 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
 
                   {/* Dates */}
                   <div className="text-sm text-gray-500">
-                    <p>Postuar me: {new Date(data.complaint.createdAt).toLocaleDateString('sq-AL', {day: "2-digit", month: "short", year: "numeric"})}</p>
+                    <p>Postuar më: {new Date(data.complaint.createdAt).toLocaleDateString('sq-AL', {day: "2-digit", month: "short", year: "numeric"})}</p>
                     {data.complaint.updatedAt !== data.complaint.createdAt && (
-                      <p>Rifreskuar me: {new Date(data.complaint.updatedAt).toLocaleDateString('sq-AL', {day: "2-digit", month: "short", year: "numeric"})}</p>
+                      <p>Rifreskuar më: {new Date(data.complaint.updatedAt).toLocaleDateString('sq-AL', {day: "2-digit", month: "short", year: "numeric"})}</p>
                     )}
                   </div>
                 </div>
@@ -308,7 +312,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                 <div className="p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Ankuesi/Raportuesi</h3>
                   {!data.complaint.user ? (
-                    <div>Ankuesi eshte anonim!</div>
+                    <div>Ankuesi është anonim!</div>
                   ) : (
                     <>
                   <div className="flex items-center gap-4">
