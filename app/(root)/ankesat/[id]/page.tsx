@@ -205,51 +205,53 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                     data.complaint.videosAttached?.length > 0) && (
                     <div className="mb-8">
                       <h3 className="text-lg font-medium text-gray-900 mb-3">Bashkngjitjet/provat</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {/* Documents */}
-                        {data.complaint.attachments.map((file, index) => (
-                          <Link href={`${file}`} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100">
-                            {file.includes('application/pdf') || 
-                            file.includes('application/msword') || 
-                            file.includes('vnd.openxmlformats-officedocument.wordprocessingml.document') || 
-                            file.includes('vnd.ms-excel') || 
-                            file.includes('vnd.openxmlformats-officedocument.spreadsheetml.sheet') || 
-                            file.includes('vnd.ms-powerpoint') || 
-                            file.includes('vnd.openxmlformats-officedocument.presentationml.presentation') ? (
-                              <svg className="w-8 h-8 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-                              </svg>
-                            ) : (
-                              <FaImage className='text-gray-400 w-8 h-8 mr-2'/>
-                            )}
-                            <div className="truncate">
-                              <p className="text-sm font-medium text-gray-900 truncate">Imazhe/Dokumente</p>
-                              <p className="text-xs text-gray-500">Klikoni për hapje</p>
-                            </div>
-                          </Link>
-                        ))}
+                      <div className='flex overflow-x-auto pb-2'>
+                        <div className={`grid ${(data.complaint.attachments.length + data.complaint.audiosAttached.length + data.complaint.videosAttached.length > 3) ? "grid-flow-col-dense  grid-rows-2" : "grid-flow-col-dense grid-rows-1"}  gap-3 min-w-full`}>
+                          {/* Documents */}
+                          {data.complaint.attachments.map((file, index) => (
+                            <Link href={`${file}`} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100 w-full">
+                              {file.includes('application/pdf') || 
+                              file.includes('application/msword') || 
+                              file.includes('vnd.openxmlformats-officedocument.wordprocessingml.document') || 
+                              file.includes('vnd.ms-excel') || 
+                              file.includes('vnd.openxmlformats-officedocument.spreadsheetml.sheet') || 
+                              file.includes('vnd.ms-powerpoint') || 
+                              file.includes('vnd.openxmlformats-officedocument.presentationml.presentation') ? (
+                                <svg className="w-8 h-8 text-gray-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                </svg>
+                              ) : (
+                                <FaImage className='text-gray-400 w-8 h-8 mr-2'/>
+                              )}
+                              <div className="truncate">
+                                <p className="text-sm font-medium text-gray-900 truncate">Imazhe/Dokumente</p>
+                                <p className="text-xs text-gray-500">Klikoni për hapje</p>
+                              </div>
+                            </Link>
+                          ))}
 
-                        {/* Videos */}
-                        {data.complaint.videosAttached?.map((file, index) => (
-                          <Link href={`${file}`} aria-description='attachment' target='_blank' key={`video-${index}`} className="shadow-md p-3 flex items-center">
-                            <FaFileVideo className='text-gray-400 w-8 h-8 mr-2' />
-                            <div className="truncate">
-                              <p className="text-sm font-medium text-gray-900 truncate">Video/Inqizime</p>
-                              <p className="text-xs text-gray-500">Klikoni për hapje</p>
-                            </div>
-                          </Link>
-                        ))}
+                          {/* Videos */}
+                          {data.complaint.videosAttached?.map((file, index) => (
+                            <Link href={`${file}`} aria-description='attachment' target='_blank' key={`video-${index}`} className="shadow-md p-3 flex items-center">
+                              <FaFileVideo className='text-gray-400 w-8 h-8 mr-2' />
+                              <div className="truncate">
+                                <p className="text-sm font-medium text-gray-900 truncate">Video/Inqizime</p>
+                                <p className="text-xs text-gray-500">Klikoni për hapje</p>
+                              </div>
+                            </Link>
+                          ))}
 
-                        {/* Audios */}
-                        {data.complaint.audiosAttached?.map((file, index) => (
-                          <Link href={`${file}`} aria-description='attachment' target='_blank' key={`audio-${index}`} className="shadow-md p-3 flex items-center">
-                            <FaFileAudio className='text-gray-400 w-8 h-8 mr-2' />
-                            <div className="truncate">
-                              <p className="text-sm font-medium text-gray-900 truncate">Audio/Inqizime</p>
-                              <p className="text-xs text-gray-500">Klikoni për hapje</p>
-                            </div>
-                          </Link>
-                        ))}
+                          {/* Audios */}
+                          {data.complaint.audiosAttached?.map((file, index) => (
+                            <Link href={`${file}`} aria-description='attachment' target='_blank' key={`audio-${index}`} className="shadow-md p-3 flex items-center">
+                              <FaFileAudio className='text-gray-400 w-8 h-8 mr-2' />
+                              <div className="truncate">
+                                <p className="text-sm font-medium text-gray-900 truncate">Audio/Inqizime</p>
+                                <p className="text-xs text-gray-500">Klikoni për hapje</p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
