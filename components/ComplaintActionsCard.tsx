@@ -54,6 +54,8 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
         title: "",
         description: "",
         attachments: [],
+        category: "GJUHE_URREJTJE",
+        email: "",
         audiosAttached: [],
         videosAttached: []
       }), [])
@@ -577,7 +579,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                             control={reportControl}
                             name="category"
                             render={({field}) => (
-                              <Select value={field.value} onValueChange={field.onChange}>
+                              <Select value={field.value} defaultValue={field.value} onValueChange={field.onChange}>
                                 <SelectTrigger className='w-full'>
                                   <SelectValue placeholder="Zgjidhni një kategori"/>
                                 </SelectTrigger>
