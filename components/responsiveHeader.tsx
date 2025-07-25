@@ -1,4 +1,3 @@
-// components/ResponsiveHeader.tsx
 'use client';
 
 import { Session } from 'next-auth';
@@ -9,6 +8,7 @@ import { useState, useEffect, Children } from 'react';
 import LogOut from './LogOut';
 
 export default function ResponsiveHeader({ session }: { session: Session | null }) {
+  
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);

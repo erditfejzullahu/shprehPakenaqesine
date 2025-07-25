@@ -32,14 +32,13 @@ export async function generateMetadata(): Promise<Metadata>{
 
 const page = async () => {
     const session = await auth();
-    // console.log(session, ' servsession');
     
     if(!session){
         redirect('/kycuni?from=profili')
     }
     
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
         <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 leading-tight w-fit mx-auto relative tracking-tight">Profili <span className='text-indigo-600'>Juaj</span>
                 <Image

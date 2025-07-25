@@ -216,17 +216,17 @@ const MyProfileData = ({session}: {session: Session}) => {
   return (
     <>      
       <div className='relative overflow-x-auto'>
-        <div className='flex space-x-0 min-w-max'>
-          <button type='button' onClick={() => handleTabChange("myComplaints")} className={`min-w-fit cursor-pointer ${activeTab === "myComplaints" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
+        <div className='flex space-x-0 w-fit border-b'>
+          <button type='button' onClick={() => handleTabChange("myComplaints")} className={`min-w-fit cursor-pointer ${activeTab === "myComplaints" ? " font-medium shadow-md border-b-2 border-b-indigo-500 text-indigo-800" : "bg-white shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2  `}>
               Ankesat e krijuara
           </button>
-          <button type='button' onClick={() => handleTabChange("contributions")} className={`min-w-fit cursor-pointer ${activeTab === "contributions" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
+          <button type='button' onClick={() => handleTabChange("contributions")} className={`min-w-fit cursor-pointer ${activeTab === "contributions" ? " font-medium shadow-md border-b-2 border-b-indigo-500 text-indigo-800" : "bg-white shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2  `}>
               Kontribimet e bëra
           </button>
-          <button type='button' onClick={() => handleTabChange("settings")} className={`min-w-fit cursor-pointer ${activeTab === "settings" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r border-r-gray-200 `}>
+          <button type='button' onClick={() => handleTabChange("settings")} className={`min-w-fit cursor-pointer ${activeTab === "settings" ? " font-medium shadow-md border-b-2 border-b-indigo-500 text-indigo-800" : "bg-white shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2  `}>
               Të dhënat tua
           </button>
-          <button type='button' onClick={() => handleTabChange("userLogs")} className={`min-w-fit cursor-pointer ${activeTab === "userLogs" ? "bg-white font-medium shadow-md border-b-indigo-300 text-black" : "bg-gray-100 shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2 border-b-2 border-r-gray-200 `}>Regjistrat</button>
+          <button type='button' onClick={() => handleTabChange("userLogs")} className={`min-w-fit cursor-pointer ${activeTab === "userLogs" ? " font-medium shadow-md border-b-2 border-b-indigo-500 text-indigo-800" : "bg-white shadow-none border-b-gray-200 text-gray-600 font-normal"}  px-4 py-2   `}>Regjistrat</button>
         </div>
       </div>
       

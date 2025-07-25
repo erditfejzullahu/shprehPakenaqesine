@@ -14,8 +14,10 @@ import {signIn} from "next-auth/react"
 import {toast} from "sonner"
 import { useRouter, useSearchParams } from 'next/navigation'
 import api from '@/lib/api'
+import { useSession } from 'next-auth/react'
 
 const LoginForm = () => {
+  const {update} = useSession();
     const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
   const [errorMessage, setErrorMessage] = useState("")
@@ -65,16 +67,17 @@ const LoginForm = () => {
         username: data.username,
         password: data.password  
     })
-        // CredentialsSignin
+        
     if(!res?.error){
         toast.success("Sapo jeni kycur me sukes!")
         setErrorMessage("")
         router.replace(redirectTo || "/profili")
+        router.refresh()
     }else{
         toast.error("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
         setErrorMessage("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
     }
-  }, [])
+  }, [router])
 
   const handleRegister = useCallback(async (data: z.infer<typeof registerSchema>) => {
     try {
@@ -98,7 +101,7 @@ const LoginForm = () => {
       setErrorMessage("Dicka shkoi gabim! Ju lutem provoni perseri")
       toast.error("Dicka shkoi gabim! Ju lutem provoni perseri")
     }
-  }, [])
+  }, [router])
 
   useEffect(() => {
     setErrorMessage("")
@@ -109,29 +112,29 @@ const LoginForm = () => {
     <div className="w-full max-w-6xl mx-auto mt-4 mb-4">
       {isLogin ? (
         // Login Form
-        <form className="flex flex-col gap-4 max-w-xl mx-auto shadow-xl p-4" onSubmit={handleLoginSubmit(handleLogin)}>
+        <form className="flex flex-col gap-4 max-w-xl mx-auto shadow-lg p-4" onSubmit={handleLoginSubmit(handleLogin)}>
           <div>
-            <Label htmlFor='username' className="mb-1">Emri i perdoruesit</Label>
+            <Label htmlFor='username' className="mb-1">Emri i përdoruesit</Label>
             <Input 
               id='username' 
               type='text' 
-              placeholder='Shtypni ketu emrin e perdoruesist...' 
+              placeholder='Shtypni këtu emrin e përdoruesist...' 
               {...loginRegister("username")}
             />
-            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni ketu emrin e perdoruesit qe e keni perdorur ne formen e krijimit te llogarise.</p>
+            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni këtu emrin e përdoruesit që e keni perdorur në formën e krijimit të llogarisë.</p>
             {loginErrors.username && (
               <p className="text-red-500 text-sm mt-1">{loginErrors.username.message}</p>
             )}
           </div>
           <div>
-            <Label htmlFor='password' className="mb-1">Fjalekalimi</Label>
+            <Label htmlFor='password' className="mb-1">Fjalëkalimi</Label>
             <Input 
               id='password' 
               type='password' 
               {...loginRegister("password")} 
               placeholder='**********'
             />
-            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni ketu fjalekalimin. Siguroni qe te mos e perhapni me asnje njeri.</p>
+            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni këtu fjalekalimin. Sigurohuni që të mos e perhapni me asnjë njeri.</p>
             {loginErrors.password && (
               <p className="text-red-500 text-sm mt-1">{loginErrors.password.message}</p>
             )}
@@ -163,26 +166,26 @@ const LoginForm = () => {
         </form>
       ) : (
         // Registration Form
-        <form className="flex flex-col gap-4 max-w-xl mx-auto shadow-xl p-4" onSubmit={handleRegisterSubmit(handleRegister)}>
+        <form className="flex flex-col gap-4 max-w-xl mx-auto shadow-lg p-4" onSubmit={handleRegisterSubmit(handleRegister)}>
           <div>
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="relative w-fit">
-                  <Label htmlFor='fullName' className="mb-1 w-fit">Emri juaj i plote</Label>
+                  <Label htmlFor='fullName' className="mb-1 w-fit">Emri juaj i plotë</Label>
                   <FaInfoCircle size={12} color='#4f46e5' className="absolute -right-3.5 -top-2" />
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Emri juaj duhet te jete valid qe te kaloje procesin e verifikimit.</p>
+                <p>Emri juaj duhet te jetë valid që të kalojë procesin e verifikimit.</p>
               </TooltipContent>
             </Tooltip>
             <Input 
               id='fullName' 
               type='text' 
-              placeholder='Shkruani ketu emrin tuaj te plote...' 
+              placeholder='Shkruani këtu emrin tuaj të plotë...' 
               {...registerRegister("fullName")}
             />
-            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni ketu emrin tuaj te plote, pasi qe nevojitet per verifikim te llogarise.</p>
+            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni këtu emrin tuaj të plotë, pasi që nevojitet për verifikim të llogarisë.</p>
             {registerErrors.fullName && (
               <p className="text-red-500 text-sm mt-1">{registerErrors.fullName.message}</p>
             )}
@@ -196,16 +199,16 @@ const LoginForm = () => {
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Emaili juaj duhet te jete valid per verifikim permes emailit.</p>
+                <p>Emaili juaj duhet të jetë valid për verifikim përmes emailit.</p>
               </TooltipContent>
             </Tooltip>
             <Input 
               id='email' 
               type='email' 
-              placeholder='Shtypni ketu emailin tuaj...' 
+              placeholder='Shtypni këtu emailin tuaj...' 
               {...registerRegister("email")}
             />
-            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni ketu emailin tuaj valid, pasi qe nevojitet per verifikim permes emailit.</p>
+            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni këtu emailin tuaj valid, pasi që nevojitet për verifikim përmes emailit.</p>
             {registerErrors.email && (
               <p className="text-red-500 text-sm mt-1">{registerErrors.email.message}</p>
             )}
@@ -215,10 +218,10 @@ const LoginForm = () => {
             <Input 
               id='username' 
               type='text' 
-              placeholder='Shtypni ketu emrin e perdoruesist...' 
+              placeholder='Shtypni këtu emrin e perdoruesist...' 
               {...registerRegister("username")}
             />
-            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni ketu emrin e perdoruesit, me te cilin keni per tu kycur ne llogari.</p>
+            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni këtu emrin e përdoruesit, me të cilin keni për tu kycur në llogari.</p>
             {registerErrors.username && (
               <p className="text-red-500 text-sm mt-1">{registerErrors.username.message}</p>
             )}
@@ -234,11 +237,11 @@ const LoginForm = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Zgjidhni mes opsioneve me poshte</SelectLabel>
+                  <SelectLabel>Zgjidhni mes opsioneve më poshtë</SelectLabel>
                   <SelectItem value='MASHKULL'>Mashkull</SelectItem>
-                  <SelectItem value='FEMER'>Femer</SelectItem>
-                  <SelectItem value='TJETER'>Tjeter</SelectItem>
-                  <SelectItem value='PA_GJINI'>Nuk dua ta tregoj</SelectItem>
+                  <SelectItem value='FEMER'>Femër</SelectItem>
+                  <SelectItem value='TJETER'>Tjetër</SelectItem>
+                  <SelectItem value='PA_GJINI'>Nuk dua të tregoj</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -247,27 +250,27 @@ const LoginForm = () => {
             )}
           </div>
           <div>
-            <Label htmlFor='password' className="mb-1">Fjalekalimi</Label>
+            <Label htmlFor='password' className="mb-1">Fjalëkalimi</Label>
             <Input 
               id='password' 
               type='password' 
               {...registerRegister("password")} 
               placeholder='**********'
             />
-            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni ketu fjalekalimin. Siguroni qe te mos e perhapni me asnje njeri.</p>
+            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni këtu fjalëkalimin. Siguroni që të mos e përhapni me asnjë njeri.</p>
             {registerErrors.password && (
               <p className="text-red-500 text-sm mt-1">{registerErrors.password.message}</p>
             )}
           </div>
           {password !== "" && <div>
-            <Label htmlFor='confirmPassword' className="mb-1">Konfirmo Fjalekalimin</Label>
+            <Label htmlFor='confirmPassword' className="mb-1">Konfirmo Fjalëkalimin</Label>
             <Input 
               id='confirmPassword' 
               type='password' 
               {...registerRegister("confirmPassword")} 
               placeholder='**********'
             />
-            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni ketu fjalekalimin qe keni shkruar me larte.</p>
+            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni këtu fjalëkalimin që keni shkruar më lartë.</p>
             {registerErrors.confirmPassword && (
               <p className="text-red-500 text-sm mt-1">{registerErrors.confirmPassword.message}</p>
             )}
@@ -277,7 +280,7 @@ const LoginForm = () => {
               primary 
               classNames='flex-1 w-full' 
               type="submit"
-              text={`${isRegisterSubmitting ? "Duke krijuar llogarine..." : "Krijo llogarine"}`}
+              text={`${isRegisterSubmitting ? "Duke krijuar llogarinë..." : "Krijo llogarinë"}`}
             />
             <div>
                 {errorMessage && <div>
