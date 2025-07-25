@@ -16,11 +16,16 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import api from '@/lib/api'
 import { useSession } from 'next-auth/react'
 
+const passwordResetSchema = z.object({
+  email: z.email("Duhet një email i vlefshëm.")
+})
+
 const LoginForm = () => {
-  const {update} = useSession();
-    const router = useRouter()
+  const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
   const [errorMessage, setErrorMessage] = useState("")
+  const [isPasswordForgotten, setIsPasswordForgotten] = useState(false)
+  const [isRegister, setIsRegister] = useState(false)
 
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('from')
@@ -57,6 +62,17 @@ const LoginForm = () => {
       confirmPassword: ""
     }), []),
     mode: "onChange"
+  })
+
+  const {
+    register: passwordResetRegister,
+    handleSubmit: passwordResetSubmit,
+    formState: {errors: passwordResetErrors, isSubmitting: passwordResetSubmitting}
+  } = useForm<z.infer<typeof passwordResetSchema>>({
+    resolver: zodResolver(passwordResetSchema),
+    defaultValues: {
+      email: ""
+    }
   })
 
   const password = watch("password")
@@ -103,6 +119,20 @@ const LoginForm = () => {
     }
   }, [router])
 
+  const handlePasswordReset = useCallback(async (data: z.infer<typeof passwordResetSchema>) => {
+    try {
+      const response = await api.post(`/api/auth/changePassword/forgotPassword`, {email: data.email})
+      console.log(response.data);
+      if(response.data.success){
+        
+        toast.success(response.data.message)
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message || "Dicka shkoi gabim!")
+    }
+  }, [router])
+
   useEffect(() => {
     setErrorMessage("")
   }, [isLogin])
@@ -146,25 +176,35 @@ const LoginForm = () => {
               type="submit"
               text={`${isLoginSubmitting ? "Duke u kycur..." : "Kycu"}`}
             />
-            <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
-                {errorMessage && <div>
-                    <p className="text-red-500 text-left text-xs mt-3">{errorMessage}</p>
-                </div>}
-                <div>
-                    <p className="text-sm mt-3 text-gray-600">
+            {errorMessage && <div>
+                <p className="text-red-500 text-center text-xs mt-3">{errorMessage}</p>
+            </div>}
+                <div className='flex flex-row items-center justify-between gap-2 max-[526px]:flex-col max-[528px]:gap-0'>
+                  <div>
+                    <p className="text-sm mt-3 text-gray-600 text-left">
                     Nuk keni llogari? 
                     <span 
-                        onClick={() => setIsLogin(false)} 
+                        onClick={() => {setIsLogin(false); setIsRegister(true); setIsPasswordForgotten(false)}} 
                         className="text-indigo-600 cursor-pointer transition-all ease-in-out hover:font-bold ml-1"
                     >
                         Krijoni Tani!
                     </span>
                     </p>
+                  </div>
+                  <div>
+                    <p className="text-sm mt-3 text-gray-600 text-right">Keni harruar fjalëkalimin?
+                      <span 
+                        onClick={() => { setIsPasswordForgotten(true); setIsLogin(false); setIsRegister(false)}} 
+                        className="text-indigo-600 cursor-pointer transition-all ease-in-out hover:font-bold ml-1"
+                      >
+                        Rivendosni tani!
+                      </span>
+                    </p>
+                  </div>
                 </div>
-            </div>
           </div>
         </form>
-      ) : (
+      ) : isRegister ? (
         // Registration Form
         <form className="flex flex-col gap-4 max-w-xl mx-auto shadow-lg p-4" onSubmit={handleRegisterSubmit(handleRegister)}>
           <div>
@@ -298,6 +338,30 @@ const LoginForm = () => {
                     </p>
                 </div>
             </div>
+          </div>
+        </form>
+      ) : (
+        <form onSubmit={passwordResetSubmit(handlePasswordReset)} className='flex flex-col gap-4 max-w-xl mx-auto shadow-lg p-4'>
+          <div>
+            <Label htmlFor='passwordResetEmail' className="mb-1">Emaili juaj</Label>
+            <Input 
+              id='passwordResetEmail' 
+              type='text' 
+              placeholder='përdoruesi@shembull.com' 
+              {...passwordResetRegister("email")}
+            />
+            <p className="text-gray-400 text-xs font-normal mt-1">Paraqitni këtu emailin tuaj të regjistruar në platformë.</p>
+            {passwordResetErrors.email && (
+              <p className="text-red-500 text-sm mt-1">{passwordResetErrors.email.message}</p>
+            )}
+          </div>
+          <div className='flex-1'>
+            <CTAButton 
+              primary 
+              classNames='flex-1 w-full' 
+              type="submit"
+              text={`${isLoginSubmitting ? "Duke bërë kërkesën..." : "Bëni kërkesë"}`}
+            />
           </div>
         </form>
       )}

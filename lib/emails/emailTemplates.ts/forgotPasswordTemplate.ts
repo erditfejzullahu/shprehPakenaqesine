@@ -1,4 +1,4 @@
-export const forgotPasswordTemplate = (resetUrl: string,token: string) => `
+export const forgotPasswordTemplate = (resetUrl: string) => `
 <!DOCTYPE html>
 <html lang="sq">
   <head>
@@ -53,7 +53,7 @@ export const forgotPasswordTemplate = (resetUrl: string,token: string) => `
         Kemi marrë një kërkesë për të rivendosur fjalëkalimin e llogarisë suaj.
         Për të vazhduar, ju lutemi klikoni butonin më poshtë:
       </p>
-      <a href="${resetUrl}/${token}" class="button">Rivendos Fjalëkalimin</a>
+      <a href="${resetUrl}" class="button">Rivendos Fjalëkalimin</a>
       <p>
         Nëse nuk keni kërkuar një rivendosje të fjalëkalimit, ju mund ta injoroni këtë email.
       </p>

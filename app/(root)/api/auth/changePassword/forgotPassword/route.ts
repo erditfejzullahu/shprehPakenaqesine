@@ -1,11 +1,14 @@
+import { sendPasswordResetEmail } from "@/lib/emails/forgotPassword";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
     const {email} = await req.json()
+    console.log(email, " email");
+    
     try {
         const user = await prisma.users.findUnique({where: {email}})
-        if(!user) return NextResponse.json({success: false, message: "Nëse ky email ekziston, është dërguar një lidhje për rivendosjeje fjalëkalimi."}, {status: 200});
+        if(!user) return NextResponse.json({success: true, message: "Nëse ky email ekziston, është dërguar një lidhje për rivendosjeje fjalëkalimi."}, {status: 200});
 
         const token = crypto.randomUUID().toString();
         const expires = new Date(Date.now() + 3600000) //1 ore
@@ -18,7 +21,8 @@ export const POST = async (req: NextRequest) => {
             }
         })
 
-        const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/rivendos-fjalekalimin=${token}`;
+        const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/rivendos-fjalekalimin?token=${token}`;
+        await sendPasswordResetEmail(email, resetUrl)
 
         return NextResponse.json({success: true, message: "Nëse ky email ekziston, është dërguar një lidhje për rivendosjeje fjalëkalimi."}, {status: 200})
     } catch (error) {

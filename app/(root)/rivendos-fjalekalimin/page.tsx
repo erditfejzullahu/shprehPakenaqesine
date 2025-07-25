@@ -47,7 +47,7 @@ const page = async ({searchParams}: {searchParams: Promise<{token: string}>}) =>
             Rivendosni fjalëkalimin tuaj në mënyrë të sigurt për të vazhduar përdorimin e <span className="text-indigo-600">ShfaqPakënaqësinë</span>.
             </p>
         </div>
-        <PasswordResetComponent />
+        <PasswordResetComponent token={token}/>
     </section>
   )
 }

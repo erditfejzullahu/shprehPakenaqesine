@@ -7,6 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import CTAButton from "./CTAButton";
+import { toast } from "sonner";
+import api from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const schema = z
   .object({
@@ -37,7 +40,8 @@ const schema = z
 
 type FormData = z.infer<typeof schema>;
 
-const PasswordResetComponent = () => {
+const PasswordResetComponent = ({token}: {token: string}) => {
+    const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -46,9 +50,16 @@ const PasswordResetComponent = () => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("New password:", data.password);
-    // Këtu shto API call-in tënd për ta ruajtur password-in
+  const onSubmit = async (data: FormData) => {
+    try {
+        const response = await api.post(`/api/auth/changePassword/resetPassword`, {password: data.password, token})
+        if(response.data.success){
+            toast.success('Fjalëkalimi u rivendos me sukses!')
+            router.replace('/kycuni')
+        }
+    } catch (error: any) {
+        toast.error(error.response.data.message)
+    }
   };
 
   return (
