@@ -18,6 +18,9 @@ export const forgotPasswordTemplate = (resetUrl: string) => `
         padding: 40px;
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        -moz-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       }
       h1 {
         font-size: 24px;
@@ -33,7 +36,7 @@ export const forgotPasswordTemplate = (resetUrl: string) => `
         margin-top: 24px;
         padding: 12px 24px;
         background-color: #4f46e5;
-        color: #ffffff;
+        color: #ffffff!important;
         text-decoration: none;
         border-radius: 6px;
         font-weight: bold;
@@ -53,7 +56,7 @@ export const forgotPasswordTemplate = (resetUrl: string) => `
         Kemi marrë një kërkesë për të rivendosur fjalëkalimin e llogarisë suaj.
         Për të vazhduar, ju lutemi klikoni butonin më poshtë:
       </p>
-      <a href="${resetUrl}" class="button">Rivendos Fjalëkalimin</a>
+      <a href="${resetUrl}" class="button" style="color:#fff!important">Rivendos Fjalëkalimin</a>
       <p>
         Nëse nuk keni kërkuar një rivendosje të fjalëkalimit, ju mund ta injoroni këtë email.
       </p>
@@ -63,5 +66,6 @@ export const forgotPasswordTemplate = (resetUrl: string) => `
     </div>
   </body>
 </html>
+
 
 `

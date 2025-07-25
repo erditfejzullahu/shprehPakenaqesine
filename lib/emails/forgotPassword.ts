@@ -12,12 +12,18 @@ const transporter = nodemailer.createTransport({
 })
 
 export const sendPasswordResetEmail = async (email: string, resetUrl: string) => {
+    
     const mailOptions: nodemailer.SendMailOptions = {
         from: process.env.EMAIL_FROM,
         to: email,
         subject: "Kërkesë për rivendosje fjalëkalimi",
         html: forgotPasswordTemplate(resetUrl)
-    }
+    };
 
-    await transporter.sendMail(mailOptions)
+    (async () => {
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log("Message sent:", info.messageId);
+    })();
+    // await transporter.sendMail(mailOptions)
 }

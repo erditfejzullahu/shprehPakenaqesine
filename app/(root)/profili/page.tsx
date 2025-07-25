@@ -5,6 +5,8 @@ import { auth } from '@/auth';
 import AnonimityToggle from '@/components/AnonimityToggle';
 import { Metadata } from 'next';
 import Image from 'next/image';
+import { toast } from 'sonner';
+import ShowToasterInCaseFromPasswordReset from '@/components/ShotToasterInCaseFromPasswordReset';
 
 
 export async function generateMetadata(): Promise<Metadata>{
@@ -29,15 +31,15 @@ export async function generateMetadata(): Promise<Metadata>{
     }
 }
 
-
-const page = async () => {
+const page = async ({searchParams}: {searchParams: Promise<{redirected?: string}>}) => {
     const session = await auth();
-    
+    const {redirected} = await searchParams;
     if(!session){
         redirect('/kycuni?from=profili')
     }
     
   return (
+    <>
     <div className="min-h-screen bg-white">
         <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 leading-tight w-fit mx-auto relative tracking-tight">Profili <span className='text-indigo-600'>Juaj</span>
@@ -98,6 +100,8 @@ const page = async () => {
             <MyProfileData session={session}/>
         </div>
     </div>
+    <ShowToasterInCaseFromPasswordReset fromResetPassword={redirected ? true : false}/>
+    </>
   )
 }
 

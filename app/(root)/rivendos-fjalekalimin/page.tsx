@@ -1,7 +1,8 @@
+import { auth } from '@/auth';
 import PasswordResetComponent from '@/components/PasswordResetComponent';
 import { Metadata } from 'next';
 import Image from 'next/image';
-import { NextRequest } from 'next/server'
+import { redirect } from 'next/navigation';
 import React from 'react'
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -26,6 +27,10 @@ export const generateMetadata = async (): Promise<Metadata> => {
 };
 
 const page = async ({searchParams}: {searchParams: Promise<{token: string}>}) => {
+    const session = await auth()
+    if(session){
+        redirect('/profili?redirected=reset-password')
+    }
     const {token} = await searchParams;
     if(!token){
         throw new Error("Token i pavlefshëm")
