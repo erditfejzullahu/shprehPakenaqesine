@@ -22,6 +22,9 @@ export const GET = async (req: NextRequest) => {
                     }
                 }
             },
+            orderBy: {
+                createdAt: "desc"
+            },
             skip,
             take: limit
         })        

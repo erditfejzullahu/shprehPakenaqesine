@@ -99,8 +99,8 @@ model Contributions {
   contributionValidated Boolean @default(false)
   audiosAttached  String[]           @default([])
   videosAttached  String[]           @default([])
-  complaint   Complaint @relation(fields: [complaintId], references: [id])
-  user        Users     @relation(fields: [userId], references: [id])
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  user        Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -135,8 +135,8 @@ model ComplaintUpVotes {
   complaintId String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  complaint   Complaint @relation(fields: [complaintId], references: [id])
-  user        Users     @relation(fields: [userId], references: [id])
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  user        Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, complaintId])
 }

@@ -32,7 +32,6 @@ export const POST = async (req: NextRequest) => {
     }
     try {
         const body: ComplaintsSchema = await req.json();
-        console.log(body, " body");
         
         const sanitizedBody = {
             companyId: body.companyId,

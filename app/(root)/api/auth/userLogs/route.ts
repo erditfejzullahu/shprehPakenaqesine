@@ -32,6 +32,9 @@ export const GET = async (req: NextRequest) => {
                 ipAddress: true,
                 userAgent: true,
                 createdAt: true
+            },
+            orderBy: {
+                createdAt: "desc"
             }
         })
 

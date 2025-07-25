@@ -100,7 +100,6 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
     callbacks: {
         async jwt({ token, user, trigger, session }) {
             if(trigger === "update"){
-                console.log(session, ' session')
                 return { 
                     ...token,
                     ...(session.email && { email: session.email }),

@@ -13,7 +13,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
         //     return NextResponse.json({message: "Not authorized"}, {status: 500})
         // }
         const rateLimitKey = `rate_limit:getSingleComplaint:${ipAddress}`
-        const ratelimiter = await rateLimit(rateLimitKey, 20, 60)
+        const ratelimiter = await rateLimit(rateLimitKey, 60, 60)
         if(!ratelimiter.allowed){
             return NextResponse.json({
                 success: false,
@@ -142,10 +142,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                 }
             })),
             hasVoted
-        }
-
-        console.log(complaint.contributions);
-        
+        }        
 
         return NextResponse.json({success: true, complaint}, {status: 200, headers: ratelimiter.responseHeaders})
     } catch (error) {

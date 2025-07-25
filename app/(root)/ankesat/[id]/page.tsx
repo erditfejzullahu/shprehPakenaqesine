@@ -133,12 +133,9 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
     })
     if(!response.ok){
       throw new Error("Dicka shkoi gabim. Ju lutem provoni perseri!")
-    }
-
-    
+    }    
     
     const data: ComplantPerIdInterface = await response.json();
-    console.log(data);
     
     const getCategoryLabel = (category: string) => {
       // Convert enum value to readable label

@@ -10,6 +10,7 @@ export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(with
     query: {
         $allModels: {
             async $allOperations({model, operation, args, query}) {
+                console.log("po hin");
                 
                 const result = await query(args) as {id?: string, complaintId?: string}
 
@@ -36,7 +37,7 @@ export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(with
                     case "ComplaintUpVotes":
                         action = operation === "create" ? "CREATE_COMPLAINTUPVOTES" : "DELETE_COMPLAINTUPVOTES"
                         entityType = "Complaint";
-                        entityId = operation === "create" ? result.complaintId : operation === "delete" ? args.where.complaintId?.toString() : null;
+                        entityId = operation === "create" ? result.complaintId : operation === "delete" ? args.where.userId_complaintId?.complaintId?.toString() : null;
                         break;
                     case "Contributions":
                         if(operation === "create"){
@@ -76,6 +77,7 @@ export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(with
                 if(!action) return result;
 
                 const {userId, ipAddress, userAgent} = getPrismaContext();
+                console.log(`userID: ${userId}, ipAddress:${ipAddress}`);                
 
                 try {
                     await prisma.activityLog.create({

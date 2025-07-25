@@ -128,7 +128,7 @@ const AdminUserLogs = () => {
         enableSorting: true,
         enableGlobalFilter: true,
         cell: info => (
-            <div>{new Date(info.getValue()).toLocaleDateString('sq-AL', {dateStyle: "full"})}</div>
+            <div>{new Date(info.getValue()).toLocaleString('sq-AL', {dateStyle: "full", timeStyle: "medium"})}</div>
         )
     })
 ];

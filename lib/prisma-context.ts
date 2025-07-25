@@ -9,6 +9,8 @@ export type PrismaRequestContext = {
 const prismaContext = new AsyncLocalStorage<PrismaRequestContext>()
 
 export function runWithPrismaContext<T>(ctx: PrismaRequestContext, fn: () => T){
+    console.log(ctx);
+    
     return prismaContext.run(ctx, fn)
 }
 
