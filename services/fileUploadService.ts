@@ -37,6 +37,7 @@ class FileUploadService {
         'image/png',
         'image/jpg',
         'image/webp',
+        'image/gif',
     ])
     
     private readonly validVideoTypes: Set<string> = new Set([
@@ -119,7 +120,7 @@ class FileUploadService {
       ): Promise<UploadResult> {
         // Validate entity type
 
-    const entityTypes: string[] = ['complaints/attachments', 'complaints/audiosAttached', 'complaints/videosAttached', 'companys/images', 'companys/logo', 'users', 'reports/attachments', 'reports/audiosAttached', 'reports/videosAttached']
+    const entityTypes: string[] = ['complaints/attachments', 'complaints/audiosAttached', 'complaints/videosAttached', 'companys/images', 'companys/logo', 'users', 'reports/attachments', 'reports/audiosAttached', 'reports/videosAttached', 'contactUs']
         if (!entityTypes.includes(entityType)) {
           throw new Error('Invalid entity type');
         }

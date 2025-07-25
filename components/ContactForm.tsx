@@ -20,7 +20,7 @@ const ContactForm = () => {
     const [attachmentPreviews, setAttachmentPreviews] = useState<string[]>([])
     const abortControllerRef = useRef<AbortController | null>(null)
 
-    const {control, handleSubmit, formState: {errors, isSubmitting, isSubmitted}, reset} = useForm<validationSchema>({
+    const {control, handleSubmit, formState: {errors, isSubmitting}, reset} = useForm<validationSchema>({
         resolver: zodResolver(contactFormSchema),
         defaultValues: useMemo(() => ({
             fullName: "",
@@ -89,7 +89,7 @@ const ContactForm = () => {
         }     
       } catch (error: any) {
         console.error(error);
-        toast.error(error.response.data.message)
+        toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni përsëri.")
       }
     }, [reset])
 
@@ -256,7 +256,7 @@ const ContactForm = () => {
                 )}
             </div>
             <div className="mx-auto w-[200px] max-[580px]:w-full">
-                <CTAButton primary type='submit' text={isSubmitted ? "Duke u derguar" : "Dërgo"} classNames="!w-full !flex-1 "/>
+                <CTAButton primary type='submit' text={isSubmitting ? "Duke u derguar..." : "Dërgo"} classNames="!w-full !flex-1 "/>
             </div>
         </form>
     </div>
