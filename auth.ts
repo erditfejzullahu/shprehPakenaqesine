@@ -1,8 +1,21 @@
-import NextAuth from 'next-auth';
+import NextAuth, { CredentialsSignin } from 'next-auth';
 import prisma from '@/lib/prisma';
 import {PrismaAdapter} from "@auth/prisma-adapter"
 import CredentialsProvider from 'next-auth/providers/credentials'
 import * as bcrypt from "bcrypt"
+import { cookies } from 'next/headers';
+import { signCookieValue } from './lib/emails/sendEmailVerification';
+
+class EmailVerifiedError extends CredentialsSignin {
+ constructor(messageCode: string) {
+    super();
+    this.code = messageCode;
+ }
+}
+
+class UsernamePasswordError extends CredentialsSignin {
+    code = "USERNAME_PASSWORD_WRONG"
+}
 
 export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -32,6 +45,7 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
                 password: true,
                 role: true,
                 createdAt: true,
+                email_verified: true,
                 gender: true,
                 _count: {
                     select: {
@@ -46,13 +60,28 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
         });
 
         if (!user || !user.password) {
-            return null;
+            throw new UsernamePasswordError();
+        }
+
+        if(!user.email_verified){
+            (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
+                error: true,
+                email: user.email
+            })), {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                maxAge: 60 * 3,
+                path: '/',
+                sameSite: "strict"
+            })
+            const message = `EMAIL_NOT_VERIFIED`
+            throw new EmailVerifiedError(message)
         }
 
         const isValid = await bcrypt.compare(password, user.password);
 
         if (!isValid) {
-            return null;
+            throw new UsernamePasswordError();
         }
 
         const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"

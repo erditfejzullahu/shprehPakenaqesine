@@ -152,7 +152,6 @@ const CompanyCard = ({
           <CTAButton text="Shto imazhe" classNames="p-2! w-full!" onClick={() => toast.warning("Se shpejti...")}/>
         </div>
       )}
-      {}
     </Link>
   );
 }

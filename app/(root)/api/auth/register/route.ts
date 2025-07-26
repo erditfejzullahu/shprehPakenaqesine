@@ -7,7 +7,7 @@ import DOMPurify from 'isomorphic-dompurify' // Client+server side sanitization
 import validator from "validator"
 import { rateLimit } from "@/lib/redis";
 import { addHours, addMinutes } from "date-fns";
-import { sendUserVerificationEmail } from "@/lib/emails/sendEmailVerification";
+import { sendUserVerificationEmail, signCookieValue } from "@/lib/emails/sendEmailVerification";
 import { cookies } from "next/headers";
 
 type CreateUserDto = z.infer<typeof registerSchema>;
@@ -119,6 +119,17 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 
         const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verifiko-emailin/${verificationToken}`;
         await sendUserVerificationEmail(newUser.id, newUser.email, verificationUrl);
+
+        (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
+            error: true,
+            email: newUser.email
+        })), {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 60 * 3,
+            path: '/',
+            sameSite: "strict"
+        })
         
         return NextResponse.json({
             success: true,

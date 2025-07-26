@@ -15,6 +15,7 @@ import {toast} from "sonner"
 import { useRouter, useSearchParams } from 'next/navigation'
 import api from '@/lib/api'
 import { useSession } from 'next-auth/react'
+import ResendVerificationLink from './ResendVerificationLink'
 
 const passwordResetSchema = z.object({
   email: z.email("Duhet një email i vlefshëm.")
@@ -24,8 +25,9 @@ const LoginForm = () => {
   const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
   const [errorMessage, setErrorMessage] = useState("")
-  const [isPasswordForgotten, setIsPasswordForgotten] = useState(false)
   const [isRegister, setIsRegister] = useState(false)
+  const [resendVerificationFromLogin, setResendVerificationFromLogin] = useState(false)
+  const [resendVerificationFromRegister, setResendVerificationFromRegister] = useState(false)
 
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('from')
@@ -50,6 +52,7 @@ const LoginForm = () => {
     handleSubmit: handleRegisterSubmit, 
     formState: { errors: registerErrors, isSubmitting: isRegisterSubmitting }, watch,
     control,
+    reset: registerReset,
     setValue
   } = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -83,35 +86,41 @@ const LoginForm = () => {
         username: data.username,
         password: data.password  
     })
-        
-    if(!res?.error){
-        toast.success("Sapo jeni kycur me sukes!")
-        setErrorMessage("")
-        router.replace(redirectTo || "/profili")
-        router.refresh()
-    }else{
-        toast.error("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
-        setErrorMessage("Emri i perdoruesit apo Fjalekalimi eshte i gabuar")
-    }
+        console.log(res);
+        if(res.error){
+          if(res.code === 'EMAIL_NOT_VERIFIED'){
+            setErrorMessage("Ju lutem verifikoni emailin tuaj.")
+            setResendVerificationFromLogin(true)
+          }else if(res.code === "USERNAME_PASSWORD_WRONG"){
+            setResendVerificationFromLogin(false)
+            toast.error("Emri i perdoruesit apo Fjalëkalimi është i gabuar")
+            setErrorMessage("Emri i perdoruesit apo Fjalekalimi është i gabuar")
+          }else{
+            toast.error("Dicka shkoi gabim! Ju lutem provoni përsëri")
+          }
+        }else{
+          toast.success("Sapo jeni kycur me sukes!")
+          setErrorMessage("")
+          setResendVerificationFromLogin(false)
+          router.replace(redirectTo || "/profili")
+          router.refresh()
+        }
   }, [router])
 
   const handleRegister = useCallback(async (data: z.infer<typeof registerSchema>) => {
     try {
       const response = await api.post('/api/auth/register', data)
       if(response.data.success){
-          toast.success("Sapo u regjistruat me sukses, tani do te ridrejtoheni tek profili juaj!")
-          setErrorMessage("Ju lutem, verifikoni llogarinë tuaj brenda 24 orëve.")
-          // const res = await signIn("credentials", {
-          //   redirect: false,
-          //   username: data.username,
-          //   password: data.password,
-          // })
+          toast.success("Sapo u regjistruat me sukses!")
+          setErrorMessage("Një email do ju vijë për verifikim te llogarisë. Ju lutem, verifikoni llogarinë tuaj brenda 24 orëve.")
+          registerReset()
+          setResendVerificationFromRegister(true)
       }
-    } catch (error) {
-      setErrorMessage("Dicka shkoi gabim! Ju lutem provoni perseri")
-      toast.error("Dicka shkoi gabim! Ju lutem provoni perseri")
+    } catch (error: any) {
+      setErrorMessage(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni përsëri")
+      toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni përsëri")
     }
-  }, [router])
+  }, [router, registerReset])
 
   const handlePasswordReset = useCallback(async (data: z.infer<typeof passwordResetSchema>) => {
     try {
@@ -168,17 +177,22 @@ const LoginForm = () => {
               primary 
               classNames='flex-1 w-full' 
               type="submit"
+              isLoading={isLoginSubmitting}
               text={`${isLoginSubmitting ? "Duke u kycur..." : "Kycu"}`}
             />
             {errorMessage && <div>
                 <p className="text-red-500 text-center text-xs mt-3">{errorMessage}</p>
             </div>}
+                {resendVerificationFromLogin && <div className='mt-2 text-center'>
+                  <span className='text-gray-600 text-sm'>Nuk ju ka ardhur linku? </span>
+                  <button type='button' onClick={() => router.replace(`/api/emailVerification/resend`)} className='text-indigo-600 cursor-pointer text-sm text-left'>Ridërgo linkun në emailin tuaj!</button>
+                </div>}
                 <div className='flex flex-row items-center justify-between gap-2 max-[526px]:flex-col max-[528px]:gap-0'>
                   <div>
                     <p className="text-sm mt-3 text-gray-600 text-left">
                     Nuk keni llogari? 
                     <span 
-                        onClick={() => {setIsLogin(false); setIsRegister(true); setIsPasswordForgotten(false)}} 
+                        onClick={() => {setIsLogin(false); setIsRegister(true)}} 
                         className="text-indigo-600 cursor-pointer transition-all ease-in-out hover:font-bold ml-1"
                     >
                         Krijoni Tani!
@@ -188,7 +202,7 @@ const LoginForm = () => {
                   <div>
                     <p className="text-sm mt-3 text-gray-600 text-right">Keni harruar fjalëkalimin?
                       <span 
-                        onClick={() => { setIsPasswordForgotten(true); setIsLogin(false); setIsRegister(false)}} 
+                        onClick={() => { setIsLogin(false); setIsRegister(false)}} 
                         className="text-indigo-600 cursor-pointer transition-all ease-in-out hover:font-bold ml-1"
                       >
                         Rivendosni tani!
@@ -314,12 +328,14 @@ const LoginForm = () => {
               primary 
               classNames='flex-1 w-full' 
               type="submit"
+              isLoading={isRegisterSubmitting}
               text={`${isRegisterSubmitting ? "Duke krijuar llogarinë..." : "Krijo llogarinë"}`}
             />
             <div>
                 {errorMessage && <div>
                     <p className="text-red-500 text-left text-xs mt-3">{errorMessage}</p>
                 </div>}
+                {resendVerificationFromRegister && <ResendVerificationLink />}
                 <div>
                     <p className="text-sm mt-3 text-right text-gray-600">
                     Keni llogari? 
@@ -354,13 +370,14 @@ const LoginForm = () => {
               primary 
               classNames='flex-1 w-full' 
               type="submit"
-              text={`${isLoginSubmitting ? "Duke bërë kërkesën..." : "Bëni kërkesë"}`}
+              isLoading={passwordResetSubmitting}
+              text={`${passwordResetSubmitting ? "Duke bërë kërkesën..." : "Bëni kërkesë"}`}
             />
             <div>
               <p className="text-sm mt-3 text-gray-600 text-left">
               Dëshironi të indentifikoheni?
               <span 
-                  onClick={() => {setIsLogin(true); setIsRegister(false); setIsPasswordForgotten(false)}} 
+                  onClick={() => {setIsLogin(true); setIsRegister(false)}} 
                   className="text-indigo-600 cursor-pointer transition-all ease-in-out hover:font-bold ml-1"
               >
                   Kycuni tani!
