@@ -18,7 +18,18 @@ export async function generateMetadata(): Promise<Metadata>{
             robots: {
                 index: false,
                 follow: true
-            }
+            },
+            openGraph: {
+                title: 'Profili - ShprehPakenaqësinë',
+                description: 'Kyçuni për të parë profilin tuaj',
+                url: 'https://shprehpakenaqesine.com/profili', // update accordingly
+                type: 'website',
+            },
+                twitter: {
+                card: 'summary',
+                title: 'Profili - ShprehPakenaqësinë',
+                description: 'Kyçuni për të parë profilin tuaj',
+            },
         };
     }else{
         return {

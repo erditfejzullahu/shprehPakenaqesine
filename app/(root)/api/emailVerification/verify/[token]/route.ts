@@ -9,23 +9,30 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
         
         const user = await prisma.users.findFirst({where: {emailVerificationToken: token}})
         if(!user) {
-            (await cookies()).set('email-verification', signCookieValue('error'), {
+            (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
+                error: true,
+            })), {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                maxAge: 60 * 2,
-                path: '/verifiko-emailin/verifikimi-gabim'
+                maxAge: 60 * 3,
+                path: '/',
+                sameSite: "strict"
             })
-            return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=Token%20verifikimi%20invalid`, req.url));
+            return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=token_invalid`, req.url));
         }
 
         if(user.emailVerificationTokenExpires && user.emailVerificationTokenExpires < new Date()){
-            (await cookies()).set('email-verification', signCookieValue('error'), {
+            (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
+                error: true,
+                email: user.email
+            })), {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                maxAge: 60 * 2,
-                path: '/verifiko-emailin/verifikimi-gabim'
+                maxAge: 60 * 3,
+                path: '/',
+                sameSite: "strict"
             })
-            return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=Tokeni%20ka%20skaduar&email=${user.email}`, req.url));
+            return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=token_expired`, req.url));
         }
 
         await prisma.users.update({
@@ -37,22 +44,28 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
             }
         });
 
-        (await cookies()).set('email-verification', signCookieValue('success'), {
+        (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
+            error: false,
+        })), {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            maxAge: 60 * 2, //2 min
-            path: '/verifiko-emailin/verifikimi-sukses'
+            maxAge: 60 * 3, //3 min
+            path: '/',
+            sameSite: "strict"
         })
 
         return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-sukses', req.url))
     } catch (error) {
         console.error(error);
-        (await cookies()).set('email-verification', signCookieValue('error'), {
+        (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
+            error: true,
+        })), {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            maxAge: 60 * 2,
-            path: '/verifiko-emailin/verifikimi-gabim'
+            maxAge: 60 * 3,
+            path: '/',
+            sameSite: "strict"
         })
-        return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=Error%20gjate%20verifikimit`, req.url));
+        return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=internal_error`, req.url));
     }
 }

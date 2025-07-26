@@ -29,16 +29,18 @@ export const sendUserVerificationEmail = async (userId: string, email: string, v
 }
 
 const secret = process.env.COOKIE_SECRET!;
+const SIGNATURE_DELIMITER = '|SIG|';
 
 export const signCookieValue = (value: string) => {
     const hmac = crypto.createHmac('sha256', secret)
     hmac.update(value);
     const signature = hmac.digest("hex")
-    return `${value}.${signature}`;
+    return `${value}_${signature}`;
 }
 
 export const verifyCookieValue = (signedValue: string): string | null => {
-    const [value, signature] = signedValue.split('.')
+    const [value, signature] = signedValue.split('_')
+    
     if(!value || !signature) return null;
 
     const expectedSig = crypto.createHmac('sha256', secret).update(value).digest("hex");
