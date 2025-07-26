@@ -1,4 +1,5 @@
 import { auth } from '@/auth'
+import { verifyCookieValue } from '@/lib/emails/sendEmailVerification'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -7,10 +8,9 @@ import React from 'react'
 const page = async () => {
     const session = await auth();
     if(session) redirect('/');
-    const cookieStore = await cookies()
-    if(cookieStore.get('email-verification')?.value !== 'resend'){
-        redirect('/')
-    }
+    const signedCookie = (await cookies()).get('email-verification')?.value
+    const value = signedCookie ? verifyCookieValue(signedCookie) : null;
+    if(value !== 'resend') redirect('/')
   return (
     <div className='py-10'>
         <div className="max-w-md mx-auto text-center p-6 bg-white rounded-lg shadow-lg">

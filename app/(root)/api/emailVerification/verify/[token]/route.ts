@@ -1,3 +1,4 @@
+import { signCookieValue } from "@/lib/emails/sendEmailVerification";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,7 +9,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
         
         const user = await prisma.users.findFirst({where: {emailVerificationToken: token}})
         if(!user) {
-            (await cookies()).set('email-verification', 'error', {
+            (await cookies()).set('email-verification', signCookieValue('error'), {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 60 * 2,
@@ -18,7 +19,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
         }
 
         if(user.emailVerificationTokenExpires && user.emailVerificationTokenExpires < new Date()){
-            (await cookies()).set('email-verification', 'error', {
+            (await cookies()).set('email-verification', signCookieValue('error'), {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 60 * 2,
@@ -36,7 +37,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
             }
         });
 
-        (await cookies()).set('email-verification', 'success', {
+        (await cookies()).set('email-verification', signCookieValue('success'), {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 2, //2 min
@@ -46,7 +47,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
         return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-sukses', req.url))
     } catch (error) {
         console.error(error);
-        (await cookies()).set('email-verification', 'error', {
+        (await cookies()).set('email-verification', signCookieValue('error'), {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 2,

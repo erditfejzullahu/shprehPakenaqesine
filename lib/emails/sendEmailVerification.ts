@@ -4,6 +4,7 @@ import { transporter } from "./transporter";
 import prisma from "../prisma";
 import { verifyEmailTemplate } from "./emailTemplates.ts/verifyEmailTemplate";
 import { cookies } from "next/headers";
+import crypto from "crypto"
 
 export const sendUserVerificationEmail = async (userId: string, email: string, verificationUrl: string) => {
     const mailOptions: SendMailOptions = {
@@ -27,3 +28,19 @@ export const sendUserVerificationEmail = async (userId: string, email: string, v
     })()
 }
 
+const secret = process.env.COOKIE_SECRET!;
+
+export const signCookieValue = (value: string) => {
+    const hmac = crypto.createHmac('sha256', secret)
+    hmac.update(value);
+    const signature = hmac.digest("hex")
+    return `${value}.${signature}`;
+}
+
+export const verifyCookieValue = (signedValue: string): string | null => {
+    const [value, signature] = signedValue.split('.')
+    if(!value || !signature) return null;
+
+    const expectedSig = crypto.createHmac('sha256', secret).update(value).digest("hex");
+    return expectedSig === signature ? value : null
+}

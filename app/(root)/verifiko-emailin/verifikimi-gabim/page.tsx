@@ -1,4 +1,5 @@
 import { auth } from '@/auth';
+import { verifyCookieValue } from '@/lib/emails/sendEmailVerification';
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -11,7 +12,9 @@ export default async function VerificationErrorPage({
     const session = await auth()
     if(session) redirect('/')
     const {error, email} = await searchParams;
-    if(!((await cookies()).get('email-verification')?.value === "error")){
+    const signedCookie = (await cookies()).get('email-verification')?.value
+    const value = signedCookie ? verifyCookieValue(signedCookie) : null;
+    if(value !== "error"){
         redirect('/')
     }
 

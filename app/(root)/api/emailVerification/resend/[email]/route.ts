@@ -1,4 +1,4 @@
-import { sendUserVerificationEmail } from "@/lib/emails/sendEmailVerification";
+import { sendUserVerificationEmail, signCookieValue } from "@/lib/emails/sendEmailVerification";
 import prisma from "@/lib/prisma";
 import { addHours } from "date-fns";
 import { cookies } from "next/headers";
@@ -27,7 +27,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{email: s
         const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verifiko-emailin/${verificationToken}`
         await sendUserVerificationEmail(user.id, user.email, verificationUrl);
 
-        (await cookies()).set('email-verification', 'resend', {
+        (await cookies()).set('email-verification', signCookieValue('resend'), {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 60 * 2,
