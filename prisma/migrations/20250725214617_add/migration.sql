@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "ActivityAction" ADD VALUE 'SEND_EMAIL_FORGOT_PASSWORD';

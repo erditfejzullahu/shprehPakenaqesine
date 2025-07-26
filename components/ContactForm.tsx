@@ -13,10 +13,12 @@ import CTAButton from './CTAButton'
 import Image from 'next/image'
 import api from '@/lib/api'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 type validationSchema = z.infer<typeof contactFormSchema>
 
 const ContactForm = () => {
+  const router = useRouter();
     const [attachmentPreviews, setAttachmentPreviews] = useState<string[]>([])
     const abortControllerRef = useRef<AbortController | null>(null)
 
@@ -86,6 +88,8 @@ const ContactForm = () => {
         const response = await api.post('/api/contactUs', data)
         if(response.data.success){
           toast.success('Kërkesa e kontaktimit shkoi me sukses! Do të ndëgjoni shumë shpejt nga ne.')
+          reset();
+          router.replace('/')
         }     
       } catch (error: any) {
         console.error(error);

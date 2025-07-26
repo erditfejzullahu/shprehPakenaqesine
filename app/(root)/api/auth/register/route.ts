@@ -1,11 +1,14 @@
 import prisma from "@/lib/prisma";
 import { registerSchema } from "@/lib/schemas/authSchema";
 import { NextRequest, NextResponse } from "next/server";
-import {z} from "zod"
+import { z} from "zod"
 import * as bcrypt from "bcrypt"
 import DOMPurify from 'isomorphic-dompurify' // Client+server side sanitization
 import validator from "validator"
 import { rateLimit } from "@/lib/redis";
+import { addHours, addMinutes } from "date-fns";
+import { sendUserVerificationEmail } from "@/lib/emails/sendEmailVerification";
+import { cookies } from "next/headers";
 
 type CreateUserDto = z.infer<typeof registerSchema>;
 
@@ -68,6 +71,9 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
             }, {status: 409})
         }
 
+        const verificationToken = crypto.randomUUID().toString()
+        const verificationTokenExpires = addMinutes(new Date(), 1) // 1 dit
+
         const hashedPassword = await bcrypt.hash(validatedData.password, 10)
         const newUser = await prisma.users.create({
             data: {
@@ -78,6 +84,8 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
                 email: validatedData.email,
                 gender: validatedData.gender,
                 username: validatedData.username,
+                emailVerificationToken: verificationToken,
+                emailVerificationTokenExpires: verificationTokenExpires,
                 createdAt: new Date()
             }
         })
@@ -109,6 +117,9 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
           }
         })
 
+        const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verifiko-emailin/${verificationToken}`;
+        await sendUserVerificationEmail(newUser.id, newUser.email, verificationUrl);
+        
         return NextResponse.json({
             success: true,
             message: "Perdoruesi u regjistrua me sukses",

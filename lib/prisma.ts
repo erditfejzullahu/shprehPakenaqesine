@@ -10,7 +10,6 @@ export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(with
     query: {
         $allModels: {
             async $allOperations({model, operation, args, query}) {
-                console.log("po hin");
                 
                 const result = await query(args) as {id?: string, complaintId?: string}
 
@@ -72,8 +71,8 @@ export const prisma = globalForPrisma.prisma || new PrismaClient().$extends(with
                         entityId = operation === "create" ? result.id : operation === "delete" ? args.where.id : null
                         break;
                     case "ContactedUs":
-                        action = operation === "create" && "CREATE_CONTACTUS" || null
-                        entityId = operation === "create" && result.id?.toString() || null
+                        action = operation === "create" ? "CREATE_CONTACTUS" : null
+                        entityId = operation === "create" ? result.id?.toString() : null
                     default:
                         return result;
                 }

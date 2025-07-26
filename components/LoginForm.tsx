@@ -100,18 +100,12 @@ const LoginForm = () => {
       const response = await api.post('/api/auth/register', data)
       if(response.data.success){
           toast.success("Sapo u regjistruat me sukses, tani do te ridrejtoheni tek profili juaj!")
-          const res = await signIn("credentials", {
-            redirect: false,
-            username: data.username,
-            password: data.password,
-          })
-          if(res?.ok){
-            setErrorMessage("")
-            router.replace('/profili');
-          }else{
-            toast.error("Dicka shkoi gabim ne kycjen tuaj. Provoni manualisht ose na kontaktoni!")
-            setErrorMessage("Dicka shkoi gabim ne kycjen tuaj. Provoni manualisht ose na kontaktoni!")
-          }
+          setErrorMessage("Ju lutem, verifikoni llogarinë tuaj brenda 24 orëve.")
+          // const res = await signIn("credentials", {
+          //   redirect: false,
+          //   username: data.username,
+          //   password: data.password,
+          // })
       }
     } catch (error) {
       setErrorMessage("Dicka shkoi gabim! Ju lutem provoni perseri")

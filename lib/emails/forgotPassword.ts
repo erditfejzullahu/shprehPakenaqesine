@@ -1,29 +1,29 @@
-import * as nodemailer from "nodemailer"
+import { SendMailOptions } from "nodemailer";
 import { forgotPasswordTemplate } from "./emailTemplates.ts/forgotPasswordTemplate"
+import { transporter } from "./transporter";
+import prisma from "../prisma";
 
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_SERVER,
-    port: Number(process.env.SMTP_PORT),
-    secure: false,
-    auth: {
-        user: process.env.SMTP_LOGIN,
-        pass: process.env.SMTP_PASSWORD
-    }
-})
 
-export const sendPasswordResetEmail = async (email: string, resetUrl: string) => {
+export const sendPasswordResetEmail = async (userId: string, email: string, resetUrl: string) => {
     
-    const mailOptions: nodemailer.SendMailOptions = {
+    const mailOptions: SendMailOptions = {
         from: process.env.EMAIL_FROM,
         to: email,
-        subject: "Kërkesë për rivendosje fjalëkalimi",
+        subject: "Kërkesë për rivendosje fjalëkalimi | ShfaqPakënaqësinë",
         html: forgotPasswordTemplate(resetUrl)
     };
 
     (async () => {
     const info = await transporter.sendMail(mailOptions);
-
-    console.log("Message sent:", info.messageId);
+    await prisma.activityLog.create({
+        data: {
+            userId: userId,
+            entityId: userId,
+            entityType: "Other",
+            action: "SEND_EMAIL_FORGOT_PASSWORD",
+        }
+    })
+    console.log("Email for password forgot sent:", info.messageId);
     })();
     // await transporter.sendMail(mailOptions)
 }

@@ -33,7 +33,7 @@ export const POST = async (req: NextRequest) => {
         })
 
         const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/rivendos-fjalekalimin?token=${token}`;
-        await sendPasswordResetEmail(email, resetUrl)
+        await sendPasswordResetEmail(user.id, email, resetUrl)
 
         return NextResponse.json({success: true, message: "Nëse ky email ekziston, është dërguar një lidhje për rivendosjeje fjalëkalimi."}, {status: 200})
     } catch (error) {

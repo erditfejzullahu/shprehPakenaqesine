@@ -81,7 +81,7 @@ export const GET = async (req: NextRequest) => {
         if(!userDetails){
             return NextResponse.json({success: false, message: "Nuk u gjet ndonje detaj!"}, {status: 404})
         }
-
+        
         
 
         const details = {

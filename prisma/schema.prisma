@@ -75,10 +75,12 @@ model Users {
   acceptedUser     Boolean            @default(false)
   email            String             @unique
   email_verified   Boolean            @default(false)
+  emailVerificationToken String?
+  emailVerificationTokenExpires DateTime?
   gender           Gender
   role UserRole @default(USER)
   username         String             @unique
-  fullName         String             @default("Anonimi")
+  fullName         String             
   anonimity        Boolean            @default(false)
   reputation       Int                @default(0)
   passwordResetToken String? @unique
@@ -89,6 +91,7 @@ model Users {
   userLogs ActivityLog[]
 
   @@index([username])
+  @@index([email])
 }
 
 model Contributions {
@@ -270,6 +273,9 @@ enum ActivityAction {
   CREATE_REPORTS
   UPDATE_REPORTS
   DELETE_REPORTS
+
+  SEND_EMAIL_VERIFICATION
+  SEND_EMAIL_FORGOT_PASSWORD
 
   CREATE_SUBSCRIBERS
   DELETE_SUBSCRIBERS
