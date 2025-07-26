@@ -11,10 +11,13 @@ import { CompaniesWithHasMore, CompanyInterface } from '@/types/types'
 
 
 const CompanysQuery = () => {
+  
+  const width = typeof window === "undefined" ? null : window.innerWidth;
+  
   const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch, error} = useInfiniteQuery({
     queryKey: ['companies'],
     queryFn: async ({ pageParam }) => {
-      const res = await api.get<CompaniesWithHasMore>(`/api/companies?page=${pageParam}`);
+      const res = await api.get<CompaniesWithHasMore>(`/api/companies?page=${pageParam}&width=${width}`);
       return res.data;
     },
     initialPageParam: 1,

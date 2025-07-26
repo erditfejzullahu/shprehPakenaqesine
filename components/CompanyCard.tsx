@@ -147,7 +147,7 @@ const CompanyCard = ({
           </div>
         </div>
       ) : (
-        <div className="mx-auto flex flex-col justify-between gap-2 w-full">
+        <div className="mx-auto flex flex-col justify-between gap-2 w-full mt-auto">
           <span className="flex flex-row items-center justify-center flex-wrap gap-1 text-gray-600 text-center text-sm">Nuk ka galeri aktuale <CiImageOff className="text-indigo-600" size={18}/></span>
           <CTAButton text="Shto imazhe" classNames="p-2! w-full!" onClick={() => toast.warning("Se shpejti...")}/>
         </div>

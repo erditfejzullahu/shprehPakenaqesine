@@ -31,12 +31,15 @@ export async function GET(req: NextRequest, res: NextResponse) {
         const pageStr = req.nextUrl.searchParams.get('page')
         const page = pageStr ? parseInt(pageStr) : 1;
         const limitStr = req.nextUrl.searchParams.get('limit')
+        const limitQuery = limitStr ? parseInt(limitStr) : 6;
 
         const sortByStr = req.nextUrl.searchParams.get("sortBy") as SortByType | null
         const searchParams = req.nextUrl.searchParams.get("search")
         
+        const widthStr = req.nextUrl.searchParams.get('width');
+        const width = widthStr ? parseInt(widthStr) : null;
 
-        const limit = limitStr ? parseInt(limitStr) : 6;
+        const limit = (width && width < 768) ? 3 : limitQuery;
 
         const skip = (page-1) * limit;
 
