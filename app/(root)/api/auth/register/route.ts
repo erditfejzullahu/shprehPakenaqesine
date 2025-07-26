@@ -30,7 +30,6 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
     try {
         const body = await req.json() as CreateUserDto
         const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
-                
         const rateLimitKey = `rate_limit:registerUser:${ipAddress}`
         const ratelimiter = await rateLimit(rateLimitKey, 5, 60)
         if(!ratelimiter.allowed){
@@ -118,7 +117,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
         })
 
         const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verifiko-emailin/${verificationToken}`;
-        await sendUserVerificationEmail(newUser.id, newUser.email, verificationUrl);
+        await sendUserVerificationEmail(newUser.id, newUser.email, verificationUrl, ipAddress, userAgent);
 
         (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
             error: true,

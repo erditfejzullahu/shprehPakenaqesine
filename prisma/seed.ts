@@ -10,15 +10,16 @@ async function main(){
     await prisma.companies.deleteMany();
     await prisma.complaint.deleteMany();
 
-    const hashedPassword = await bcrypt.hash("erditbaba1!.", 10);
+    const hashedPassword = await bcrypt.hash("Laptophp1!.", 10);
 
     const user = await prisma.users.create({
         data: {
-            username: "Anonimi",
+            username: "erditbaba",
             password: hashedPassword,
             createdAt: new Date().toISOString(),
             gender: "MASHKULL",
             acceptedUser: true,
+            fullName: "Erdit Fejzullahu",
             email: "erditfejzullahu45@gmail.com",
             email_verified: true,
             reputation: 0,

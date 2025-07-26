@@ -6,7 +6,7 @@ import { verifyEmailTemplate } from "./emailTemplates.ts/verifyEmailTemplate";
 import { cookies } from "next/headers";
 import crypto from "crypto"
 
-export const sendUserVerificationEmail = async (userId: string, email: string, verificationUrl: string) => {
+export const sendUserVerificationEmail = async (userId: string, email: string, verificationUrl: string, ipAddress?: string | null, userAgent?: string | null) => {
     const mailOptions: SendMailOptions = {
         from: process.env.EMAIL_FROM,
         to: email,
@@ -21,7 +21,9 @@ export const sendUserVerificationEmail = async (userId: string, email: string, v
                 userId: userId,
                 entityId: userId,
                 entityType: "Other",
-                action: "SEND_EMAIL_VERIFICATION"
+                action: "SEND_EMAIL_VERIFICATION",
+                ipAddress,
+                userAgent
             }
         })
         console.log("Email for email verification sent: ", info.messageId)

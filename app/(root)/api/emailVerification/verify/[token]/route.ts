@@ -6,7 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 export const GET = async (req: NextRequest, {params}: {params: Promise<{token: string}>}) => {
     try {
         const {token} = await params;
-        
+        const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
+        const userAgent = req.headers.get('user-agent') || null
         const user = await prisma.users.findFirst({where: {emailVerificationToken: token}})
         if(!user) {
             (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
@@ -52,6 +53,17 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
             maxAge: 60 * 3, //3 min
             path: '/',
             sameSite: "strict"
+        })
+
+        await prisma.activityLog.create({
+            data: {
+                userId: user.id,
+                entityId: user.id,
+                entityType: "Other",
+                action: "ACCOUNT_VERIFIED",
+                ipAddress,
+                userAgent
+            }
         })
 
         return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-sukses', req.url))

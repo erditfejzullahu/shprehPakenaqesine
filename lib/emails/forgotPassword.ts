@@ -4,7 +4,7 @@ import { transporter } from "./transporter";
 import prisma from "../prisma";
 
 
-export const sendPasswordResetEmail = async (userId: string, email: string, resetUrl: string) => {
+export const sendPasswordResetEmail = async (userId: string, email: string, resetUrl: string, ipAddress?: string | null, userAgent?: string | null) => {
     
     const mailOptions: SendMailOptions = {
         from: process.env.EMAIL_FROM,

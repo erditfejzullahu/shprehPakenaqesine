@@ -16,6 +16,7 @@ export const GET = async (req: NextRequest) => {
     }
 
     const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
+    const userAgent = req.headers.get('user-agent') || null
     // const rateLimitKey = `rate_limit:resend:${email}:${ipAddress}`;
 
     // const ratelimiter = await rateLimit(rateLimitKey, 10, 60); //24 * 60 * 60 * 1000 ni dit
@@ -48,7 +49,7 @@ export const GET = async (req: NextRequest) => {
         })
 
         const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verifiko-emailin/${verificationToken}`
-        await sendUserVerificationEmail(user.id, user.email, verificationUrl);
+        await sendUserVerificationEmail(user.id, user.email, verificationUrl, ipAddress, userAgent);
 
         (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
             resend: true,
