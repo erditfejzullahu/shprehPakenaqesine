@@ -105,7 +105,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
                 data: {
                   fullName: validatedData.fullName,
                   password: hashedPassword,
-                  acceptedUser: false,
+                  acceptedUser: true,
                   email_verified: false,
                   email: validatedData.email,
                   gender: validatedData.gender,
