@@ -17,18 +17,21 @@ export const GET = async (req: NextRequest) => {
 
     const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
-    // const rateLimitKey = `rate_limit:resend:${email}:${ipAddress}`;
-
-    // const ratelimiter = await rateLimit(rateLimitKey, 10, 60); //24 * 60 * 60 * 1000 ni dit
-    // if(!ratelimiter.allowed){
-    //     (await cookies()).set('email-verification', signCookieValue('error'), {
-    //             httpOnly: true,
-    //             secure: process.env.NODE_ENV === "production",
-    //             maxAge: 60 * 2,
-    //             path: '/verifiko-emailin/verifikimi-gabim'
-    //         })
-    //     return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=shume_kerkesa`, req.url));
-    // }
+    
+    const rateLimitKey = `rate_limit:resend:${cookieParsed.email}:${ipAddress}`;
+    const ratelimiter = await rateLimit(rateLimitKey, 10, 24 * 60 * 60 * 1000); //24 * 60 * 60 * 1000 ni dit
+    if(!ratelimiter.allowed){
+        (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
+            error: true,
+        })), {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 60 * 3,
+            path: '/',
+            sameSite: "strict"
+        })
+        return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=too_many_requests`, req.url));
+    }
     
     try {
         const user = await prisma.users.findUnique({where: {email: cookieParsed.email}})
@@ -64,7 +67,6 @@ export const GET = async (req: NextRequest) => {
 
         return NextResponse.redirect(new URL(`/verifiko-emailin/ridergo-verifikimin/njoftim`, req.url))
     } catch (error) {
-        console.error(error);
         
         ((await cookies()).delete('email-verification'))
         return NextResponse.redirect(new URL('/', req.url))

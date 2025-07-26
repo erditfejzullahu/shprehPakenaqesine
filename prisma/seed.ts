@@ -21,7 +21,7 @@ async function main(){
             acceptedUser: true,
             fullName: "Erdit Fejzullahu",
             email: "erditfejzullahu45@gmail.com",
-            email_verified: true,
+            email_verified: false,
             reputation: 0,
             anonimity: false
         }

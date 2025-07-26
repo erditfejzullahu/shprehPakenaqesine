@@ -58,7 +58,10 @@ export default async function VerificationErrorPage({
       token_invalid: "Tokeni verifikues është invalid!",
       token_expired: "Tokeni verifikues ka skaduar!",
       internal_error: "Gabime teknike në verifikim!",
-      default: "Dicka shkoi gabim në verifikm!"
+      default: "Dicka shkoi gabim në verifikm!",
+      update_failed: "Dicka shkoi gabim në ripërditësimin e përdoruesit!",
+      activity_failed: "Dicka shkoi gabim në shtimin e regjistrave të përdoruesit!",
+      too_many_requests: "Keni bërë shumë kërkesa! Ju lutem provoni më vonë"
     }
 
     
