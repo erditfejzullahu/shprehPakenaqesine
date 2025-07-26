@@ -40,7 +40,7 @@ const page = async () => {
     
     const value = signedCookie ? verifyCookieValue(signedCookie) : null;
     const parsedValue = JSON.parse(value || "null")
-    if(parsedValue === null || !parsedValue?.resend) redirect('/');
+    if(parsedValue === null || !parsedValue?.resend || !parsedValue?.email) redirect('/');
 
   return (
     <div className='mb-10'>
@@ -55,7 +55,7 @@ const page = async () => {
                   className='size-10 absolute -top-7 -right-9 rotate-[30deg] max-[350px]:-right-7 max-[350px]:-top-9 max-[350px]:rotate-[20deg] max-[336px]:-right-5 max-[313px]:-right-3 max-[295px]:right-0 max-[295px]:rotate-0'
               />
           </h1>
-          <p className='text-gray-600 text-center max-[420px]:text-sm'>Ri-verifikimi i llogarisë tuaj është proceduar me sukses. Ju keni <span className='text-indigo-600'>24 orë</span> për verifikimin e llogarisë tuaj.</p>
+          <p className='text-gray-600 text-center max-[420px]:text-sm'>Ri-verifikimi i llogarisë tuaj është proceduar me sukses në email-in: <span className='text-indigo-600'>{parsedValue.email}</span>. Ju keni <span className='text-indigo-600'>24 orë</span> për verifikimin e llogarisë tuaj.</p>
           <div className="mt-6 max-w-md gap-2 mx-auto flex-1 flex flex-wrap">
             <div className='flex-1'>
               <Button asChild variant={"destructive"}>

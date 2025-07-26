@@ -51,11 +51,12 @@ export const GET = async (req: NextRequest) => {
         await sendUserVerificationEmail(user.id, user.email, verificationUrl);
 
         (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
-            resend: true
+            resend: true,
+            email: user.email
         })), {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                maxAge: 60 * 2,
+                maxAge: 60 * 10,
                 path: '/',
                 sameSite: "strict"
         })
