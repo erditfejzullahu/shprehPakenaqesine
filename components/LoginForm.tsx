@@ -87,16 +87,26 @@ const LoginForm = () => {
         password: data.password  
     })
         console.log(res);
+        setResendVerificationFromLogin(false)
         if(res.error){
           if(res.code === 'EMAIL_NOT_VERIFIED'){
-            setErrorMessage("Ju lutem verifikoni emailin tuaj.")
+            setErrorMessage("Ju lutem verifikoni emailin tuaj")
             setResendVerificationFromLogin(true)
           }else if(res.code === "USERNAME_PASSWORD_WRONG"){
-            setResendVerificationFromLogin(false)
             toast.error("Emri i perdoruesit apo Fjalëkalimi është i gabuar")
             setErrorMessage("Emri i perdoruesit apo Fjalekalimi është i gabuar")
+          }else if(res.code?.includes("5_REMAINING")){
+            toast.error(`Ju mund të provoni vetëm edhe ${res.code.split("#")[1]} herë`)
+            setErrorMessage(`Në rast se kaloni edhe ${res.code.split("#")[1]} përpjekje të pa suksesshme, llogaria juaj bllokohet`)
+          }else if(res.code === "ACCOUNT_BLOCKED"){
+            toast.error("Llogaria juaj është bllokuar")
+            setErrorMessage("Na kontaktoni për procedurat e mëtutjeshme")
+          }else if(res.code?.includes("TOO_MANY_REQUESTS")){
+            toast.error("Më ngadalë. Jeni duke provuar shumë herë")
+            setErrorMessage(`Ju mund të provoni përsëri pas ${res.code.split("#")[1]} sekondash`)
           }else{
             toast.error("Dicka shkoi gabim! Ju lutem provoni përsëri")
+            setErrorMessage("Na kontaktoni nëse problemi vazhdon!")
           }
         }else{
           toast.success("Sapo jeni kycur me sukes!")

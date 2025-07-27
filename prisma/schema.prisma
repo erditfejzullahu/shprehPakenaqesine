@@ -85,6 +85,10 @@ model Users {
   reputation       Int                @default(0)
   passwordResetToken String? @unique
   passwordResetExpires DateTime?
+
+  blocked Boolean @default(false)
+  attempts Int @default(0)
+
   complaints       Complaint[]
   complaintUpVotes ComplaintUpVotes[]
   contributions    Contributions[]

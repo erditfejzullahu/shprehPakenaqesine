@@ -12,7 +12,7 @@ export const POST = async (req: NextRequest) => {
     }
             
     const rateLimitKey = `rate_limit:changeAnonimity:${session.user.id}:${ipAddress}`
-    const ratelimiter = await rateLimit(rateLimitKey, 20, 60)
+    const ratelimiter = await rateLimit(rateLimitKey, 60, 60)
     if(!ratelimiter.allowed){
         return NextResponse.json({
             success: false,

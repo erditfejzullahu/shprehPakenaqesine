@@ -5,6 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import * as bcrypt from "bcrypt"
 import { cookies } from 'next/headers';
 import { signCookieValue } from './lib/emails/sendEmailVerification';
+import { rateLimit } from './lib/redis';
 
 class EmailVerifiedError extends CredentialsSignin {
  constructor(messageCode: string) {
@@ -15,6 +16,25 @@ class EmailVerifiedError extends CredentialsSignin {
 
 class UsernamePasswordError extends CredentialsSignin {
     code = "USERNAME_PASSWORD_WRONG"
+}
+
+class TooManyRequests extends CredentialsSignin {
+    constructor(messageCode: string) {
+        super();
+        this.code = messageCode
+    }
+}
+
+class AccountBlocked extends CredentialsSignin {
+    code = "ACCOUNT_BLOCKED"
+}
+
+class FiveRemainingTryes extends CredentialsSignin {
+    constructor(messageCode: string){
+        super();
+        this.code = messageCode
+    }
+    // code = "5_REMAINING"
 }
 
 export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
@@ -29,10 +49,16 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
         if (!credentials?.username || !credentials?.password) {
             return null;
         }
-        
+
         const { username, password } = credentials as {
             username: string;
             password: string
+        }
+
+        const rateLimitKey = `rate_limit:login:${username}`
+        const ratelimiter = await rateLimit(rateLimitKey, 15, 60)
+        if(!ratelimiter.allowed){
+            throw new TooManyRequests(`TOO_MANY_REQUESTS#${ratelimiter.reset}`)
         }
 
         const user = await prisma.users.findUnique({
@@ -44,6 +70,7 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
                 email: true,
                 password: true,
                 role: true,
+                attempts: true,
                 createdAt: true,
                 email_verified: true,
                 gender: true,
@@ -61,6 +88,16 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
 
         if (!user || !user.password) {
             throw new UsernamePasswordError();
+        }
+
+        if(user.attempts > 8){
+            await prisma.users.update({
+                where: {username},
+                data: {
+                    blocked: true
+                }
+            })
+            throw new AccountBlocked();
         }
 
         if(!user.email_verified){
@@ -81,8 +118,27 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
         const isValid = await bcrypt.compare(password, user.password);
 
         if (!isValid) {
+            await prisma.users.update({
+                where: {username},
+                data: {
+                    attempts: {
+                        increment: 1
+                    }
+                }
+            })
+            if(user.attempts > 3){
+                const attemptLogic = 9 - user.attempts
+                throw new FiveRemainingTryes(`5_REMAINING#${attemptLogic}`)
+            }
             throw new UsernamePasswordError();
         }
+
+        await prisma.users.update({
+            where: {username},
+            data: {
+                attempts: 0
+            }
+        })
 
         const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
         const userAgent = req.headers.get('user-agent') || null

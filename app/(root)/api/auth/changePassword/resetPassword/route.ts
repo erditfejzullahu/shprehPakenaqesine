@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import * as bcrypt from "bcrypt"
+import { rateLimit } from "@/lib/redis";
 
 export const POST = async (req: NextRequest) => {
     const {token, password} = await req.json();
@@ -8,6 +9,18 @@ export const POST = async (req: NextRequest) => {
     const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
     const userAgent = req.headers.get('user-agent') || null
     try {
+        const rateLimitKey = `rate_limit:resetPassword:${ipAddress}`
+        const rateLimiter = await rateLimit(rateLimitKey, 120, 24 * 60 * 60 * 1000)
+        if(!rateLimiter.allowed){
+            return NextResponse.json({
+            success: false,
+            message: `Provoni perseri me vone!`
+        }, {
+            status: 429,
+            headers: rateLimiter.responseHeaders
+        })
+        }
+        
         const user = await prisma.users.findUnique({
             where: {
                 passwordResetToken: token,
@@ -16,8 +29,9 @@ export const POST = async (req: NextRequest) => {
                 }
             }
         })
-
+        
         if(!user) return NextResponse.json({success: false, message: "Token i pavlefshëm ose i skaduar"}, {status: 400});
+        
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
