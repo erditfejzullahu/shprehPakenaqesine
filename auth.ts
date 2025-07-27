@@ -56,7 +56,7 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
         }
 
         const rateLimitKey = `rate_limit:login:${username}`
-        const ratelimiter = await rateLimit(rateLimitKey, 15, 60)
+        const ratelimiter = await rateLimit(rateLimitKey, 3, 30)
         if(!ratelimiter.allowed){
             throw new TooManyRequests(`TOO_MANY_REQUESTS#${ratelimiter.reset}`)
         }
