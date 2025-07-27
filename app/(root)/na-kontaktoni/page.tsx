@@ -1,6 +1,6 @@
 import ContactForm from '@/components/ContactForm'
+import Video from '@/components/Video';
 import { Metadata } from 'next';
-import Image from 'next/image';
 import React from 'react'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -73,12 +73,8 @@ const page = () => {
       <main className="flex-1">
         <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight w-fit mx-auto relative tracking-tight mb-2">Na <span className='text-indigo-600'>Kontaktoni</span>
-            <Image 
-              src={'/agenda.gif'}
-              width={40}
-              height={40}
-              alt='contact us'
-              quality={50}
+            <Video 
+              src='/agenda.mp4'
               className='size-10 absolute -top-8 -right-7 rotate-[30deg] max-[330px]:-top-9 max-[310px]:-right-5'
             />
           </h1>

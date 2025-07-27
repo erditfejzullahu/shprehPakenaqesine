@@ -26,7 +26,7 @@ const sanitizeName = (name: string): string => {
     );
   };
 
-export const POST = async (req: NextRequest, res: NextResponse) => {
+export const POST = async (req: NextRequest) => {
     try {
         const body = await req.json() as CreateUserDto
         const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"

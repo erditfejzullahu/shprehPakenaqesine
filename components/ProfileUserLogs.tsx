@@ -76,39 +76,47 @@ const ProfileUserLogs = ({session}: {session: Session}) => {
                 [ActivityAction.LOGIN]: "Hyrje në sistem",
                 [ActivityAction.LOGOUT]: "Dalje nga sistemi",
                 [ActivityAction.REGISTER]: "Regjistrim",
-                
+                [ActivityAction.FORGOT_PASSWORD]: "Kërkesë për rivendosje fjalëkalimi",
+
                 [ActivityAction.CREATE_COMPANIES]: "Krijim kompanie",
                 [ActivityAction.UPDATE_COMPANIES]: "Përditësim kompanie",
                 [ActivityAction.DELETE_COMPANIES]: "Fshirje kompanie",
-                
-                [ActivityAction.CREATE_COMPLAINT]: "Krijim ankesë",
-                [ActivityAction.UPDATE_COMPLAINT]: "Përditësim ankesë",
-                [ActivityAction.DELETE_COMPLAINT]: "Fshirje ankesë",
-                [ActivityAction.UPVOTE_COMPLAINT]: "Votim pozitiv për ankesë",
-                
+
+                [ActivityAction.CREATE_COMPLAINT]: "Krijim ankese",
+                [ActivityAction.UPDATE_COMPLAINT]: "Përditësim ankese",
+                [ActivityAction.DELETE_COMPLAINT]: "Fshirje ankese",
+                [ActivityAction.UPVOTE_COMPLAINT]: "Votim pozitiv për ankese",
+
                 [ActivityAction.CREATE_COMPLAINTUPVOTES]: "Krijim votash për ankesa",
                 [ActivityAction.DELETE_COMPLAINTUPVOTES]: "Fshirje votash për ankesa",
-                
-                [ActivityAction.CREATE_REPORTS]: "Krijim raporte",
-                [ActivityAction.UPDATE_REPORTS]: "Përditësim raporte",
-                [ActivityAction.DELETE_REPORTS]: "Fshirje raporte",
-                
-                [ActivityAction.CREATE_SUBSCRIBERS]: "Krijim pajtimtarësh",
-                [ActivityAction.DELETE_SUBSCRIBERS]: "Fshirje pajtimtarësh",
-                
-                [ActivityAction.CREATE_CONTRIBUTIONS]: "Krijim kontribucionesh",
-                [ActivityAction.UPDATE_CONTRIBUTIONS_ADMIN_ACCEPT]: "Pranim kontribucioni nga admin",
-                [ActivityAction.UPDATE_CONTRIBUTIONS_ADMIN_UPDATE]: "Përditësim kontribucioni nga admin",
-                
-                [ActivityAction.UPDATE_USER_DETAILS]: "Përditësim detaje përdoruesi",
-                [ActivityAction.UPDATE_USER_ADMIN_DETAILS]: "Përditësim detaje admini",
-                [ActivityAction.UPDATE_OTHER_USERS_DETAILS_BY_ADMIN]: "Përditësim detaje përdoruesish të tjerë nga admini",
-                
+
+                [ActivityAction.CREATE_REPORTS]: "Krijim raporti",
+                [ActivityAction.UPDATE_REPORTS]: "Përditësim raporti",
+                [ActivityAction.DELETE_REPORTS]: "Fshirje raporti",
+
+                [ActivityAction.SEND_EMAIL_VERIFICATION]: "Dërgim email verifikimi",
+                [ActivityAction.SEND_EMAIL_FORGOT_PASSWORD]: "Dërgim email për rivendosje fjalëkalimi",
+                [ActivityAction.ACCOUNT_VERIFIED]: "Llogaria u verifikua",
+
+                [ActivityAction.CREATE_SUBSCRIBERS]: "Krijim pajtimtari",
+                [ActivityAction.DELETE_SUBSCRIBERS]: "Fshirje pajtimtari",
+
+                [ActivityAction.CREATE_CONTACTUS]: "Dërgim mesazhi kontaktues",
+
+                [ActivityAction.CREATE_CONTRIBUTIONS]: "Krijim kontribucioni",
+                [ActivityAction.UPDATE_CONTRIBUTIONS_ADMIN_ACCEPT]: "Pranim kontribucioni nga admini",
+                [ActivityAction.UPDATE_CONTRIBUTIONS_ADMIN_UPDATE]: "Përditësim kontribucioni nga admini",
+
+                [ActivityAction.UPDATE_USER_DETAILS]: "Përditësim të dhënash të përdoruesit",
+                [ActivityAction.UPDATE_USER_ADMIN_DETAILS]: "Përditësim të dhënash admini",
+                [ActivityAction.UPDATE_OTHER_USERS_DETAILS_BY_ADMIN]: "Përditësim të dhënash për përdorues të tjerë nga admini",
+
                 [ActivityAction.CHANGE_PASSWORD]: "Ndryshim fjalëkalimi",
-                
-                [ActivityAction.DOWNLOAD_FILE]: "Shkarkim skedar",
-                [ActivityAction.COPIED_FILE_URL]: "Kopjim URL skedari"
+
+                [ActivityAction.DOWNLOAD_FILE]: "Shkarkim skedari",
+                [ActivityAction.COPIED_FILE_URL]: "Kopjim i URL-së së skedarit"
             };
+
             
             return (
                 <ReusableHoverCard

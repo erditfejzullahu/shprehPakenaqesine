@@ -4,9 +4,8 @@ import MyProfileData from '@/components/MyProfileData';
 import { auth } from '@/auth';
 import AnonimityToggle from '@/components/AnonimityToggle';
 import { Metadata } from 'next';
-import Image from 'next/image';
-import { toast } from 'sonner';
 import ShowToasterInCaseFromPasswordReset from '@/components/ShotToasterInCaseFromPasswordReset';
+import Video from '@/components/Video';
 
 
 export async function generateMetadata(): Promise<Metadata>{
@@ -54,12 +53,8 @@ const page = async ({searchParams}: {searchParams: Promise<{redirected?: string}
     <div className="min-h-screen bg-white">
         <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 leading-tight w-fit mx-auto relative tracking-tight">Profili <span className='text-indigo-600'>Juaj</span>
-                <Image
-                    src={'/social-page.gif'}
-                    width={40}
-                    height={40}
-                    alt='complaint'
-                    quality={50}
+                <Video 
+                    src='/social-page.mp4'
                     className='size-10 absolute -top-7 -right-9 rotate-[30deg]'
                 />
             </h1>

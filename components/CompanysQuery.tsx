@@ -9,7 +9,6 @@ import { FaChevronDown } from 'react-icons/fa'
 import { CompaniesWithHasMore, CompanyInterface } from '@/types/types'
 
 
-
 const CompanysQuery = () => {
   
   const width = typeof window === "undefined" ? null : window.innerWidth;

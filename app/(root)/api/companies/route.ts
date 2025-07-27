@@ -13,7 +13,7 @@ enum SortByType {
     FOUNDEDDESC = "founded-desc"
 }
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
     try {
         const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
         

@@ -1,9 +1,9 @@
 import { auth } from '@/auth'
 import { Button } from '@/components/ui/button'
+import Video from '@/components/Video'
 import { verifyCookieValue } from '@/lib/emails/sendEmailVerification'
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
-import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React from 'react'
@@ -46,12 +46,8 @@ const page = async () => {
     <div className='mb-10'>
       <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 leading-tight w-fit mx-auto relative tracking-tight">Emaili <span className='text-indigo-600'>u dërgua!</span>
-              <Image
-                  src={'/social-page.gif'}
-                  width={40}
-                  height={40}
-                  alt='complaint'
-                  quality={50}
+              <Video
+                  src='/social-page.mp4'
                   className='size-10 absolute -top-7 -right-9 rotate-[30deg] max-[350px]:-right-7 max-[350px]:-top-9 max-[350px]:rotate-[20deg] max-[336px]:-right-5 max-[313px]:-right-3 max-[295px]:right-0 max-[295px]:rotate-0'
               />
           </h1>

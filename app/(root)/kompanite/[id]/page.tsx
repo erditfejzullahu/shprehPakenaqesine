@@ -1,6 +1,7 @@
 import { Companies } from '@/app/generated/prisma';
 import CompanyPage from '@/components/CompanyPage';
 import api from '@/lib/api';
+import prisma from '@/lib/prisma';
 import { CompanyPerIdInterface } from '@/types/types';
 import { Metadata } from 'next';
 import Image from 'next/image';
@@ -9,12 +10,17 @@ import React from 'react'
 
 export const revalidate = 300;
 
-export async function getStaticParams() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/companies/ids`, {next: {revalidate: revalidate}, method: "GET"})
-  if(!res.ok){
-    throw new Error("Error fetching ids")
-  }
-  const ids: {id: string}[] = await res.json()
+export async function generateStaticParams() {
+  // const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/companies/ids`, {next: {revalidate: revalidate}, method: "GET"})
+  // if(!res.ok){
+  //   throw new Error("Error fetching ids")
+  // }
+  // const ids: {id: string}[] = await res.json()
+  const ids = await prisma.companies.findMany({
+    select: {
+      id: true
+    }
+  })
   return ids.map((company) => ({
     id: company.id
   }))
@@ -214,6 +220,8 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                             src={image} 
                             alt={`Imazhi kompanise ${index + 1}`}
                             className="w-full h-full object-cover"
+                            quality={60}
+                            loading="lazy"
                             width={200}
                             height={200}
                           />

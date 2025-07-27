@@ -1,14 +1,12 @@
-import CompanysQuery from '@/components/CompanysQuery'
-import ComplaintsQuery from '@/components/ComplaintsQuery'
 import CTAButton from '@/components/CTAButton'
+import { DynamicCompanysQuery, DynamicComplaintsQuery, DynamicSubscriberForm } from '@/components/DynamicComponents'
 import FeatureCard from '@/components/FeatureCard'
-import SubscriberForm from '@/components/SubscriberForm'
 import { MUNICIPALITY_IMAGES } from '@/data/municipalities'
 import { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-import { FaArrowRight, FaChevronDown, FaPlusSquare } from 'react-icons/fa'
+import { FaChevronDown, FaPlusSquare } from 'react-icons/fa'
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
@@ -123,6 +121,8 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
             alt='lines'
             width={800}
             height={800}
+            priority
+            quality={75}
             className='w-full object-cover -z-50 opacity-5 h-full top-0 left-0 absolute'
           />
           {MUNICIPALITY_IMAGES.map((item, index) => {
@@ -143,6 +143,8 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
                         alt={item.municipality}
                         width={56}
                         height={56}
+                        quality={40}
+                        loading="lazy"
                     />
                 </div>
             )
@@ -181,6 +183,8 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
                 alt='underline'
                 width={700}
                 height={700}
+                loading="lazy"
+                quality={50}
                 className='w-full -z-50 opacity-5 absolute -top-4 indigo-mask max-[425px]:top-0 max-[385px]:top-2 '
               />
               <p className="text-gray-600 max-w-md text-base max-[420px]:text-sm">
@@ -197,7 +201,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
             </Link>
           </div>
           
-          <CompanysQuery />
+          <DynamicCompanysQuery />
         </section>
 
 
@@ -208,6 +212,8 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
                 alt='underline'
                 width={700}
                 height={700}
+                loading="lazy"
+                quality={50}
                 className='w-1/2 max-[768px]:w-full -z-50 rotate-[175deg] max-[768px]:rotate-0 opacity-5 absolute -top-2 max-[768px]:-top-4 max-[490px]:top-0 max-[425px]:top-2 max-[350px]:top-4 right-0 indigo-mask'
               />
             <div className="space-y-2">
@@ -228,7 +234,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
             </Link>
           </div>
           
-          <ComplaintsQuery />
+          <DynamicComplaintsQuery />
         </section>
 
 
@@ -239,7 +245,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
             <FeatureCard 
               icon="lock.png" 
               title="Konfidencionalitet" 
-              description={<>Ankesat tuaja të thjeshta mund te mbeten totalisht anonime. Shikoni <Link className="text-indigo-600" href={"termat-e-perdorimit"}>Termat e Përdorimit</Link></>}
+              description={<>Ankesat tuaja të thjeshta mund te mbeten totalisht anonime. Shikoni <Link className="text-indigo-900 underline" href={"termat-e-perdorimit"}>Termat e Përdorimit</Link></>}
             />
             <FeatureCard 
               icon="star.png" 
@@ -255,7 +261,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
         </section>
 
         <section>
-          <SubscriberForm />
+          <DynamicSubscriberForm />
         </section>
       </main>
     </div>

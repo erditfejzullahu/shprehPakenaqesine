@@ -1,26 +1,37 @@
 import ComplaintActionsCard from '@/components/ComplaintActionsCard';
 import ComplaintsPageTabs from '@/components/ComplaintsPageTabs';
-import { ComplaintPerIdWithCompany, ComplantPerIdInterface } from '@/types/types';
+import {  ComplantPerIdInterface } from '@/types/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
 import { auth } from '../../../../auth';
 import { cookies } from 'next/headers';
-import { ImageIcon } from 'lucide-react';
 import { FaFileAudio, FaFileVideo, FaImage, FaThumbsDown } from 'react-icons/fa';
 import { Metadata } from 'next';
 import { MUNICIPALITY_IMAGES } from '@/data/municipalities';
 import DeleteComplaintComponent from '@/components/DeleteComplaintComponent';
 import { redirect } from 'next/navigation';
+import prisma from '@/lib/prisma';
 
 export const revalidate = 300;
 
-export async function getStaticParams() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/complaints/ids`, {next: {revalidate: revalidate}, method: "GET"})
-  if(!res.ok){
-    throw new Error("Error fetching ids")
-  }
-  const ids: {id: string}[] = await res.json()
+export async function generateStaticParams() {
+  // const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/complaints/ids`, {next: {revalidate: revalidate}, method: "GET"})
+  // if(!res.ok){
+  //   throw new Error("Error fetching ids")
+  // }
+  // const ids: {id: string}[] = await res.json()
+  const ids = await prisma.complaint.findMany({
+    where: {
+        AND: [
+            {status: "ACCEPTED"},
+            {deleted: false}
+        ]
+    },
+    select: {
+      id: true
+    }
+  })
   return ids.map((complaint) => ({
     id: complaint.id
   }))

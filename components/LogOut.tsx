@@ -25,8 +25,9 @@ export default function LogOut() {
       onClick={handleSignOut}
       aria-label="Log out"
       className="cursor-pointer"
+      aria-description="log out"
     >
-      <MdLogout size={24} color="#fb2c36" />
+      <MdLogout aria-description="logout" size={24} color="#fb2c36" />
     </button>
   );
 }

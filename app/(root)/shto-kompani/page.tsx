@@ -1,7 +1,7 @@
 import { auth } from '@/auth'
 import CreateCompanyForm from '@/components/CreateCompanyForm'
+import Video from '@/components/Video'
 import { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React from 'react'
@@ -78,13 +78,9 @@ const page = async () => {
         <FaPlusSquare size={24} color='#4f46e5'/>
       </Link>
       <h1 className="text-3xl mb-2 sm:text-4xl md:text-5xl font-bold leading-tight w-fit mx-auto relative tracking-tight">Krijo <span className="text-indigo-600">Kompani</span>
-        <Image
-          src={'/press-day.gif'}
-          width={40}
-          height={40}
-          alt='add company'
-          quality={50}
-          className='size-10 absolute -top-8 -left-7 -rotate-[30deg] max-[330px]:-top-10 max-[287px]:left-0'
+        <Video
+            src='/press-day.mp4'
+            className='size-10 absolute -top-8 -left-7 -rotate-[30deg] max-[330px]:-top-10 max-[287px]:left-0'
         />
       </h1>
       <p className='text-gray-600 max-[420px]:text-sm'>Këtu mund të shtoni kompaninë për të cilën mund të krijoni ankesë ju apo perdoruesit e tjerë te platformës <span className="text-indigo-600">ShprehPakënaqësinë</span></p>

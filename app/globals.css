@@ -172,3 +172,11 @@ ul {
 .indigo-mask{
   filter: brightness(0) saturate(100%) invert(20%) sepia(72%) saturate(3643%) hue-rotate(241deg) brightness(95%) contrast(89%);
 }
+
+video::-internal-media-controls {
+  display: none !important;
+}
+
+video::-webkit-media-controls {
+  display: none !important;
+}

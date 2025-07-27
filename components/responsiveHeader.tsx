@@ -67,7 +67,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
                 </div>
             ) : (
                 <Link href="/profili" className="hover:scale-110 transition-transform">
-                    <FaUser size={24} color="#4f46e5" />
+                    <FaUser aria-description='profile' size={24} color="#4f46e5" />
                 </Link>
             )}
             {isMobile ? (

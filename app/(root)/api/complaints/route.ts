@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { rateLimit } from "@/lib/redis";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async (req: NextRequest, res: NextResponse) => {
+export const GET = async (req: NextRequest) => {
     try {
         const pageStr = req.nextUrl.searchParams.get("page");
         const page = pageStr ? parseInt(pageStr) : 1
