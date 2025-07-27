@@ -12,8 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
 
   return {
-    title: 'ShfaqPakenaqësinë - Platformë për Ankesa të Punës dhe Komunale',
-    description: 'Platformë anonime për raportimin e padrejtësive në vendin e punës dhe problemeve komunale. Mbrojtje e të drejtave të qytetarëve dhe punonjësve në Kosovë.',
+    title: 'ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve',
+    description: 'Platformë digjitale për të ndarë pakënaqësitë dhe për të raportuar shqetësimet në komunat e Kosovës. Qëndro anonim, vepro publikisht.',
     keywords: [
       'raportim pune',
       'ankesa komunale',
@@ -26,17 +26,28 @@ export async function generateMetadata(): Promise<Metadata> {
     ],
     openGraph: {
       title: 'ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve',
-      description: 'Platformë për raportimin e padrejtësive në punë dhe problemeve komunale në mënyrë të sigurt dhe anonime',
+      description: 'Platformë digjitale për të ndarë pakënaqësitë dhe për të raportuar shqetësimet në komunat e Kosovës. Qëndro anonim, vepro publikisht.',
       type: 'website',
       locale: 'sq_AL',
       url: baseUrl,
       siteName: 'ShfaqPakenaqësinë',
       images: [{
-        url: `${baseUrl}/images/home-og.jpg`,
+        url: `${baseUrl}/shfaqpakenaqesine-cover.png`,
         width: 1200,
         height: 630,
         alt: 'ShfaqPakenaqësinë - Platformë për Ankesa Publike',
       }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve",
+      description: "Raporto shqetësimet në komunën tënde dhe kontribuo në ndryshimin e komunitetit.",
+      images: {
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+        width: 1200,  // Required for OG
+        height: 630,  // Required for OG
+        alt: "ShfaqPakënaqësinë - Raporto problemet në komunën tënde"
+      },
     },
     alternates: {
       canonical: baseUrl,

@@ -57,11 +57,31 @@ export async function generateMetadata({
         description: 'Lexo dhe ndaj ankesa rreth kompanive në platformën tonë. Shprehu për përvojën tënde.',
         keywords: ['ankesa', 'kompani', 'shqipëri', 'kosovë', 'raportim', 'shërbime', 'puna'],
         openGraph: {
-          title: 'Ankesa - ShprehPakenaqësinë',
-          description: 'Platforma për shprehjen e ankesave ndaj kompanive në Shqipëri dhe Kosovë',
+          title: "Ankesa - ShprehPakenaqësinë",
+          description: "Lexo dhe ndaj ankesa rreth kompanive në platformën tonë. Shprehu për përvojën tënde.",
+          url: "https://shfaqpakenaqesine.com/ankesat/" + id,
+          siteName: "ShfaqPakënaqësinë",
+          type: "article",
+          locale: "sq_AL",
+          images: [
+            {
+              url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+              width: 1200,  // Required for OG
+              height: 630,  // Required for OG
+              alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+            }
+          ]
         },
         twitter: {
-          card: 'summary_large_image',
+          card: "summary_large_image",
+          title: "Ankesa - ShprehPakenaqësinë",
+          description: "Lexo dhe ndaj ankesa rreth kompanive në platformën tonë. Shprehu për përvojën tënde.",
+          images: {
+            url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+            width: 1200,  // Required for OG
+            height: 630,  // Required for OG
+            alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+          },
         },
       };
     }
@@ -99,9 +119,12 @@ export async function generateMetadata({
         description: seoDescription,
         type: 'article',
         locale: 'sq_AL',
+        url: "https://shfaqpakenaqesine.com/ankesat/" + id,
         siteName: 'ShprehPakenaqësinë',
         images: [{
           url: `${process.env.NEXT_PUBLIC_BASE_URL}/${complaintImage}`,
+          width: 1200,  // Required for OG
+          height: 630,
           alt: `${complaint.title} - Ankesë ndaj ${complaint.company ? complaint.company : 'Komunës së ' + complaint.municipality}`,
         }],
         publishedTime: new Date(complaint.createdAt).toISOString(),

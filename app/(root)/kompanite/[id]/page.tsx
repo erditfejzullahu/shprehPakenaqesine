@@ -38,6 +38,26 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
         openGraph: {
           title: 'Vlerëso Kompaninë - ShprehPakenaqësinë',
           description: 'Platforma për vlerësimin e kompanive në Kosovë në bazë të ankesave',
+          images: {
+            url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+            width: 1200,  // Required for OG
+            height: 630,  // Required for OG
+            alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+          },
+        },
+        twitter: {
+          card: "summary_large_image",
+          title: "Vlerëso Kompaninë - ShprehPakenaqësinë",
+          description: "Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.",
+          images: {
+            url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+            width: 1200,  // Required for OG
+            height: 630,  // Required for OG
+            alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+          },
+        },
+        alternates: {
+          canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/${id}`,
         },
       };
     }

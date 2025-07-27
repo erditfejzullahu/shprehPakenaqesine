@@ -29,11 +29,22 @@ export async function generateMetadata(): Promise<Metadata> {
       url: `${baseUrl}/krijo-ankese`,
       siteName: 'ShprehPakenaqësinë',
       images: [{
-        url: `${baseUrl}/images/create-complaint-og.jpg`,
+        url: `${baseUrl}/shfaqpakenaqesine-cover.png`,
         width: 1200,
         height: 630,
         alt: 'Krijo ankesë në ShprehPakenaqësinë',
       }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Krijo Ankesë - ShprehPakenaqësinë",
+      description: "Formular për krijimin e ankesave kundër kompanive.",
+      images: {
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+        width: 1200,  // Required for OG
+        height: 630,  // Required for OG
+        alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+      },
     },
     alternates: {
       canonical: `${baseUrl}/krijo-ankese`,

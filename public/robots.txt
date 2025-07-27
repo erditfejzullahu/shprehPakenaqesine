@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /kycuni/
+Allow: /              # Allow everything else
+
+Sitemap: https://shfaqpakenaqesine.com/sitemap.xml

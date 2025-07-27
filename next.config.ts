@@ -1,4 +1,3 @@
-import { withNextVideo } from "next-video/process";
 import type { NextConfig } from "next";
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
@@ -76,4 +75,4 @@ const nextConfig: NextConfig = {
 
 // ANALYZE=true next build
 
-export default withNextVideo(withBundleAnalyzer(nextConfig));
+export default withBundleAnalyzer(nextConfig);

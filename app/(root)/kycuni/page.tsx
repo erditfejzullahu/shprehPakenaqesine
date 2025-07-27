@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: `${baseUrl}/kycu`,
       siteName: 'ShfaqPakenaqësinë',
       images: [{
-        url: `${baseUrl}/images/login-og.jpg`,
+        url: `${baseUrl}/shfaqpakenaqesine-cover.png`,
         width: 1200,
         height: 630,
         alt: 'Faqja e Kyçjes - ShfaqPakenaqësinë',

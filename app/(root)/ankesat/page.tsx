@@ -6,7 +6,7 @@ import React from 'react'
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shprehpakenaqesine.com';
-  const defaultImage = `${baseUrl}/images/complaints-cover.jpg`;
+  const defaultImage = `${baseUrl}/shfaqpakenaqesine-cover.png`;
 
   return {
     title: 'Të Gjitha Ankesat - ShprehPakenaqësinë',

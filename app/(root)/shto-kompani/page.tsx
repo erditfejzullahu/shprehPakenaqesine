@@ -31,11 +31,22 @@ export async function generateMetadata(): Promise<Metadata> {
       url: `${baseUrl}/shto-kompani`,
       siteName: 'ShprehPakenaqësinë',
       images: [{
-        url: `${baseUrl}/images/add-company-og.jpg`,
+        url: `${baseUrl}/shfaqpakenaqesine-cover.png`,
         width: 1200,
         height: 630,
         alt: 'Shto kompani të re në ShprehPakenaqësinë',
       }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Shto Kompani të Re - ShprehPakenaqësinë",
+      description: "Formular për regjistrimin e kompanive të reja në platformë",
+      images: {
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+        width: 1200,  // Required for OG
+        height: 630,  // Required for OG
+        alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+      },
     },
     alternates: {
       canonical: `${baseUrl}/shto-kompani`,
