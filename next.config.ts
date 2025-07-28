@@ -1,9 +1,5 @@
 import type { NextConfig } from "next";
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
-
 const nextConfig: NextConfig = {
   /* config options here */
   // async rewrites() {
@@ -29,24 +25,24 @@ const nextConfig: NextConfig = {
       }
     ]
   },
-  experimental: {
-    scrollRestoration: true,
-    optimizeCss: true,
-    optimizeServerReact: true
-  },
+  // experimental: {
+  //   scrollRestoration: true,
+  //   optimizeCss: true,
+  //   optimizeServerReact: true
+  // },
   eslint: {
     ignoreDuringBuilds: true
   },
   typescript: {
     ignoreBuildErrors: true //remove
   },
-  compiler: {
-    styledComponents: true,
-    reactRemoveProperties: true,
-    removeConsole: process.env.NODE_ENV === 'production' 
-      ? { exclude: ['error'] }  // Client-side only removal
-      : false,
-  },
+  // compiler: {
+  //   styledComponents: true,
+  //   reactRemoveProperties: true,
+  //   removeConsole: process.env.NODE_ENV === 'production' 
+  //     ? { exclude: ['error'] }  // Client-side only removal
+  //     : false,
+  // },
   // async headers() {
   //   return [
   //     {
@@ -85,4 +81,4 @@ const nextConfig: NextConfig = {
 
 // ANALYZE=true next build
 
-export default withBundleAnalyzer(nextConfig);
+export default nextConfig;
