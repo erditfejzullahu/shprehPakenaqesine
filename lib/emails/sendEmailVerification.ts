@@ -3,7 +3,6 @@ import { SendMailOptions } from "nodemailer"
 import { transporter } from "./transporter";
 import prisma from "../prisma";
 import { verifyEmailTemplate } from "./emailTemplates.ts/verifyEmailTemplate";
-import { cookies } from "next/headers";
 import crypto from "crypto"
 
 export const sendUserVerificationEmail = async (userId: string, email: string, verificationUrl: string, ipAddress?: string | null, userAgent?: string | null) => {
@@ -31,7 +30,6 @@ export const sendUserVerificationEmail = async (userId: string, email: string, v
 }
 
 const secret = process.env.COOKIE_SECRET!;
-const SIGNATURE_DELIMITER = '|SIG|';
 
 export const signCookieValue = (value: string) => {
     const hmac = crypto.createHmac('sha256', secret)

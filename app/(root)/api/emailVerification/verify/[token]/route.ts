@@ -25,7 +25,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
                 path: '/',
                 sameSite: "strict"
             })
-            return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=too_many_requests`, req.url));
+            return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=too_many_requests`, process.env.NEXT_PUBLIC_BASE_URL));
         }
 
         if(!user) {
@@ -38,7 +38,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
                 path: '/',
                 sameSite: "strict"
             })
-            return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=token_invalid`, req.url));
+            return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=token_invalid`, process.env.NEXT_PUBLIC_BASE_URL));
         }
 
         if(user.email_verified){
@@ -56,7 +56,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
                 path: '/',
                 sameSite: "strict"
             })
-            return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=token_expired`, req.url));
+            return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=token_expired`, process.env.NEXT_PUBLIC_BASE_URL));
         }
 
         try {
@@ -103,7 +103,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
                             path: '/',
                             sameSite: "strict"
                         })
-                        return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-gabim?error=update_failed', req.url))
+                        return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-gabim?error=update_failed', process.env.NEXT_PUBLIC_BASE_URL))
                     } else if (err.message === "ActivityLogFailed") {
                         (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
                             error: true,
@@ -115,7 +115,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
                             path: '/',
                             sameSite: "strict"
                         })
-                        return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-gabim?error=activity_failed', req.url))
+                        return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-gabim?error=activity_failed', process.env.NEXT_PUBLIC_BASE_URL))
                     } else {
                         (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
                             error: true,
@@ -127,7 +127,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
                             path: '/',
                             sameSite: "strict"
                         })
-                        return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-gabim?error=internal_error', req.url))
+                        return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-gabim?error=internal_error', process.env.NEXT_PUBLIC_BASE_URL))
                     }
             }
 
@@ -140,7 +140,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
                 path: '/',
                 sameSite: "strict"
             })
-            return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-sukses', req.url))
+            return NextResponse.redirect(new URL('/verifiko-emailin/verifikimi-sukses', process.env.NEXT_PUBLIC_BASE_URL))
 
         
     } catch (error) {
@@ -154,6 +154,6 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
             path: '/',
             sameSite: "strict"
         })
-        return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=internal_error`, req.url));
+        return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=internal_error`, process.env.NEXT_PUBLIC_BASE_URL));
     }
 }

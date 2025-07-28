@@ -6,13 +6,12 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
-    console.log(req.cookies.get('email-verification')?.value)
     const cookieStore = (await cookies()).get('email-verification')?.value;
     const cookieValue: any = cookieStore ? verifyCookieValue(cookieStore) : null;
     const cookieParsed = JSON.parse(cookieValue || "null");
     
     if(cookieParsed === null || !cookieParsed?.email){
-        return NextResponse.redirect(new URL('/', req.url))
+        return NextResponse.redirect(new URL('/', process.env.NEXT_PUBLIC_BASE_URL))
     }
 
     const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get("x-real-ip") || "unknown"
@@ -30,13 +29,13 @@ export const GET = async (req: NextRequest) => {
             path: '/',
             sameSite: "strict"
         })
-        return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=too_many_requests`, req.url));
+        return NextResponse.redirect(new URL(`/verifiko-emailin/verifikimi-gabim?error=too_many_requests`, process.env.NEXT_PUBLIC_BASE_URL));
     }
     
     try {
         const user = await prisma.users.findUnique({where: {email: cookieParsed.email}})
         if(!user){            
-            return NextResponse.redirect(new URL('/', req.url))
+            return NextResponse.redirect(new URL('/', process.env.NEXT_PUBLIC_BASE_URL))
         }
         ((await cookies()).delete('email-verification'))
 
@@ -65,10 +64,10 @@ export const GET = async (req: NextRequest) => {
                 sameSite: "strict"
         })
 
-        return NextResponse.redirect(new URL(`/verifiko-emailin/ridergo-verifikimin/njoftim`, req.url))
+        return NextResponse.redirect(new URL(`/verifiko-emailin/ridergo-verifikimin/njoftim`, process.env.NEXT_PUBLIC_BASE_URL))
     } catch (error) {
         
         ((await cookies()).delete('email-verification'))
-        return NextResponse.redirect(new URL('/', req.url))
+        return NextResponse.redirect(new URL('/', process.env.NEXT_PUBLIC_BASE_URL))
     }
 }
