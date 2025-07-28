@@ -5,11 +5,11 @@ import { Metadata } from 'next';
 import React from 'react'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shprehpakenaqesine.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
   const defaultImage = `${baseUrl}/shfaqpakenaqesine-cover.png`;
 
   return {
-    title: 'Të Gjitha Ankesat - ShprehPakenaqësinë',
+    title: 'Të Gjitha Ankesat - ShfaqPakenaqësinë',
     description: 'Eksploro listën e plotë të ankesave në platformën tonë. Lexoni dhe ndani përvojat tuaja me kompanitë shqiptare.',
     keywords: [
       'ankesa shqiptare',
@@ -18,20 +18,21 @@ export async function generateMetadata(): Promise<Metadata> {
       'ankesa në kosovë',
       'ankesa në shqipëri',
       'shpreh pakenaqësinë',
+      'shfaq pakenaqesine',
       'komente kompanish'
     ],
     openGraph: {
-      title: 'Të Gjitha Ankesat - ShprehPakenaqësinë',
+      title: 'Të Gjitha Ankesat - ShfaqPakenaqësinë',
       description: 'Lista e plotë e ankesave kundër kompanive shqiptare dhe kosovare',
       type: 'website',
       locale: 'sq_AL',
       url: `${baseUrl}/ankesat`,
-      siteName: 'ShprehPakenaqësinë',
+      siteName: 'ShfaqPakenaqësinë',
       images: [{
         url: defaultImage,
         width: 1200,
         height: 630,
-        alt: 'Lista e ankesave në ShprehPakenaqësinë',
+        alt: 'Lista e ankesave në ShfaqPakenaqësinë',
       }],
     },
     twitter: {

@@ -32,11 +32,11 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/company/${id}`, {next: {revalidate: 3600000}});
     if(!response.ok){
       return {
-        title: 'Kompania - ShprehPakenaqësinë',
+        title: 'Kompania - ShfaqPakenaqësinë',
         description: 'Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.',
         keywords: ['kompani', 'vlerësim', 'shqipëri', 'puna', 'shërbime', 'ankesa', 'raportime', 'kosovë', 'kosove', 'shqiperi'],
         openGraph: {
-          title: 'Vlerëso Kompaninë - ShprehPakenaqësinë',
+          title: 'Vlerëso Kompaninë - ShfaqPakenaqësinë',
           description: 'Platforma për vlerësimin e kompanive në Kosovë në bazë të ankesave',
           images: {
             url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
@@ -47,7 +47,7 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
         },
         twitter: {
           card: "summary_large_image",
-          title: "Vlerëso Kompaninë - ShprehPakenaqësinë",
+          title: "Vlerëso Kompaninë - ShfaqPakenaqësinë",
           description: "Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.",
           images: {
             url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
@@ -63,7 +63,7 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
     }
     const {company}: CompanyPerIdInterface = await response.json();
     
-    const seoTitle = `${company.name} - Vlerësim i Kompanisë | ShprehPakenaqësinë`
+    const seoTitle = `${company.name} - Vlerësim i Kompanisë | ShfaqPakenaqësinë`
     const seoDescription = company.description
       ? `${company.description.substring(0,160)}`
       : `Vlerëso ${company.name} në platformën tone duke krijuar ankesa apo raportime. Shiko detajet, komentet dhe shprehu për përvojën tënde.`;
@@ -88,12 +88,12 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
         description: seoDescription,
         type: 'article',
         locale: 'sq_AL',
-        siteName: 'ShprehPakenaqësinë',
+        siteName: 'ShfaqPakenaqësinë',
         images: [
           {
             url: `${process.env.NEXT_PUBLIC_BASE_URL}/${company.logoUrl}`,
             secureUrl: company.logoUrl,
-            alt: `${company.name} - ShprehPakenaqësinë`
+            alt: `${company.name} - ShfaqPakenaqësinë`
           }
         ],
         publishedTime: new Date(company.createdAt).toISOString(),
@@ -109,11 +109,11 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
   } catch (error) {
     console.error('Gabim në marrjen e të dhënave:', error);
     return {
-      title: 'Kompania - ShprehPakenaqësinë',
+      title: 'Kompania - ShfaqPakenaqësinë',
       description: 'Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.',
       keywords: ['kompani', 'vlerësim', 'shqipëri', 'puna', 'shërbime', 'ankesa', 'raportime', 'kosovë', 'kosove', 'shqiperi'],
       openGraph: {
-        title: 'Vlerëso Kompaninë - ShprehPakenaqësinë',
+        title: 'Vlerëso Kompaninë - ShfaqPakenaqësinë',
         description: 'Platforma për vlerësimin e kompanive në Kosovë në bazë të ankesave',
       },
     };

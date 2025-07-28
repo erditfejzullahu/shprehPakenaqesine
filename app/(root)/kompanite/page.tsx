@@ -5,11 +5,11 @@ import { Metadata } from 'next';
 import React from 'react'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shprehpakenaqesine.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
   const defaultImage = `${baseUrl}/shfaqpakenaqesine-cover.png`;
 
   return {
-    title: 'Të Gjitha Kompanitë - ShprehPakenaqësinë',
+    title: 'Të Gjitha Kompanitë - ShfaqPakenaqësinë',
     description: 'Eksploro listën e plotë të kompanive në platformën tonë. Shiko detajet, vlerësimet dhe shprehu për përvojën tënde.',
     keywords: [
       'kompani shqiptare',
@@ -21,17 +21,17 @@ export async function generateMetadata(): Promise<Metadata> {
       'biznese shqiptare'
     ],
     openGraph: {
-      title: 'Të Gjitha Kompanitë - ShprehPakenaqësinë',
+      title: 'Të Gjitha Kompanitë - ShfaqPakenaqësinë',
       description: 'Lista e plotë e kompanive për të cilat mund të shprehni përshtypjet tuaja',
       type: 'website',
       locale: 'sq_AL',
       url: `${baseUrl}/kompanite`,
-      siteName: 'ShprehPakenaqësinë',
+      siteName: 'ShfaqPakenaqësinë',
       images: [{
         url: defaultImage,
         width: 1200,
         height: 630,
-        alt: 'Lista e kompanive në ShprehPakenaqësinë',
+        alt: 'Lista e kompanive në ShfaqPakenaqësinë',
       }],
     },
     twitter: {

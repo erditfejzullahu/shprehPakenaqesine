@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: 'Emaili u Verifikua me Sukses',
       description: 'Emaili juaj është verifikuar me sukses. Klikoni për të vazhduar me identifikimin.',
-      url: 'https://shprehpakenaqesine.com/verifiko-emailin/verifikimi-sukses', // zëvendësoje me URL reale nëse ndryshon
+      url: 'https://shfaqpakenaqesine.com/verifiko-emailin/verifikimi-sukses', // zëvendësoje me URL reale nëse ndryshon
       type: 'website',
     },
     twitter: {

@@ -5,14 +5,14 @@ import { FaCheck, FaFolder } from 'react-icons/fa'
 import { TbHexagonNumber1Filled, TbHexagonNumber2Filled } from "react-icons/tb";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shprehpakenaqesine.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
   
   return {
-    title: 'Si Funksionon ShprehPakenaqësinë - Udhëzues i Plotë',
+    title: 'Si Funksionon ShfaqPakenaqësinë - Udhëzues i Plotë',
     description: 'Mësoni si të përdorni platformën tonë për të raportuar kompani dhe të shprehni pakenaqësitë tuaja në mënyrë të sigurt',
     keywords: [
       'si funksionon',
-      'udhëzues shprehpakenaqësinë',
+      'udhëzues ShfaqPakenaqësinë',
       'raportim kompanish',
       'si të bëj ankesë',
       'platformë ankesash',
@@ -20,17 +20,17 @@ export async function generateMetadata(): Promise<Metadata> {
       'kosovë'
     ],
     openGraph: {
-      title: 'Si Funksionon ShprehPakenaqësinë - Udhëzues i Plotë',
+      title: 'Si Funksionon ShfaqPakenaqësinë - Udhëzues i Plotë',
       description: 'Mësoni hap pas hapi si të regjistroni kompani dhe të bëni ankesa në platformën tonë',
       type: 'article',
       locale: 'sq_AL',
       url: `${baseUrl}/si-funksionon`,
-      siteName: 'ShprehPakenaqësinë',
+      siteName: 'ShfaqPakenaqësinë',
       images: [{
         url: `${baseUrl}/images/how-it-works-og.jpg`,
         width: 1200,
         height: 630,
-        alt: 'Udhëzues për përdorimin e ShprehPakenaqësinë',
+        alt: 'Udhëzues për përdorimin e ShfaqPakenaqësinë',
       }],
     },
     alternates: {
@@ -45,7 +45,7 @@ const page = () => {
     const structuredData = {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    "name": "Si të përdorni ShprehPakenaqësinë",
+    "name": "Si të përdorni ShfaqPakenaqësinë",
     "description": "Udhëzues hap pas hapi për regjistrimin e kompanive dhe krijimin e ankesave",
     "step": [
       {

@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: 'Verifikimi Dështoi',
       description: 'Verifikimi i emailit tuaj ka dështuar. Klikoni për të ridërguar linkun ose na kontaktoni.',
-      url: 'https://shprehpakenaqesine.com/verifiko-emailin/verifikimi-gabim', // përditëso me URL reale
+      url: 'https://shfaqpakenaqesine.com/verifiko-emailin/verifikimi-gabim', // përditëso me URL reale
       type: 'website',
     },
     twitter: {

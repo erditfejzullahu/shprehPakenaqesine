@@ -9,10 +9,10 @@ import { FaPlusSquare } from 'react-icons/fa'
 
 
 export async function generateMetadata(): Promise<Metadata> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shprehpakenaqesine.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
   
   return {
-    title: 'Shto Kompani të Re - ShprehPakenaqësinë',
+    title: 'Shto Kompani të Re - ShfaqPakenaqësinë',
     description: 'Shtoni një kompani të re në platformën tonë për të lejuar krijimin e ankesave dhe vlerësimeve',
     keywords: [
       'shto kompani',
@@ -24,22 +24,22 @@ export async function generateMetadata(): Promise<Metadata> {
       'formular kompanish'
     ],
     openGraph: {
-      title: 'Shto Kompani të Re - ShprehPakenaqësinë',
+      title: 'Shto Kompani të Re - ShfaqPakenaqësinë',
       description: 'Formular për regjistrimin e kompanive të reja në platformë',
       type: 'website',
       locale: 'sq_AL',
       url: `${baseUrl}/shto-kompani`,
-      siteName: 'ShprehPakenaqësinë',
+      siteName: 'ShfaqPakenaqësinë',
       images: [{
         url: `${baseUrl}/shfaqpakenaqesine-cover.png`,
         width: 1200,
         height: 630,
-        alt: 'Shto kompani të re në ShprehPakenaqësinë',
+        alt: 'Shto kompani të re në ShfaqPakenaqësinë',
       }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Shto Kompani të Re - ShprehPakenaqësinë",
+      title: "Shto Kompani të Re - ShfaqPakenaqësinë",
       description: "Formular për regjistrimin e kompanive të reja në platformë",
       images: {
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,

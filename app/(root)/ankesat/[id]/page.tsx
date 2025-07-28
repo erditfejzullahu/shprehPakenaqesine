@@ -42,7 +42,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shprehpakenaqesine.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
   const {id} = await params
   try {
     const response = await fetch(
@@ -53,11 +53,11 @@ export async function generateMetadata({
     // Fallback metadata if API fails
     if (!response.ok) {
       return {
-        title: 'Ankesa - ShprehPakenaqësinë',
+        title: 'Ankesa - ShfaqPakenaqësinë',
         description: 'Lexo dhe ndaj ankesa rreth kompanive në platformën tonë. Shprehu për përvojën tënde.',
         keywords: ['ankesa', 'kompani', 'shqipëri', 'kosovë', 'raportim', 'shërbime', 'puna'],
         openGraph: {
-          title: "Ankesa - ShprehPakenaqësinë",
+          title: "Ankesa - ShfaqPakenaqësinë",
           description: "Lexo dhe ndaj ankesa rreth kompanive në platformën tonë. Shprehu për përvojën tënde.",
           url: "https://shfaqpakenaqesine.com/ankesat/" + id,
           siteName: "ShfaqPakënaqësinë",
@@ -74,7 +74,7 @@ export async function generateMetadata({
         },
         twitter: {
           card: "summary_large_image",
-          title: "Ankesa - ShprehPakenaqësinë",
+          title: "Ankesa - ShfaqPakenaqësinë",
           description: "Lexo dhe ndaj ankesa rreth kompanive në platformën tonë. Shprehu për përvojën tënde.",
           images: {
             url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
@@ -89,7 +89,7 @@ export async function generateMetadata({
     const {complaint}: ComplantPerIdInterface = await response.json();
     
     // Generate SEO metadata
-    const seoTitle = `${complaint.title} - Ankesë ndaj ${complaint.company ? complaint.company.name : 'Komunës së ' + complaint.municipality} | ShprehPakenaqësinë`;
+    const seoTitle = `${complaint.title} - Ankesë ndaj ${complaint.company ? complaint.company.name : 'Komunës së ' + complaint.municipality} | ShfaqPakenaqësinë`;
     const seoDescription = complaint.description
       ? `${complaint.description.substring(0, 160)}...`
       : `Lexo ankesën rreth ${complaint.company ? complaint.company.name : 'Komunës së ' + complaint.municipality}. Shprehu dhe ndaj përvojën tënde.`;
@@ -120,7 +120,7 @@ export async function generateMetadata({
         type: 'article',
         locale: 'sq_AL',
         url: "https://shfaqpakenaqesine.com/ankesat/" + id,
-        siteName: 'ShprehPakenaqësinë',
+        siteName: 'ShfaqPakenaqësinë',
         images: [{
           url: `${process.env.NEXT_PUBLIC_BASE_URL}/${complaintImage}`,
           width: 1200,  // Required for OG
@@ -145,10 +145,10 @@ export async function generateMetadata({
   } catch (error) {
     console.error('Gabim në marrjen e të dhënave të ankesës:', error);
     return {
-      title: 'Ankesa - ShprehPakenaqësinë',
+      title: 'Ankesa - ShfaqPakenaqësinë',
       description: 'Lexo dhe ndaj ankesa rreth kompanive në platformën tonë',
       openGraph: {
-        title: 'Ankesa - ShprehPakenaqësinë',
+        title: 'Ankesa - ShfaqPakenaqësinë',
         description: 'Platforma për shprehjen e ankesave ndaj kompanive',
       },
     };

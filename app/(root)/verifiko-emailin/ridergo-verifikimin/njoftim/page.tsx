@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: 'Emaili për Verifikim u Dërgua',
       description: 'Ju lutemi kontrolloni inbox-in tuaj për të verifikuar llogarinë.',
-      url: 'https://shprehpakenaqesine.com/verifiko-emailin/ridergo-verifikimin/njofrim', // update accordingly
+      url: 'https://shfaqpakenaqesine.com/verifiko-emailin/ridergo-verifikimin/njoftim', // update accordingly
       type: 'website',
     },
     twitter: {

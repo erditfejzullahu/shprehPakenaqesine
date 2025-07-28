@@ -12,27 +12,27 @@ export async function generateMetadata(): Promise<Metadata>{
     const session = await auth();
     if(!session){
         return {
-            title: 'Profili - ShprehPakenaqësinë',
+            title: 'Profili - ShfaqPakenaqësinë',
             description: 'Kyçuni për të parë profilin tuaj',
             robots: {
                 index: false,
                 follow: true
             },
             openGraph: {
-                title: 'Profili - ShprehPakenaqësinë',
+                title: 'Profili - ShfaqPakenaqësinë',
                 description: 'Kyçuni për të parë profilin tuaj',
-                url: 'https://shprehpakenaqesine.com/profili', // update accordingly
+                url: 'https://shfaqpakenaqesine.com/profili', // update accordingly
                 type: 'website',
             },
                 twitter: {
                 card: 'summary',
-                title: 'Profili - ShprehPakenaqësinë',
+                title: 'Profili - ShfaqPakenaqësinë',
                 description: 'Kyçuni për të parë profilin tuaj',
             },
         };
     }else{
         return {
-          title: `${session?.user.fullName} | ShprehPakenaqësinë`,
+          title: `${session?.user.fullName} | ShfaqPakenaqësinë`,
           robots: {
             index: false,
             follow: true

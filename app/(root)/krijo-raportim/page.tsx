@@ -8,10 +8,10 @@ import React from 'react'
 import { FaPlusSquare } from 'react-icons/fa'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shprehpakenaqesine.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shfaqpakenaqesine.com';
   
   return {
-    title: 'Krijo Ankesë - ShprehPakenaqësinë',
+    title: 'Krijo Ankesë - ShfaqPakenaqësinë',
     description: 'Krijo një ankesë të re për një kompani. Ndaj përvojën tënde me të tjerët në platformën tonë.',
     keywords: [
       'krijo ankesë',
@@ -22,22 +22,22 @@ export async function generateMetadata(): Promise<Metadata> {
       'formular ankesash'
     ],
     openGraph: {
-      title: 'Krijo Ankesë - ShprehPakenaqësinë',
+      title: 'Krijo Ankesë - ShfaqPakenaqësinë',
       description: 'Formular për krijimin e ankesave kundër kompanive',
       type: 'website',
       locale: 'sq_AL',
       url: `${baseUrl}/krijo-ankese`,
-      siteName: 'ShprehPakenaqësinë',
+      siteName: 'ShfaqPakenaqësinë',
       images: [{
         url: `${baseUrl}/shfaqpakenaqesine-cover.png`,
         width: 1200,
         height: 630,
-        alt: 'Krijo ankesë në ShprehPakenaqësinë',
+        alt: 'Krijo ankesë në ShfaqPakenaqësinë',
       }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Krijo Ankesë - ShprehPakenaqësinë",
+      title: "Krijo Ankesë - ShfaqPakenaqësinë",
       description: "Formular për krijimin e ankesave kundër kompanive.",
       images: {
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
