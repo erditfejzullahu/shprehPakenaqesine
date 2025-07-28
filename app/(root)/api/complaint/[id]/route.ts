@@ -51,6 +51,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                 description: true,
                 createdAt: true,
                 updatedAt: true,
+                status: true,
                 attachments: true,
                 audiosAttached: true,
                 videosAttached: true,
@@ -68,6 +69,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                 },
                 user: {
                     select: {
+                        id: true,
                         userProfileImage: true,
                         username: true,
                         fullName: true,
@@ -85,6 +87,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                         id: true,
                         user: {
                             select: {
+                                id: true,
                                 userProfileImage: true,
                                 username: true,
                                 fullName: true,
@@ -102,6 +105,16 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
 
         if(!complaintQuery){
             return NextResponse.json({success: false, message: "Nuk u gjet asnje ankese/raportim"}, {status: 404})
+        }
+
+        if(complaintQuery.status === "PENDING"){
+            if(session){
+                if(session.user.id !== complaintQuery.user.id){
+                    return NextResponse.json({success: false, message: "Nuk u gjet asnje ankese/raportim"}, {status: 404})
+                }
+            }else{
+                return NextResponse.json({success: false, message: "Nuk u gjet asnje ankese/raportim"}, {status: 404})
+            }
         }
 
         const complaint = {
@@ -124,6 +137,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                 website: complaintQuery.company.website
             } : null,
             user: complaintQuery.user.anonimity ? null : {
+                id: complaintQuery.user.id,
                 userProfileImage: complaintQuery.user.userProfileImage,
                 username: complaintQuery.user.username,
                 fullName: complaintQuery.user.fullName,
@@ -133,6 +147,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
             contributions: complaintQuery.contributions.map((contribution) => ({
                 user: contribution.user.anonimity ? null : {
                     id: contribution.id,
+                    userId: contribution.user.id,
                     userProfileImage: contribution.user.userProfileImage,
                     username: contribution.user.username,
                     fullName: contribution.user.fullName,

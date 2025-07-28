@@ -18,6 +18,7 @@ async function main(){
             password: hashedPassword,
             createdAt: new Date().toISOString(),
             gender: "MASHKULL",
+            role: "ADMIN",
             acceptedUser: true,
             fullName: "Erdit Fejzullahu",
             email: "erditfejzullahu45@gmail.com",
