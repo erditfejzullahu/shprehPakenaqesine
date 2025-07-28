@@ -6,6 +6,7 @@ import AnonimityToggle from '@/components/AnonimityToggle';
 import { Metadata } from 'next';
 import ShowToasterInCaseFromPasswordReset from '@/components/ShotToasterInCaseFromPasswordReset';
 import Video from '@/components/Video';
+import Image from 'next/image';
 
 
 export async function generateMetadata(): Promise<Metadata>{
@@ -65,10 +66,12 @@ const page = async ({searchParams}: {searchParams: Promise<{redirected?: string}
             <div className="p-6 sm:p-8">
                 <div className="flex flex-row max-[900px]:flex-col items-center gap-6">
                     <div className="relative">
-                    <img 
+                    <Image 
                         className="w-24 h-24 rounded-full border-4 border-indigo-100 object-cover" 
                         src={session.user.userProfileImage} 
                         alt={`Imazhi i ${session.user.username}`}
+                        width={96}
+                        height={96}
                     />
                     {session.user && (
                         <div className="absolute bottom-0 right-0 bg-white rounded-full p-1">
