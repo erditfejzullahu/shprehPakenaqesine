@@ -6,6 +6,19 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig: NextConfig = {
   /* config options here */
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{
+          type: 'host',
+          value: 'localhost',
+        }],
+        permanent: false,
+        destination: `${process.env.NEXT_PUBLIC_BASE_URL}/:path*`,
+      },
+    ]
+  },
   compress: true,
   images: {
     formats: ['image/avif', 'image/webp'],
