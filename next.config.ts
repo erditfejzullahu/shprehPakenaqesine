@@ -35,7 +35,9 @@ const nextConfig: NextConfig = {
   compiler: {
     styledComponents: true,
     reactRemoveProperties: true,
-    removeConsole: process.env.NODE_ENV === "production"
+    removeConsole: process.env.NODE_ENV === 'production' 
+      ? { exclude: ['error'] }  // Client-side only removal
+      : false,
   },
   async headers() {
     return [
