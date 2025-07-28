@@ -14,6 +14,7 @@ import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 
 export const revalidate = 300;
+export const dynamicParams = true
 
 export async function generateStaticParams() {
   // const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/complaints/ids`, {next: {revalidate: revalidate}, method: "GET"})

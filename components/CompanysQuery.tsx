@@ -24,7 +24,7 @@ const CompanysQuery = () => {
       lastPage.hasMore ? allPages.length + 1 : undefined,
     retry: 2,
     refetchOnWindowFocus: false
-  })      
+  })        
   
   if(isLoading) return <LoadingSpinner />
   if(!data || data.pages[0].companies.length === 0) return <div className="mx-auto flex flex-col items-center -mb-12 -top-6">

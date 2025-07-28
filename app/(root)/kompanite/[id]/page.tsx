@@ -8,7 +8,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
 
-export const revalidate = 300;
+export const revalidate = 3600
+export const dynamicParams = true
 
 export async function generateStaticParams() {
   // const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/companies/ids`, {next: {revalidate: revalidate}, method: "GET"})
