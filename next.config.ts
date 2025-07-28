@@ -6,14 +6,14 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig: NextConfig = {
   /* config options here */
-  async rewrites() {
-    return [
-      {
-        source: '/uploads/:path*',
-        destination: '/public/uploads/:path*'
-      }
-    ]
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/uploads/:path*',
+  //       destination: '/public/uploads/:path*'
+  //     }
+  //   ]
+  // },
   compress: true,
   images: {
     formats: ['image/avif', 'image/webp'],
