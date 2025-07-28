@@ -1,9 +1,5 @@
 import type { NextConfig } from "next";
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
-
 const nextConfig: NextConfig = {
   /* config options here */
   compress: true,
@@ -75,4 +71,4 @@ const nextConfig: NextConfig = {
 
 // ANALYZE=true next build
 
-export default withBundleAnalyzer(nextConfig);
+export default nextConfig;
