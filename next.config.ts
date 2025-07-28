@@ -14,10 +14,10 @@ const nextConfig: NextConfig = {
   //     }
   //   ]
   // },
-  compress: true,
+  // compress: true,
   images: {
-    formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 86400,
+    // formats: ['image/avif', 'image/webp'],
+    // minimumCacheTTL: 86400,
     remotePatterns: [
       {
         protocol: "https",
