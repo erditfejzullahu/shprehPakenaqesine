@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 
 const ResendVerificationLink = () => {
 const router = useRouter();
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(60);
   const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {
