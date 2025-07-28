@@ -240,7 +240,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                       {data.company.images.length > 0 ? data.company.images.map((image, index) => (
                         <div key={index} className="aspect-square bg-gray-100 shadow-md overflow-hidden">
                           <Image 
-                            src={image} 
+                            src={`/serve${image}`} 
                             alt={`Imazhi kompanise ${index + 1}`}
                             className="w-full h-full object-cover"
                             quality={60}
