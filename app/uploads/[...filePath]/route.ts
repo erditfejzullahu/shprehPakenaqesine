@@ -3,11 +3,15 @@ import { NextRequest } from "next/server";
 import path from "path";
 import mime from "mime"
 
-export const GET = async (req: NextRequest, {params}: {params: Promise<{filePath: string}>}) => {
+export const GET = async (req: NextRequest, {params}: {params: Promise<{filePath?: string[]}>}) => {
     const {filePath} = await params;
-    const fileDir = path.join(process.cwd(), filePath)
+    if(!filePath || !filePath.length){
+        return new Response("Invalid path", {status: 400})
+    }
     
-    if(filePath.includes("..")){
+    const fileDir = path.join(process.cwd(), ...filePath)
+    
+    if(fileDir.includes("..")){
         return new Response('Invalid path', {status: 400})
     }
 
@@ -15,21 +19,21 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{filePath
         return new Response('File not found', {status: 404})
     }
 
-    const contentType = mime.getType(filePath) || "application/octet-stream"
+    const contentType = mime.getType(fileDir) || "application/octet-stream"
 
     const dangerousTypes = ['application/x-msdownload', 'application/x-sh', 'application/x-bat'] 
     if (dangerousTypes.includes(contentType)) {
         return new Response('Blocked file type', { status: 403 })
     }
 
-    const fileStream = createReadStream(filePath);
+    const fileStream = createReadStream(fileDir);
 
     return new Response(fileStream as any, {
         status: 200,
         headers: {
             'Content-Type': contentType,
             'Cache-Control': 'public, max-age=31536000, immutable',
-            'Content-Disposition': `inline; filename="${path.basename(filePath)}"`,
+            'Content-Disposition': `inline; filename="${path.basename(fileDir)}"`,
         },
     })
 }
