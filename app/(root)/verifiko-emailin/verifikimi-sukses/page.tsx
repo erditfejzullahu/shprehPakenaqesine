@@ -9,8 +9,8 @@ import { redirect } from 'next/navigation'
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Emaili u Verifikua me Sukses - ShprehPakënaqësinë',
-    description: 'Emaili juaj është verifikuar me sukses. Tani mund të vazhdoni me identifikimin në platformën ShprehPakënaqësinë.',
+    title: 'Emaili u Verifikua me Sukses - ShfaqPakënaqësinë',
+    description: 'Emaili juaj është verifikuar me sukses. Tani mund të vazhdoni me identifikimin në platformën ShfaqPakënaqësinë.',
     robots: {
       index: false,
       follow: false,

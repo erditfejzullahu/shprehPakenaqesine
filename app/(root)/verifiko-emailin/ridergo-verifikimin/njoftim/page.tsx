@@ -11,7 +11,7 @@ import { GrMail } from 'react-icons/gr'
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Emaili u Dërgua për Verifikim - ShprehPakënaqësinë',
+    title: 'Emaili u Dërgua për Verifikim - ShfaqPakënaqësinë',
     description: 'U dërgua një email për të verifikuar llogarinë tuaj. Kontrolloni inbox-in brenda 24 orëve.',
     robots: {
       index: false,

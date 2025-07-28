@@ -12,7 +12,7 @@ import Video from '@/components/Video';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Verifikimi Dështoi - ShprehPakënaqësinë',
+    title: 'Verifikimi Dështoi - ShfaqPakënaqësinë',
     description: 'Verifikimi i llogarisë tuaj ka dështuar. Ju mund të ridërgoni emailin ose të na kontaktoni për ndihmë.',
     robots: {
       index: false,

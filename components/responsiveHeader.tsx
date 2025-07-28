@@ -107,7 +107,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
             whileHover={{ rotateY: 15 }} 
             className="inline-block"
           >
-            ShprehPakënaqësinë
+            ShfaqPakënaqësinë
           </motion.span>
         </Link>
 
@@ -187,7 +187,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
                             whileHover={{ rotateY: 15 }} 
                             className="inline-block"
                         >
-                            ShprehPakënaqësinë
+                            ShfaqPakënaqësinë
                         </motion.span>
                     </Link>
                 </div>
@@ -230,7 +230,7 @@ export default function ResponsiveHeader({ session }: { session: Session | null 
                   transition={{ delay: 0.5 }}
                   className="text-gray-500 text-sm mt-4 max-[331px]:text-center mx-auto pb-2"
                 >
-                  © {new Date().getFullYear()} <Link onClick={() => setIsOpen(false)} href={"/"} className='text-indigo-600'>ShprehPakënaqësinë</Link>
+                  © {new Date().getFullYear()} <Link onClick={() => setIsOpen(false)} href={"/"} className='text-indigo-600'>ShfaqPakënaqësinë</Link>
                 </motion.div>
               </div>
             </motion.div>
