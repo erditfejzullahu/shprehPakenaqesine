@@ -40,7 +40,7 @@ const CompanyCard = ({
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-md overflow-hidden border border-gray-200">
             <Image
-              src={logoUrl}
+              src={`/serve${logoUrl}`}
               width={64}
               height={64}
               alt={name}
@@ -132,7 +132,7 @@ const CompanyCard = ({
             {images.slice(0, 3).map((img, index) => (
               <div key={index} className="flex-shrink-0">
                 <Image
-                  src={img || process.env.NEXT_PUBLIC_BASE_URL + img}
+                  src={`/serve${img}`}
                   width={120}
                   height={80}
                   unoptimized

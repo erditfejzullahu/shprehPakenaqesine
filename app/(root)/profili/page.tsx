@@ -68,7 +68,7 @@ const page = async ({searchParams}: {searchParams: Promise<{redirected?: string}
                     <div className="relative">
                     <Image 
                         className="w-24 h-24 rounded-full border-4 border-indigo-100 object-cover" 
-                        src={session.user.userProfileImage} 
+                        src={`/serve${session.user.userProfileImage}`} 
                         unoptimized
                         alt={`Imazhi i ${session.user.username}`}
                         width={96}

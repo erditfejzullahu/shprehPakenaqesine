@@ -364,7 +364,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                       width={100}
                       height={100}
                       unoptimized
-                      src={`${data.complaint.user.userProfileImage}`} 
+                      src={`serve/${data.complaint.user.userProfileImage}`} 
                       alt={`${data.complaint.user.fullName}'s avatar`} 
                       className="h-12 w-12 rounded-full"
                     />

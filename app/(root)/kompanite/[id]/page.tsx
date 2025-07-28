@@ -130,7 +130,8 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
       throw new Error('Dicka shkoi gabim')
     }
     const data: CompanyPerIdInterface = await response.json();
-
+    console.log(data.company.logoUrl, ' logoo');
+    
   return (
     <div className="min-h-screen bg-gray-50">
         {/* Header */}
@@ -146,9 +147,10 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
               Kthehu tek kompanitë
             </Link>
             <div className="flex flex-row max-[400px]:flex-col items-start gap-4 max-[400px]:gap-2">
-              <Image 
-                src={data.company.logoUrl} 
+              <Image
+                src={`/serve${data.company.logoUrl}`} 
                 alt={`${data.company.name} logo`} 
+                unoptimized
                 width={64}
                 height={64}
                 className="w-16 h-16 max-[400px]:w-24 max-[400px]:h-24 rounded-md object-contain border border-gray-200"

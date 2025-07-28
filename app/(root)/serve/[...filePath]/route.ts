@@ -8,8 +8,12 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{filePath
     if(!filePath || !filePath.length){
         return new Response("Invalid path", {status: 400})
     }
+
+    console.log(filePath, ' filepath');
     
-    const fileDir = path.join(process.cwd(), ...filePath)
+    
+    const fileDir = path.join(process.cwd(), 'public', ...filePath)
+    console.log(fileDir, '  filedir');
     
     if(fileDir.includes("..")){
         return new Response('Invalid path', {status: 400})
