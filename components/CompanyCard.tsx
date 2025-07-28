@@ -44,6 +44,7 @@ const CompanyCard = ({
               width={64}
               height={64}
               alt={name}
+              unoptimized
               className="w-full h-full object-cover"
             />
           </div>
@@ -134,6 +135,7 @@ const CompanyCard = ({
                   src={img || process.env.NEXT_PUBLIC_BASE_URL + img}
                   width={120}
                   height={80}
+                  unoptimized
                   alt={`${name} gallery image ${index + 1}`}
                   className="w-24 h-16 object-cover rounded-md border border-gray-200"
                 />
