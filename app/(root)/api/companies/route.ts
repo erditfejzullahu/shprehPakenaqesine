@@ -112,12 +112,6 @@ export async function GET(req: NextRequest) {
         })));  
         const filteredOrNotFilteredCount = await prisma.companies.count({where})
 
-        if(!searchParams){
-            if(companies.length === 0){
-                return NextResponse.json({message: "No companies found"}, {status: 404})
-            }
-        }
-
         const hasMore = page * limit < filteredOrNotFilteredCount;
         return NextResponse.json({companies, hasMore, filteredOrNotFilteredCount}, {status: 200, headers: ratelimiter.responseHeaders})
         

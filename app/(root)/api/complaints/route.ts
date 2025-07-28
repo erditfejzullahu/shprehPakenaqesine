@@ -55,10 +55,6 @@ export const GET = async (req: NextRequest) => {
             return complaint;
         })
 
-        if(complaints.length === 0){
-            return NextResponse.json({message: "No complaints found"}, {status: 404})
-        }
-
         return NextResponse.json({complaints: complaintsSafe}, {status: 200, headers: ratelimiter.responseHeaders})
     } catch (error) {
         console.error(error)
