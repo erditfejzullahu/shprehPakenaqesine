@@ -127,8 +127,8 @@ const CompanyCard = ({
       </div>
 
       {images && images.length > 0 ? (
-        <div className="mt-2">
-          <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="mt-auto">
+          <div className="flex gap-2 overflow-x-auto">
             {images.slice(0, 3).map((img, index) => (
               <div key={index} className="flex-shrink-0">
                 <Image
