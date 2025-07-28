@@ -251,7 +251,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                         <div className={`grid ${(data.complaint.attachments.length + data.complaint.audiosAttached.length + data.complaint.videosAttached.length > 3) ? "grid-flow-col-dense  grid-rows-2" : "grid-flow-col-dense grid-rows-1"}  gap-3 min-w-full`}>
                           {/* Documents */}
                           {data.complaint.attachments.map((file, index) => (
-                            <Link href={`${file}`} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100 w-full">
+                            <Link href={`/serve${file}`} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100 w-full">
                               {file.includes('application/pdf') || 
                               file.includes('application/msword') || 
                               file.includes('vnd.openxmlformats-officedocument.wordprocessingml.document') || 
@@ -274,7 +274,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
 
                           {/* Videos */}
                           {data.complaint.videosAttached?.map((file, index) => (
-                            <Link href={`${file}`} aria-description='attachment' target='_blank' key={`video-${index}`} className="shadow-md p-3 flex items-center">
+                            <Link href={`/serve${file}`} aria-description='attachment' target='_blank' key={`video-${index}`} className="shadow-md p-3 flex items-center">
                               <FaFileVideo className='text-gray-400 w-8 h-8 mr-2' />
                               <div className="truncate">
                                 <p className="text-sm font-medium text-gray-900 truncate">Video/Inqizime</p>
@@ -285,7 +285,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
 
                           {/* Audios */}
                           {data.complaint.audiosAttached?.map((file, index) => (
-                            <Link href={`${file}`} aria-description='attachment' target='_blank' key={`audio-${index}`} className="shadow-md p-3 flex items-center">
+                            <Link href={`/serve${file}`} aria-description='attachment' target='_blank' key={`audio-${index}`} className="shadow-md p-3 flex items-center">
                               <FaFileAudio className='text-gray-400 w-8 h-8 mr-2' />
                               <div className="truncate">
                                 <p className="text-sm font-medium text-gray-900 truncate">Audio/Inqizime</p>
