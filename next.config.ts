@@ -47,40 +47,40 @@ const nextConfig: NextConfig = {
       ? { exclude: ['error'] }  // Client-side only removal
       : false,
   },
-  async headers() {
-    return [
-      {
-        source: '/_next/static/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable'
-          }
-        ]
-      },
-      {
-        source: "/static/(.*)", // Caches images/fonts
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, must-revalidate",
-          },
-        ],
-      },
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: process.env.NODE_ENV === 'development'
-              ? 'no-cache'
-              : 'private, no-cache, max-age=0, must-revalidate'
-          }
-        ]
-      },
-    ]
-  },
-  productionBrowserSourceMaps: false
+  // async headers() {
+  //   return [
+  //     {
+  //       source: '/_next/static/(.*)',
+  //       headers: [
+  //         {
+  //           key: 'Cache-Control',
+  //           value: 'public, max-age=31536000, immutable'
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       source: "/static/(.*)", // Caches images/fonts
+  //       headers: [
+  //         {
+  //           key: "Cache-Control",
+  //           value: "public, max-age=31536000, must-revalidate",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       source: '/:path*',
+  //       headers: [
+  //         {
+  //           key: 'Cache-Control',
+  //           value: process.env.NODE_ENV === 'development'
+  //             ? 'no-cache'
+  //             : 'private, no-cache, max-age=0, must-revalidate'
+  //         }
+  //       ]
+  //     },
+  //   ]
+  // },
+  // productionBrowserSourceMaps: false
 };
 
 // ANALYZE=true next build
