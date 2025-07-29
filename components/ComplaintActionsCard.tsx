@@ -106,12 +106,13 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
           setAttachmentPreviews([])
           setAudioPreviews([])
           setVideoPreviews([])
+          router.refresh();
         }
       } catch (error: any) {
         console.error(error)
         toast.error(error.response.data.message || "Dicka shkoi gabim")
       }
-    }, [contributeReset])
+    }, [contributeReset, router])
 
     const removeItems = (index: number, type: "attachments" | "audiosAttached" | "videosAttached") => {
       switch (type) {
