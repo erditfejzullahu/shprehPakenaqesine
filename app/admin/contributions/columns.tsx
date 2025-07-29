@@ -2,14 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { ExtendedContribution } from "@/types/admin"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-
-import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import ContributionsTableComponent from "@/components/admin/ContributionsTableComponent"
 import ContributionActions from "./contributionActions"
 
 export const columns: ColumnDef<ExtendedContribution>[] = [

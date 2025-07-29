@@ -29,7 +29,7 @@ interface ReportsCardProps {
   complaint: {
     id: string;
     title: string;
-    company: {
+    company?: {
       id: string;
       name: string;
     } | null;

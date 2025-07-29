@@ -204,7 +204,7 @@ const ContributionActions = ({ contribution }: {contribution: ExtendedContributi
             <div className="flex items-center gap-3">
                 <div className="relative w-10 h-10 rounded-full overflow-hidden">
                 <Image
-                    src={contribution.user.userProfileImage}
+                    src={`/serve${contribution.user.userProfileImage}`}
                     alt={contribution.user.fullName}
                     fill
                     className="object-cover"
@@ -227,7 +227,7 @@ const ContributionActions = ({ contribution }: {contribution: ExtendedContributi
                 <div className="relative">
                 <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
                     <Image
-                    src={images[currentImageIndex]}
+                    src={`/serve${images[currentImageIndex]}`}
                     alt={`Attachment ${currentImageIndex + 1}`}
                     fill
                     className="object-contain cursor-pointer"

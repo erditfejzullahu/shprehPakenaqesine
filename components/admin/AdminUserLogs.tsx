@@ -89,7 +89,7 @@ const AdminUserLogs = () => {
                 <div className='flex flex-col items-center gap-2'>
                     <div>
                         <Image 
-                            src={info.row.original.user.userProfileImage}
+                            src={`/serve${info.row.original.user.userProfileImage}`}
                             className='size-12 rounded-full'
                             alt={info.row.original.user.fullName}
                             width={42}

@@ -2,17 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { ExtendedReport } from "@/types/admin"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
 import ReportActions from "./reportActions"
 
 export const columns: ColumnDef<ExtendedReport>[] = [

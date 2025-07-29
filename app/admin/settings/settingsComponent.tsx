@@ -46,7 +46,7 @@ const SettingsComponent = ({session}: {session: Session}) => {
 
   useEffect(() => {
     if(session.user.userProfileImage){
-      imageUrlToBase64(session.user.userProfileImage)
+      imageUrlToBase64(`/serve${session.user.userProfileImage}`)
           .then(base64 => setValue("userProfileImage", base64))
           .catch(console.error)
     }

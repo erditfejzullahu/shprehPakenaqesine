@@ -71,7 +71,7 @@ const CompanyActions = ({company}: {company: Companies}) => {
     
 
     if(company.logoUrl){
-        imageUrlToBase64(company.logoUrl)
+        imageUrlToBase64(`/serve${company.logoUrl}`)
             .then(base64 => setValue("logoAttachment", base64))
             .catch(console.error)
     }
@@ -79,7 +79,7 @@ const CompanyActions = ({company}: {company: Companies}) => {
     if(company.images.length > 0){
         let attachmentImages: string[] = []
         for(const image of company.images){
-            imageUrlToBase64(image)
+            imageUrlToBase64(`/serve${image}`)
                 .then(base64 => attachmentImages.push(base64))
                 .catch(console.error)
         }

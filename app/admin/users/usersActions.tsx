@@ -51,11 +51,9 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
 
     if(open && users){
         if(users.userProfileImage){        
-          imageUrlToBase64(users.userProfileImage)
+          imageUrlToBase64(`/serve${users.userProfileImage}`)
               .then(base64 => {setValue("userProfileImage", base64); console.log(base64, ' fotooo??')})
               .catch(console.error);
-          
-          console.log(getValues("userProfileImage"), ' foto?')
         }
     }
     
@@ -89,9 +87,7 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
       reader.readAsDataURL(file)
     }, [])
 
-    const onSubmit = useCallback(async (data: UserEditFormValues) => {
-        console.log(data);
-        
+    const onSubmit = useCallback(async (data: UserEditFormValues) => {        
       try {
         const response = await api.patch(`/api/admin/users/${users.id}`, data)
 

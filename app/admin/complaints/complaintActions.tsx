@@ -99,7 +99,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
       if(complaint.attachments && complaint.attachments.length > 0){
         let attachments: string[] = []
         for(const attach of complaint.attachments){
-            imageUrlToBase64(attach)
+            imageUrlToBase64(`/serve${attach}`)
                 .then(base64 => attachments.push(base64))
                 .catch(console.error)
         }
@@ -110,7 +110,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
       if(complaint.audiosAttached && complaint.audiosAttached.length > 0){
         let audAttachments: string[] = []
         for(const attach of complaint.audiosAttached){
-            imageUrlToBase64(attach)
+            imageUrlToBase64(`/serve${attach}`)
                 .then(base64 => audAttachments.push(base64))
                 .catch(console.error)
         }
@@ -121,7 +121,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
       if(complaint.videosAttached && complaint.videosAttached.length > 0){
         let vidAttachments: string[] = []
         for(const attach of complaint.videosAttached){
-            imageUrlToBase64(attach)
+            imageUrlToBase64(`/serve${attach}`)
                 .then(base64 => vidAttachments.push(base64))
                 .catch(console.error)
         }

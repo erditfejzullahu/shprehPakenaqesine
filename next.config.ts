@@ -25,9 +25,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true
   },
-  typescript: {
-    ignoreBuildErrors: true //remove
-  },
+  // typescript: {
+  //   ignoreBuildErrors: true //remove
+  // },
   compiler: {
     styledComponents: true,
     reactRemoveProperties: true,
