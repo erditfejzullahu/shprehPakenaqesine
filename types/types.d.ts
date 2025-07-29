@@ -25,6 +25,7 @@ export interface MyProfileComplaints{
     companyId?: string;
     companyName?: string;
     title: string;
+    status: "PENDING" | "ACCEPTED";
     createdAt: Date;
     upVotes: number;
     resolvedStatus: ResolvedStatus;

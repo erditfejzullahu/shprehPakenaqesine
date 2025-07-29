@@ -29,6 +29,7 @@ import {
 import UpdateProfileData from './UpdateProfileData';
 import ProfileUserLogs from './ProfileUserLogs';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Badge } from './ui/badge';
 
 
 
@@ -44,13 +45,15 @@ const MyProfileData = ({session}: {session: Session}) => {
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [votesSort, setVotesSort] = useState<'most' | 'least'>('most');
 
-  const {data, isLoading, isError, refetch} = useQuery({
+  const {data, isLoading, isError, error, refetch} = useQuery({
     queryKey: ['userProfileDetails', session.user.id],
     queryFn: async () => {
       const response = await api.get<MyProfileComplaintsContributions>(`/api/auth/userAuthedProfileDetails`)
       return response.data;
     }
   })
+
+  console.log(error)
 
   const contributions = data?.details?.contributions || [];
   const complaints = data?.details?.complaints || [];
@@ -301,6 +304,7 @@ const MyProfileData = ({session}: {session: Session}) => {
                     </div>
 
                     <div className="flex justify-between items-start gap-1">
+                      <Badge variant={complaint.status === "ACCEPTED" ? "outline" : "destructive"} className='absolute right-0 top-1 left-0 mx-auto uppercase'>{complaint.status === "PENDING" ? "Në pritje" : "E pranuar"}</Badge>
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">{complaint.title}</h3>
                         {complaint.companyId && complaint.companyName ? (

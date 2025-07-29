@@ -12,6 +12,7 @@ import { MUNICIPALITY_IMAGES } from '@/data/municipalities';
 import DeleteComplaintComponent from '@/components/DeleteComplaintComponent';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
+import { Badge } from '@/components/ui/badge';
 
 export const revalidate = 3600;
 export const dynamicParams = true
@@ -212,8 +213,8 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left Column - Complaint Content */}
             <div className="lg:w-2/3">
-              <div className="bg-white shadow-lg overflow-hidden mb-6 relative">
-
+              <div className="bg-white shadow-lg mb-6 relative">
+                {data.complaint.status === "PENDING" && <Badge className='absolute rounded-none -left-2 -top-2 cursor-pointer uppercase' variant={"destructive"}>Në pritje</Badge>}
                 <DeleteComplaintComponent complaint={data.complaint} session={session}/>
                 
                 <div className="p-6 sm:p-8">
@@ -319,7 +320,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                   <h3 className="text-lg font-medium text-gray-900 mb-4">{data.complaint.company ? "Ndaj kompanisë" : "Ndaj komunës"}</h3>
                   <div className="flex items-center gap-4 mb-4">
                     <img 
-                      src={data.complaint.company ? data.complaint.company.logoUrl : MUNICIPALITY_IMAGES.find(img => img.municipality === data.complaint.municipality)?.image} //data.complaint.municipaltiy 
+                      src={data.complaint.company ? `/serve${data.complaint.company.logoUrl}` : MUNICIPALITY_IMAGES.find(img => img.municipality === data.complaint.municipality)?.image} //data.complaint.municipaltiy 
                       alt={`${data.complaint.company ? data.complaint.company.name : data.complaint.municipality.replace("_", " ")} logo`} 
                       className="h-12 w-12 rounded-md object-contain"
                     />

@@ -124,6 +124,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
             createdAt: complaintQuery.createdAt,
             updatedAt: complaintQuery.updatedAt,
             attachments: complaintQuery.attachments,
+            status: complaintQuery.status,
             audiosAttached: complaintQuery.audiosAttached,
             videosAttached: complaintQuery.videosAttached,
             upVotes: complaintQuery.upVotes,

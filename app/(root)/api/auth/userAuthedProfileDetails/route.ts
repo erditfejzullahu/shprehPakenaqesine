@@ -27,16 +27,11 @@ export const GET = async (req: NextRequest) => {
             where: {id: session.user.id},
             select: {
                 complaints: {
-                    where: {
-                        AND: [
-                            {status: "ACCEPTED"},
-                            {deleted: false}
-                        ]
-                    },
                     select: {
                         title: true,
                         createdAt: true,
                         upVotes: true,
+                        status: true,
                         resolvedStatus: true,
                         id: true,
                         municipality: true,
@@ -52,14 +47,6 @@ export const GET = async (req: NextRequest) => {
                     }
                 },
                 contributions: {
-                    where: {
-                        AND: [
-                            {complaint: {
-                                status: "ACCEPTED",
-                                deleted: false
-                            }},
-                        ]
-                    },
                     select: {
                         complaint: {
                             select: {
@@ -69,7 +56,8 @@ export const GET = async (req: NextRequest) => {
                                 municipality: true
                             }
                         },
-                        createdAt: true
+                        createdAt: true,
+                        contributionValidated: true,
                     },
                     orderBy: {
                         createdAt: "desc"
@@ -90,6 +78,7 @@ export const GET = async (req: NextRequest) => {
                     companyName: complaint.company?.name,
                     title: complaint.title,
                     municipality: complaint.municipality,
+                    status: complaint.status,
                     createdAt: complaint.createdAt,
                     upVotes: complaint.upVotes,
                     resolvedStatus: complaint.resolvedStatus,
