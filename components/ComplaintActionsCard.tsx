@@ -24,7 +24,7 @@ type ValidationSchema = z.infer<typeof contributionsSchema>;
 type ReportsValidationSchema = z.infer<typeof reportsSchema>;
 
 const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: ComplantPerIdInterface, session: Session | null}) => {
-  if(!session) return null;
+  // if(!session) return null;
     const router = useRouter();
     const {update} = useSession();
     const [isUpvoting, setIsUpvoting] = useState(false)
@@ -100,7 +100,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
         })
         if(response.data.success){
           toast.success(`Aplikimi per kontribuim ne kete ankese/raport shkoi me sukses. Do njoftoheni kur te behet validimi i evidences tuaj.`)
-          await update({contributions: session?.user.contributions + 1})
+          if(session){
+            await update({contributions: session?.user.contributions + 1})
+          }
           setContributeDialog(false)
           contributeReset()
           setAttachmentPreviews([])
