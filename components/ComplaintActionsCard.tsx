@@ -373,7 +373,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                             </div>}
                             
                             {attachmentPreviews.length > 0 && (
-                              <div className="flex flex-nowrap overflow-x-scroll gap-4">
+                              <div className="flex flex-nowrap overflow-x-auto gap-4">
                                 {attachmentPreviews.map((preview, index) => (
                                   <div key={index} className="relative group flex-shrink-0">
                                     <img 
@@ -428,7 +428,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${audioProgress}%`}} />
                             </div>}
                             {audioPreviews.length > 0 && (
-                              <div className="flex flex-nowrap overflow-x-scroll gap-4">
+                              <div className="flex flex-nowrap overflow-x-auto gap-4">
                                 {audioPreviews.map((preview, index) => (
                                   <div key={index} className="relative group flex-shrink-0">
                                     <audio controls src={preview} className="min-w-full h-44" />
@@ -479,7 +479,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                               <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${videoProgress}%`}} />
                             </div>}
                             {videoPreviews.length > 0 && (
-                              <div className="flex flex-nowrap overflow-x-scroll gap-4">
+                              <div className="flex flex-nowrap overflow-x-auto gap-4">
                                 {videoPreviews.map((preview, index) => (
                                   <div key={index} className="relative group flex-shrink-0">
                                     <video controls className="min-w-full h-44 rounded" src={preview} />

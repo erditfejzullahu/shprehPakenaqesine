@@ -24,6 +24,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { cn } from '@/lib/utils'
 // import Image from 'next/image'
 import { useSession } from 'next-auth/react'
+import { GrDocument } from 'react-icons/gr'
 
 type ComplaintsType = z.infer<typeof createComplaintsSchema> 
 
@@ -31,9 +32,9 @@ const CreateComplaintForm = () => {
   const {update, data: session} = useSession();
   if(!session) return null;
   const router = useRouter();
-  const [attachmentPreviews, setAttachmentPreviews] = useState<string[]>([])
-  const [audioPreviews, setAudioPreviews] = useState<string[]>([]);
-  const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
+  const [attachmentPreviews, setAttachmentPreviews] = useState<{name: string, file: string}[]>([])
+  const [audioPreviews, setAudioPreviews] = useState<{name: string, file: string}[]>([]);
+  const [videoPreviews, setVideoPreviews] = useState<{name: string, file: string}[]>([]);
 
   const [openCompaniesCombobox, setOpenCompaniesCombobox] = useState(false)
   const [openCategories, setOpenCategories] = useState(false)
@@ -116,9 +117,10 @@ const CreateComplaintForm = () => {
     fieldOnChange: (value: string[]) => void
   ) => {
     const files = event.target.files;
+        
     if (!files || files.length === 0) return;
 
-    const newPreviews: string[] = [];
+    const newPreviews: {name: string, file: string}[] = [];
     const fileReaders: FileReader[] = [];
     let filesRead = 0;
     setAttachmentProgress(0)
@@ -137,33 +139,34 @@ const CreateComplaintForm = () => {
       reader.onloadend = () => {
         filesRead++;
         if (reader.result) {
-          newPreviews.push(reader.result as string);
+          newPreviews.push({name: file.name, file: reader.result as string});
         }
         
         if (filesRead === files.length) {
           clearInterval(interval);
           const updatedPreviews = [...attachmentPreviews, ...newPreviews];
           setAttachmentPreviews(updatedPreviews);
-          fieldOnChange(updatedPreviews);
+          fieldOnChange(updatedPreviews.map((item) => item.file));
           setAttachmentProgress(null)
         }
       };
       
       reader.readAsDataURL(file);
+
     });
   }, []);
 
   const handleMediaChange = useCallback((
     event: React.ChangeEvent<HTMLInputElement>,
     fieldOnChange: (value: string[]) => void,
-    setPreviews: React.Dispatch<React.SetStateAction<string[]>>,
-    currentPreviews: string[],
+    setPreviews: React.Dispatch<React.SetStateAction<{name: string, file: string}[]>>,
+    currentPreviews: {name: string, file: string}[],
     acceptType: string
   ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
-    const newPreviews: string[] = [];
+    const newPreviews: {name: string, file: string}[] = [];
     const fileReaders: FileReader[] = [];
     let filesRead = 0;
 
@@ -197,7 +200,7 @@ const CreateComplaintForm = () => {
       reader.onloadend = () => {
         filesRead++;
         if (reader.result) {
-          newPreviews.push(reader.result as string);
+          newPreviews.push({name: file.name, file: reader.result as string});
         }
 
         if (filesRead === newPreviews.length) {
@@ -212,7 +215,7 @@ const CreateComplaintForm = () => {
           }
           const updatedPreviews = [...currentPreviews, ...newPreviews];
           setPreviews(updatedPreviews);
-          fieldOnChange(updatedPreviews);
+          fieldOnChange(updatedPreviews.map((item) => item.file));
         }
       };
 
@@ -226,22 +229,26 @@ const CreateComplaintForm = () => {
   const removeMedia = useCallback((
     index: number,
     fieldOnChange: (value: string[]) => void,
-    setPreviews: React.Dispatch<React.SetStateAction<string[]>>,
-    currentPreviews: string[]
+    setPreviews: React.Dispatch<React.SetStateAction<{name: string, file: string}[]>>,
+    currentPreviews: {name: string, file: string}[]
   ) => {
     const updatedPreviews = currentPreviews.filter((_, i) => i !== index);
     setPreviews(updatedPreviews);
-    fieldOnChange(updatedPreviews);
-  }, [audioPreviews, videoPreviews]);
+    fieldOnChange(updatedPreviews.map((item) => item.file));
+  }, []);
+
 
   const removeImage = useCallback((
     index: number,
     fieldOnChange: (value: string[]) => void
   ) => {
-    const updatedPreviews = attachmentPreviews.filter((_, i) => i !== index);
-    setAttachmentPreviews(updatedPreviews);
-    fieldOnChange(updatedPreviews);
-  }, [attachmentPreviews]);
+    setAttachmentPreviews(prev => {
+      const updatedPreviews = prev.filter((_, i) => i !== index);
+      console.log(updatedPreviews.map((item) => item.file))
+      fieldOnChange(updatedPreviews.map((item) => item.file));
+      return updatedPreviews;
+    });
+  }, []);
 
 
   return (
@@ -475,20 +482,42 @@ const CreateComplaintForm = () => {
           name="attachments"
           render={({ field: { onChange } }) => (
               <div className="space-y-2">
-              {attachmentPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
-                display: 'flex', 
-                flexWrap: 'wrap', 
-                gap: '10px', 
-              }}>
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                    <p className="text-sm text-center px-1 text-muted-foreground">
+                      Klikoni për të ngarkuar Imazhe/Dokumente <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                    </p>
+                  </div>
+                  <Input 
+                    id='attachments'
+                    type="file"
+                    multiple 
+                    className="hidden" 
+                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                    onChange={(e) => handleFileChange(e, onChange)}
+                  />
+                </label>
+              {attachmentPreviews.length > 0 && <div className='shadow-lg p-4 mt-2 flex gap-3 overflow-x-auto w-full'>
                 {attachmentPreviews.map((preview, index) => (
-                  <div key={index} style={{ position: 'relative' }}>
-                    <Image
-                      src={preview} 
-                      alt={`preview ${index}`} 
-                      width={100}
-                      height={100}
-                      className='h-44 w-full'
-                    />
+                  <div key={index} className='flex-shrink-0' style={{ position: 'relative' }}>
+                    {preview.file.includes('image') ? (
+                      <div className='flex flex-col items-center'>
+                        <Image
+                          src={preview.file} 
+                          alt={`preview ${index}`} 
+                          width={100}
+                          height={100}
+                          className='h-44 w-fit object-contain mx-auto'
+                        />
+                        <p className='text-sm text-gray-600 max-w-[120px] line-clamp-1'>{preview.name} asdadasdasdasdasdasdasdasdasdasd</p>
+                      </div>
+                    ) : (
+                      <div className='flex flex-col items-center'>
+                        <GrDocument className='w-fit h-44 p-1 border'/>
+                        <p className='text-sm text-gray-600 max-w-[100px] line-clamp-1'>{preview.name}</p>
+                      </div>
+                    )}
                     <button 
                       type="button"
                       className='flex items-center justify-center'
@@ -510,24 +539,7 @@ const CreateComplaintForm = () => {
                     </button>
                   </div>
                   ))}
-                </div>) : (
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-sm text-center px-1 text-muted-foreground">
-                      Klikoni për të ngarkuar Imazhe/Dokumente <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                    </p>
-                  </div>
-                  <Input 
-                    id='attachments'
-                    type="file"
-                    multiple 
-                    className="hidden" 
-                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                    onChange={(e) => handleFileChange(e, onChange)}
-                  />
-                </label>
-              )}
+                </div>}
               {typeof attachmentProgress === "number" && attachmentProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
                 <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${attachmentProgress}%`}} />
               </div>}
@@ -546,18 +558,33 @@ const CreateComplaintForm = () => {
             name="audiosAttached"
             render={({ field: { onChange } }) => (
               <div className="space-y-2">
-                {audioPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
-                  display: 'flex', 
-                  flexWrap: 'wrap', 
-                  gap: '10px', 
-                }}>
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                    <p className="text-sm text-center px-1 text-muted-foreground">
+                      Klikoni për të ngarkuar Audio/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                    </p>
+                  </div>
+                  <Input 
+                    id='audioInput'
+                    type="file"
+                    multiple 
+                    className="hidden" 
+                    accept="audio/*"
+                    onChange={(e) => handleMediaChange(e, onChange, setAudioPreviews, audioPreviews, 'audio')}
+                  />
+                </label>
+                {audioPreviews.length > 0 && <div className='shadow-lg p-4 mt-2 overflow-x-auto w-full flex flex-row gap-3'>
                   {audioPreviews.map((preview, index) => (
-                    <div key={index} style={{ position: 'relative' }}>
-                      <audio
-                        src={preview} 
-                        controls
-                        className='w-full h-44'
-                      />
+                    <div key={index} style={{ position: 'relative' }} className='flex-shrink-0'>
+                      <div className='flex flex-col items-center'>
+                        <audio
+                          src={preview.file} 
+                          controls
+                          className='w-full h-44'
+                        />
+                        <p className='text-sm text-gray-600 max-w-[140px] line-clamp-1'>{preview.name}</p>
+                      </div>
                       <button 
                         type="button"
                         className='flex items-center justify-center'
@@ -579,24 +606,7 @@ const CreateComplaintForm = () => {
                       </button>
                     </div>
                     ))}
-                  </div>) : (
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                      <p className="text-sm text-center px-1 text-muted-foreground">
-                        Klikoni për të ngarkuar Audio/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                      </p>
-                    </div>
-                    <Input 
-                      id='audioInput'
-                      type="file"
-                      multiple 
-                      className="hidden" 
-                      accept="audio/*"
-                      onChange={(e) => handleMediaChange(e, onChange, setAudioPreviews, audioPreviews, 'audio')}
-                    />
-                  </label>
-                )}
+                  </div>}
                 {typeof audioProgress === "number" && audioProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
                   <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${audioProgress}%`}} />
                 </div>}
@@ -615,18 +625,33 @@ const CreateComplaintForm = () => {
             render={({ field: { onChange } }) => (
               <>
               <div className="space-y-2">
-                {videoPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
-                  display: 'flex', 
-                  flexWrap: 'wrap', 
-                  gap: '10px', 
-                }}>
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                      <p className="text-sm text-center px-1 text-muted-foreground">
+                        Klikoni për të ngarkuar Video/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                      </p>
+                    </div>
+                    <Input 
+                      id='videoInput'
+                      type="file"
+                      multiple 
+                      className="hidden" 
+                      accept="video/*"
+                      onChange={(e) => handleMediaChange(e, onChange, setVideoPreviews, videoPreviews, 'video')}
+                    />
+                  </label>
+                {videoPreviews.length > 0 && <div className='shadow-lg p-4 mt-2 flex flex-row gap-3 w-full overflow-x-auto'>
                   {videoPreviews.map((preview, index) => (
-                    <div key={index} style={{ position: 'relative' }}>
-                      <video
-                        src={preview} 
-                        controls
-                        className='w-full h-44'
-                      />
+                    <div key={index} style={{ position: 'relative' }} className='flex-shrink-0'>
+                      <div className='flex flex-col items-center'>
+                        <video
+                          src={preview.file} 
+                          controls
+                          className='w-full h-44'
+                        />
+                        <p className='text-sm text-gray-600 max-w-[140px] line-clamp-1'>{preview.name}</p>
+                      </div>
                       <button 
                         type="button"
                         className='flex items-center justify-center'
@@ -648,24 +673,7 @@ const CreateComplaintForm = () => {
                       </button>
                     </div>
                     ))}
-                  </div>) : (
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                      <p className="text-sm text-center px-1 text-muted-foreground">
-                        Klikoni për të ngarkuar Video/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                      </p>
-                    </div>
-                    <Input 
-                      id='videoInput'
-                      type="file"
-                      multiple 
-                      className="hidden" 
-                      accept="video/*"
-                      onChange={(e) => handleMediaChange(e, onChange, setVideoPreviews, videoPreviews, 'video')}
-                    />
-                  </label>
-                )}
+                  </div>}
                 {typeof videoProgress === "number" && videoProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
                   <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${videoProgress}%`}} />
                 </div>}

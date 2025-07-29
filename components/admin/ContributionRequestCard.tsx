@@ -175,7 +175,7 @@ const ContributionRequestCard = ({
       <div className="flex items-center gap-3">
         <div className="relative w-10 h-10 rounded-full overflow-hidden">
           <Image
-            src={`/serv${user.image}`}
+            src={`/serve${user.image}`}
             alt={user.name}
             fill
             className="object-cover"
@@ -199,7 +199,7 @@ const ContributionRequestCard = ({
         <div className="relative">
           <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
             <Image
-              src={`/serv${images[currentImageIndex]}`}
+              src={`/serve${images[currentImageIndex]}`}
               alt={`Attachment ${currentImageIndex + 1}`}
               fill
               className="object-contain cursor-pointer"
@@ -263,7 +263,7 @@ const ContributionRequestCard = ({
         <div className="relative">
           <div className="w-full bg-gray-100 rounded-lg overflow-hidden">
             <video
-              src={`/serv${videoAttachments[currentVideoIndex]}`}
+              src={`/serve${videoAttachments[currentVideoIndex]}`}
               controls
               className="w-full max-h-48"
             />
@@ -306,7 +306,7 @@ const ContributionRequestCard = ({
               </svg>
             </div>
             <audio
-              src={`/serv${audioAttachments[currentAudioIndex]}`}
+              src={`/serve${audioAttachments[currentAudioIndex]}`}
               controls
               className="flex-1"
             />
@@ -347,7 +347,7 @@ const ContributionRequestCard = ({
             {documents.map((doc, index) => (
               <a
                 key={index}
-                href={`/serv${doc}`}
+                href={`/serve${doc}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600"
