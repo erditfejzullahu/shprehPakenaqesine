@@ -23,10 +23,13 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command'
 import { cn } from '@/lib/utils'
 // import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 
 type ComplaintsType = z.infer<typeof createComplaintsSchema> 
 
 const CreateComplaintForm = () => {
+  const {update, data: session} = useSession();
+  if(!session) return null;
   const router = useRouter();
   const [attachmentPreviews, setAttachmentPreviews] = useState<string[]>([])
   const [audioPreviews, setAudioPreviews] = useState<string[]>([]);
@@ -82,8 +85,6 @@ const CreateComplaintForm = () => {
   
 
   const onSubmit = useCallback(async (data: ComplaintsType) => {
-    console.log(data);
-    
     try {
       const response = await api.post(`/api/createComplaint`, {
         companyId: data.companyId,
@@ -97,6 +98,9 @@ const CreateComplaintForm = () => {
       })
       if(response.data.success){
         toast.success('Ju sapo keni krijuar ankese/raportim me sukses!')
+        await update({
+          complaints: session?.user.complaints + 1
+        })
       }
       if(response.data.url){
         router.push(`/ankesat/${response.data.url}`)
@@ -471,7 +475,7 @@ const CreateComplaintForm = () => {
           name="attachments"
           render={({ field: { onChange } }) => (
               <div className="space-y-2">
-              {attachmentPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
+              {attachmentPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
                 display: 'flex', 
                 flexWrap: 'wrap', 
                 gap: '10px', 
@@ -542,7 +546,7 @@ const CreateComplaintForm = () => {
             name="audiosAttached"
             render={({ field: { onChange } }) => (
               <div className="space-y-2">
-                {audioPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
+                {audioPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
                   display: 'flex', 
                   flexWrap: 'wrap', 
                   gap: '10px', 
@@ -611,7 +615,7 @@ const CreateComplaintForm = () => {
             render={({ field: { onChange } }) => (
               <>
               <div className="space-y-2">
-                {videoPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
+                {videoPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
                   display: 'flex', 
                   flexWrap: 'wrap', 
                   gap: '10px', 

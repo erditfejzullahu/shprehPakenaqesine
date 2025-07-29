@@ -146,7 +146,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
                         right: right,
                         transformOrigin: "center"
                     }} 
-                    className={`absolute flex items-center justify-center size-20 -z-50 shadow-xl  bg-gradient-to-br from-red-400 via-black rounded-md opacity-[4%] to-indigo-600 `}
+                    className={`absolute flex items-center justify-center size-20 -z-50 shadow-lg  bg-gradient-to-br from-red-400 via-black rounded-md opacity-[4%] to-indigo-600 `}
                 >
                     <Image 
                         src={item.image}
@@ -177,7 +177,7 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
               <CTAButton classNames='max-[390px]:w-full!' text="Mëso më shumë" />
             </Link>
           </div>
-          <Link href={"/shto-kompani"} className="bottom-0 absolute rounded-tl-lg px-4 right-0 flex flex-row items-center gap-2 shadow-xl border-t p-2 bg-gray-50 hover:bg-gray-200 transition-colors">
+          <Link href={"/shto-kompani"} className="bottom-0 absolute rounded-tl-lg px-4 right-0 flex flex-row items-center gap-2 shadow-lg border-t p-2 bg-gray-50 hover:bg-gray-200 transition-colors">
           Shto kompani
           <FaPlusSquare size={24} color='#4f46e5'/>
           </Link>

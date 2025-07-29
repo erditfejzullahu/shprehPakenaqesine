@@ -27,6 +27,9 @@ export const GET = async (req: NextRequest) => {
             where: {id: session.user.id},
             select: {
                 complaints: {
+                    where: {
+                        deleted: false
+                    },
                     select: {
                         title: true,
                         createdAt: true,
@@ -47,6 +50,11 @@ export const GET = async (req: NextRequest) => {
                     }
                 },
                 contributions: {
+                    where: {
+                        complaint: {
+                            deleted: false
+                        }
+                    },
                     select: {
                         complaint: {
                             select: {

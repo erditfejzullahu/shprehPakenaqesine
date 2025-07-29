@@ -199,7 +199,7 @@ const ContactForm = () => {
                       name="attachments"
                       render={({ field: { onChange } }) => (
                           <div className="space-y-2">
-                          {attachmentPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
+                          {attachmentPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
                             display: 'flex', 
                             flexWrap: 'wrap', 
                             gap: '10px', 

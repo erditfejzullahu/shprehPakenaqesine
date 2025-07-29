@@ -554,7 +554,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
               name="attachments"
               render={({ field: { onChange } }) => (
                   <div className="space-y-2">
-                  {attachmentPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
+                  {attachmentPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
                     display: 'flex', 
                     flexWrap: 'wrap', 
                     gap: '10px', 
@@ -625,7 +625,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                 name="audiosAttached"
                 render={({ field: { onChange } }) => (
                   <div className="space-y-2">
-                    {audioPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
+                    {audioPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
                       display: 'flex', 
                       flexWrap: 'wrap', 
                       gap: '10px', 
@@ -694,7 +694,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                 render={({ field: { onChange } }) => (
                   <>
                   <div className="space-y-2">
-                    {videoPreviews.length > 0 ? ( <div className='shadow-xl p-4 mt-2' style={{ 
+                    {videoPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
                       display: 'flex', 
                       flexWrap: 'wrap', 
                       gap: '10px', 

@@ -193,7 +193,10 @@ export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
                     ...(session.fullName && { fullName: session.fullName }),
                     ...(session.username && { username: session.username }),
                     ...(session.userProfileImage && { userProfileImage: session.userProfileImage }),
-                    ...(typeof session.anonimity === "boolean" && { anonimity: session.anonimity })
+                    ...(typeof session.anonimity === "boolean" && { anonimity: session.anonimity }),
+                    ...(session.complaints && { complaints: session.complaints }),
+                    ...(session.contributions && { contributions: session.contributions }),
+                    ...(session.reputation && { reputation: session.reputation })
                   };
             }
             if (user) {

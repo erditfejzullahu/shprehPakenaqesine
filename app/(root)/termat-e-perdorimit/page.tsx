@@ -64,7 +64,7 @@ const page = () => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
         <main>
-            <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-xl">
+            <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight relative w-fit mx-auto">Termat e <span className='text-indigo-600'>Përdorimit</span>
                   <Image src={'/pin.png'} alt='pin' width={30} height={30} className='size-8 absolute -top-8 mx-auto -right-8 max-[380px]:right-0'/>
                 </h1>
