@@ -97,7 +97,8 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                         },
                         attachments: true,
                         audiosAttached: true,
-                        videosAttached: true
+                        videosAttached: true,
+                        contributionValidated: true,
                     }
                 },
             }
@@ -154,6 +155,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{id: stri
                     fullName: contribution.user.fullName,
                     reputation: contribution.user.reputation,
                 },
+                status: contribution.contributionValidated,
                 evidencesGiven: {
                     attachments: contribution.attachments.length,
                     audioAttachments: contribution.audiosAttached.length,

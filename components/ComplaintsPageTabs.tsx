@@ -14,6 +14,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { MdOutlinePending } from 'react-icons/md';
 
 type ActiveTab = "details" | "contributions" | "discussion"
 
@@ -73,8 +74,8 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
 
             {activeTab === 'details' && (
             <div className="bg-white shadow-lg overflow-hidden p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Detaje shtese</h3>
-                <p className="text-gray-600">Nuk ka detaje shtese.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Detaje shtesë</h3>
+                <p className="text-gray-600">Nuk ka detaje shtesë.</p>
             </div>
             )}
 
@@ -104,7 +105,7 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                                             Rep: {contribution.user.reputation}
                                         </span>
                                         </div>
-                                        <p className="mt-1 text-sm text-gray-600 max-[380px]:text-sm">Ka kontribuar ne kete ankese/raportim</p>
+                                        <p className="mt-1 text-sm text-gray-600 max-[380px]:text-sm">Ka kontribuar në këtë ankesë/raportim</p>
                                         <div className='flex flex-wrap gap-2 items-center mt-1'>
                                             {contribution.evidencesGiven.attachments !== 0 && <ReusableHoverCard 
                                                 trigger={
@@ -115,7 +116,7 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                                                 }
                                                 content={
                                                     <div>
-                                                        <span className='text-sm'>{contribution.user.fullName} Ka kontribuar me {contribution.evidencesGiven.attachments} Imazhe/Dokumente</span>
+                                                        <span className='text-sm'>{contribution.user.fullName} Ka kontribuar m {contribution.evidencesGiven.attachments} Imazhe/Dokumente</span>
                                                     </div>
                                                 }
                                             />}
@@ -145,6 +146,21 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                                                     </div>
                                                 }
                                             />}
+                                            {!contribution.status && (
+                                                <ReusableHoverCard 
+                                                    trigger={
+                                                        <div className='flex flex-row gap-1 items-center bg-red-500 rounded-sm px-1.5 py-1 cursor-pointer'>
+                                                            <MdOutlinePending size={17} color='#fff'/>
+                                                            <span className='text-xs font-semibld text-white uppercase'>Në pritje</span>
+                                                        </div>
+                                                    }
+                                                    content={
+                                                        <div>
+                                                            <span className='text-sm'>Kontribimet e {contribution.user.fullName} janë në rishikim.</span>
+                                                        </div>
+                                                    }
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                     </div>

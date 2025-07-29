@@ -70,6 +70,7 @@ export interface ComplaintPageContributions {
         audioAttachments: number
         videoAttachments: number
     },
+    status: boolean;
 }
 
 export interface ComplaintPerIdWithCompany extends Complaint {
