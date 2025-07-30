@@ -1,6 +1,7 @@
 import CTAButton from '@/components/CTAButton'
 import { DynamicCompanysQuery, DynamicComplaintsQuery, DynamicSubscriberForm } from '@/components/DynamicComponents'
 import FeatureCard from '@/components/FeatureCard'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 import { MUNICIPALITY_IMAGES } from '@/data/municipalities'
 import { Metadata } from 'next'
 import Image from 'next/image'
@@ -115,167 +116,170 @@ const getDiamondPosition = (index: number, spacing = 96) => { // Increased from 
 };
 
   return (
-    <div>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationStructuredData) }}
-      />
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="w-full max-w-6xl rounded-b-2xl mx-auto max-[640px]:pt-10! py-16 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative overflow-hidden">
-          <Image 
-            src={"/output-1.webp"}
-            alt='lines'
-            width={800}
-            height={800}
-            priority
-            quality={75}
-            className='w-full object-cover -z-50 opacity-5 h-full top-0 left-0 absolute'
-          />
-          {MUNICIPALITY_IMAGES.map((item, index) => {
-            const { top, right } = getDiamondPosition(index, 96);
-            return (
-                <div 
-                    key={item.municipality} 
-                    style={{
-                        top: top, 
-                        right: right,
-                        transformOrigin: "center"
-                    }} 
-                    className={`absolute flex items-center justify-center size-20 -z-50 shadow-lg  bg-gradient-to-br from-red-400 via-black rounded-md opacity-[4%] to-indigo-600 `}
-                >
-                    <Image 
-                        src={item.image}
-                        className='size-14 rounded-sm'
-                        alt={item.municipality}
-                        width={56}
-                        height={56}
-                        quality={40}
-                        loading="lazy"
-                    />
-                </div>
-            )
-          }
-          )}
+    <>
+      <div>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationStructuredData) }}
+        />
+        <main className="flex-1">
+          {/* Hero Section */}
+          <section className="w-full max-w-6xl rounded-b-2xl mx-auto max-[640px]:pt-10! py-16 px-4 sm:px-6 lg:px-8 text-center shadow-lg relative overflow-hidden">
+            <Image 
+              src={"/output-1.webp"}
+              alt='lines'
+              width={800}
+              height={800}
+              priority
+              quality={75}
+              className='w-full object-cover -z-50 opacity-5 h-full top-0 left-0 absolute'
+            />
+            {MUNICIPALITY_IMAGES.map((item, index) => {
+              const { top, right } = getDiamondPosition(index, 96);
+              return (
+                  <div 
+                      key={item.municipality} 
+                      style={{
+                          top: top, 
+                          right: right,
+                          transformOrigin: "center"
+                      }} 
+                      className={`absolute flex items-center justify-center size-20 -z-50 shadow-lg  bg-gradient-to-br from-red-400 via-black rounded-md opacity-[4%] to-indigo-600 `}
+                  >
+                      <Image 
+                          src={item.image}
+                          className='size-14 rounded-sm'
+                          alt={item.municipality}
+                          width={56}
+                          height={56}
+                          quality={40}
+                          loading="lazy"
+                      />
+                  </div>
+              )
+            }
+            )}
 
-          <h1 className="text-[32px] uppercase sm:text-5xl md:text-6xl max-[382px]:text-[30px]! max-[360px]:text-[28px]! max-[339px]:text-[27px]! max-[328px]:text-[26px]! font-bold leading-tight tracking-tighter">
-            Bashkë për të drejtat <br className="hidden sm:block"/> e <span className="text-indigo-600">komunitetit</span>
-          </h1>
-          <p className="mt-6 sm:text-xl text-base max-[420px]:text-sm!  text-gray-600 max-w-3xl mx-auto">
-            Platformë <span className='text-indigo-600'>anonime</span> dhe e <span className='text-indigo-600'>sigurt</span> për të raportuar padrejtësi nga punëdhënësit dhe për të paraqitur ankesa ndaj komunës për shërbime publike.
-          </p>
-          <p className="text-xs text-gray-400 mx-auto mt-3 max-w-xl">Këtu do shfaqen pakenaqesitë e medha apo raportimet e shumta nga indivitë të ndryshëm për një punëdhënës ose komunë!</p>
-          <div className="mt-8 flex sm:flex-row flex-wrap gap-4 justify-center">
-            <Link aria-description='krijo raportimin' href={'/krijo-raportim'} className='max-[390px]:w-full!'>
-              <CTAButton text="Raporto Tani" classNames='border-2 border-indigo-600 max-[390px]:w-full!' primary />
-            </Link>
-            <Link aria-description='meso me shume' href={'/si-funksjonon'} className='max-[390px]:w-full!'>
-              <CTAButton classNames='max-[390px]:w-full!' text="Mëso më shumë" />
-            </Link>
-          </div>
-          <Link href={"/shto-kompani"} className="bottom-0 absolute rounded-tl-lg px-4 right-0 flex flex-row items-center gap-2 shadow-lg border-t p-2 bg-gray-50 hover:bg-gray-200 transition-colors">
-          Shto kompani
-          <FaPlusSquare size={24} color='#4f46e5'/>
-          </Link>
-        </section>
-
-        <section className="w-full max-w-6xl mx-auto py-16 pb-20 px-4 sm:px-6 lg:px-8">
-          <div className="flex  max-[685px]:flex-col max-[685px]:items-start flex-row items-end justify-between gap-4 mb-8">
-            <div className="space-y-2 relative">
-              <h2 className="md:text-3xl text-2xl font-bold text-gray-900 tracking-tight">
-                Kompanitë
-              </h2>
-              <Image 
-                src={'/underline-1.webp'}
-                alt='underline'
-                width={700}
-                height={700}
-                loading="lazy"
-                quality={50}
-                className='w-full -z-50 opacity-5 absolute -top-4 indigo-mask max-[425px]:top-0 max-[385px]:top-2 '
-              />
-              <p className="text-gray-600 max-w-md text-base max-[420px]:text-sm">
-                Eksploroni kompanitë e regjistruara në platformën tonë dhe shikoni vlerësimet e tyre
-              </p>
+            <h1 className="text-[32px] uppercase sm:text-5xl md:text-6xl max-[382px]:text-[30px]! max-[360px]:text-[28px]! max-[339px]:text-[27px]! max-[328px]:text-[26px]! font-bold leading-tight tracking-tighter">
+              Bashkë për të drejtat <br className="hidden sm:block"/> e <span className="text-indigo-600">komunitetit</span>
+            </h1>
+            <p className="mt-6 sm:text-xl text-base max-[420px]:text-sm!  text-gray-600 max-w-3xl mx-auto">
+              Platformë <span className='text-indigo-600'>anonime</span> dhe e <span className='text-indigo-600'>sigurt</span> për të raportuar padrejtësi nga punëdhënësit dhe për të paraqitur ankesa ndaj komunës për shërbime publike.
+            </p>
+            <p className="text-xs text-gray-400 mx-auto mt-3 max-w-xl">Këtu do shfaqen pakenaqesitë e medha apo raportimet e shumta nga indivitë të ndryshëm për një punëdhënës ose komunë!</p>
+            <div className="mt-8 flex sm:flex-row flex-wrap gap-4 justify-center">
+              <Link aria-description='krijo raportimin' href={'/krijo-raportim'} className='max-[390px]:w-full!'>
+                <CTAButton text="Raporto Tani" classNames='border-2 border-indigo-600 max-[390px]:w-full!' primary />
+              </Link>
+              <Link aria-description='meso me shume' href={'/si-funksjonon'} className='max-[390px]:w-full!'>
+                <CTAButton classNames='max-[390px]:w-full!' text="Mëso më shumë" />
+              </Link>
             </div>
-            <Link 
-              href="/kompanite" 
-              aria-description="all companies"
-              className="group flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors duration-200"
-            >
-              <span className="text-indigo-700 font-medium">Shiko të gjitha</span>
-              <FaChevronDown className="h-3.5 w-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
+            <Link href={"/shto-kompani"} className="bottom-0 absolute rounded-tl-lg px-4 right-0 flex flex-row items-center gap-2 shadow-lg border-t p-2 bg-gray-50 hover:bg-gray-200 transition-colors">
+            Shto kompani
+            <FaPlusSquare size={24} color='#4f46e5'/>
             </Link>
-          </div>
-          
-          <DynamicCompanysQuery />
-        </section>
+          </section>
 
-
-        <section className="w-full max-w-6xl text-indigo-900 mx-auto py-16 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 lg:px-8">
-          <div className="flex relative max-[685px]:flex-col max-[685px]:items-start flex-row items-end justify-between gap-4 mb-8">
-              <Image 
-                src={'/underline-1.webp'}
-                alt='underline'
-                width={700}
-                height={700}
-                loading="lazy"
-                quality={50}
-                className='w-1/2 max-[768px]:w-full -z-50 rotate-[175deg] max-[768px]:rotate-0 opacity-5 absolute -top-2 max-[768px]:-top-4 max-[490px]:top-0 max-[425px]:top-2 max-[350px]:top-4 right-0 indigo-mask'
-              />
-            <div className="space-y-2">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
-                Ankesat/Raportimet
-              </h2>
-              <p className="text-gray-600 max-w-md text-base max-[420px]:text-sm">
-                  Raportoni padrejtësi në punë ose paraqisni ankesa praktike ndaj komunës, thjesht dhe sigurt.
-              </p>
+          <section className="w-full max-w-6xl mx-auto py-16 pb-20 px-4 sm:px-6 lg:px-8">
+            <div className="flex  max-[685px]:flex-col max-[685px]:items-start flex-row items-end justify-between gap-4 mb-8">
+              <div className="space-y-2 relative">
+                <h2 className="md:text-3xl text-2xl font-bold text-gray-900 tracking-tight">
+                  Kompanitë
+                </h2>
+                <Image 
+                  src={'/underline-1.webp'}
+                  alt='underline'
+                  width={700}
+                  height={700}
+                  loading="lazy"
+                  quality={50}
+                  className='w-full -z-50 opacity-5 absolute -top-4 indigo-mask max-[425px]:top-0 max-[385px]:top-2 '
+                />
+                <p className="text-gray-600 max-w-md text-base max-[420px]:text-sm">
+                  Eksploroni kompanitë e regjistruara në platformën tonë dhe shikoni vlerësimet e tyre
+                </p>
+              </div>
+              <Link 
+                href="/kompanite" 
+                aria-description="all companies"
+                className="group flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors duration-200"
+              >
+                <span className="text-indigo-700 font-medium">Shiko të gjitha</span>
+                <FaChevronDown className="h-3.5 w-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
-            <Link 
-              href="/ankesat" 
-              aria-description="all companies"
-              className="group flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors duration-200"
-            >
-              <span className="text-indigo-700 font-medium">Shiko të gjitha</span>
-              <FaChevronDown className="h-3.5 w-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-          </div>
-          
-          <DynamicComplaintsQuery />
-        </section>
+            
+            <DynamicCompanysQuery />
+          </section>
 
 
-        {/* Features Section */}
-        <section className="w-full max-w-6xl mx-auto py-16 pt-6 px-4 sm:px-6 lg:px-8 text-center ">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Pse ne?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <FeatureCard 
-              icon="lock.png" 
-              title="Konfidencionalitet" 
-              description={<>Ankesat tuaja të thjeshta mund te mbeten totalisht anonime. Shikoni <Link className="text-indigo-900 underline" href={"termat-e-perdorimit"}>Termat e Përdorimit</Link></>}
-            />
-            <FeatureCard 
-              icon="star.png" 
-              title="Shtrirje e larte" 
-              description="Arrini tek një rrjet i gjerë për të maksimizuar ndikimin e raportimeve tuaja." 
-            />
-            <FeatureCard 
-              icon="success.png" 
-              title="Arritje qellimi" 
-              description="Ndihmoni në ndërtimin e një ambienti pune më të drejtë dhe transparent." 
-            />
-          </div>
-        </section>
+          <section className="w-full max-w-6xl text-indigo-900 mx-auto py-16 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 lg:px-8">
+            <div className="flex relative max-[685px]:flex-col max-[685px]:items-start flex-row items-end justify-between gap-4 mb-8">
+                <Image 
+                  src={'/underline-1.webp'}
+                  alt='underline'
+                  width={700}
+                  height={700}
+                  loading="lazy"
+                  quality={50}
+                  className='w-1/2 max-[768px]:w-full -z-50 rotate-[175deg] max-[768px]:rotate-0 opacity-5 absolute -top-2 max-[768px]:-top-4 max-[490px]:top-0 max-[425px]:top-2 max-[350px]:top-4 right-0 indigo-mask'
+                />
+              <div className="space-y-2">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+                  Ankesat/Raportimet
+                </h2>
+                <p className="text-gray-600 max-w-md text-base max-[420px]:text-sm">
+                    Raportoni padrejtësi në punë ose paraqisni ankesa praktike ndaj komunës, thjesht dhe sigurt.
+                </p>
+              </div>
+              <Link 
+                href="/ankesat" 
+                aria-description="all companies"
+                className="group flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors duration-200"
+              >
+                <span className="text-indigo-700 font-medium">Shiko të gjitha</span>
+                <FaChevronDown className="h-3.5 w-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+            
+            <DynamicComplaintsQuery />
+          </section>
 
-        <section>
-          <DynamicSubscriberForm />
-        </section>
-      </main>
-    </div>
+
+          {/* Features Section */}
+          <section className="w-full max-w-6xl mx-auto py-16 pt-6 px-4 sm:px-6 lg:px-8 text-center ">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Pse ne?</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <FeatureCard 
+                icon="lock.png" 
+                title="Konfidencionalitet" 
+                description={<>Ankesat tuaja të thjeshta mund te mbeten totalisht anonime. Shikoni <Link className="text-indigo-900 underline" href={"termat-e-perdorimit"}>Termat e Përdorimit</Link></>}
+              />
+              <FeatureCard 
+                icon="star.png" 
+                title="Shtrirje e larte" 
+                description="Arrini tek një rrjet i gjerë për të maksimizuar ndikimin e raportimeve tuaja." 
+              />
+              <FeatureCard 
+                icon="success.png" 
+                title="Arritje qellimi" 
+                description="Ndihmoni në ndërtimin e një ambienti pune më të drejtë dhe transparent." 
+              />
+            </div>
+          </section>
+
+          <section>
+            <DynamicSubscriberForm />
+          </section>
+        </main>
+      </div>
+      <GoogleAnalytics />
+    </>
   )
 }
 

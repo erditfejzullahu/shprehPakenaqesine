@@ -1,5 +1,6 @@
 import { auth } from '@/auth'
 import CreateCompanyForm from '@/components/CreateCompanyForm'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 import Video from '@/components/Video'
 import { Metadata } from 'next'
 import Link from 'next/link'
@@ -97,6 +98,7 @@ const page = async () => {
       <p className='text-gray-600 max-[420px]:text-sm'>Këtu mund të shtoni kompaninë për të cilën mund të krijoni ankesë ju apo perdoruesit e tjerë te platformës <span className="text-indigo-600">ShfaqPakënaqësinë</span></p>
     </div>
     <CreateCompanyForm />
+    <GoogleAnalytics />
     </>
   )
 }

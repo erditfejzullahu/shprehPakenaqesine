@@ -13,6 +13,7 @@ import DeleteComplaintComponent from '@/components/DeleteComplaintComponent';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { Badge } from '@/components/ui/badge';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 
 export const revalidate = 3600;
 export const dynamicParams = true
@@ -191,7 +192,8 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
     
     
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white shadow-sm max-[1152px]:shadow-none">
           <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
@@ -399,6 +401,8 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
           </div>
         </div>
       </div>
+      <GoogleAnalytics />
+    </>
   )
 }
 

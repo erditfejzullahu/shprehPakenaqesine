@@ -7,6 +7,7 @@ import { Metadata } from 'next';
 import ShowToasterInCaseFromPasswordReset from '@/components/ShotToasterInCaseFromPasswordReset';
 import Video from '@/components/Video';
 import Image from 'next/image';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 
 
 export async function generateMetadata(): Promise<Metadata>{
@@ -146,6 +147,7 @@ const page = async ({searchParams}: {searchParams: Promise<{redirected?: string}
         </div>
     </div>
     <ShowToasterInCaseFromPasswordReset fromResetPassword={redirected ? true : false}/>
+    <GoogleAnalytics />
     </>
   )
 }

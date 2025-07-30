@@ -1,4 +1,5 @@
 import AllComplaintsCard from '@/components/AllComplaintsCard'
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 import Video from '@/components/Video';
 import { getComplaintList } from '@/lib/actions/seoActions';
 import { Metadata } from 'next';
@@ -78,24 +79,27 @@ const page = async () => {
   };
 
   return (
-    <div>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <main className="flex-1">
-          <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
-            <h1 className="text-3xl sm:text-4xl mb-2 md:text-5xl font-bold leading-tight w-fit mx-auto relative tracking-tight">Te gjithë <span className="text-indigo-600">Ankesat</span>
-            <Video 
-              src='/speech-bubble.mp4'
-              className='size-10 absolute -top-7 -right-7 rotate-[30deg] max-[330px]:-right-5 max-[330px]:-top-9 max-[310px]:right-0'
-            />
-            </h1>
-            <p className="text-gray-600 max-[420px]:text-sm text-center ">Këtu mund të shihni dhe të ndërveproni me të gjitha ankesat që janë krijuar deri tani.</p>
-          </div>
-          <AllComplaintsCard />
-      </main>
-    </div>
+    <>
+      <div>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+        <main className="flex-1">
+            <div className="w-full max-w-6xl mx-auto py-10 max-[640px]:pt-8! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
+              <h1 className="text-3xl sm:text-4xl mb-2 md:text-5xl font-bold leading-tight w-fit mx-auto relative tracking-tight">Te gjithë <span className="text-indigo-600">Ankesat</span>
+              <Video 
+                src='/speech-bubble.mp4'
+                className='size-10 absolute -top-7 -right-7 rotate-[30deg] max-[330px]:-right-5 max-[330px]:-top-9 max-[310px]:right-0'
+              />
+              </h1>
+              <p className="text-gray-600 max-[420px]:text-sm text-center ">Këtu mund të shihni dhe të ndërveproni me të gjitha ankesat që janë krijuar deri tani.</p>
+            </div>
+            <AllComplaintsCard />
+        </main>
+      </div>
+      <GoogleAnalytics />
+    </>
   )
 }
 

@@ -1,4 +1,5 @@
 import { auth } from '@/auth'
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 import LoginForm from '@/components/LoginForm'
 import Video from '@/components/Video';
 import { Metadata } from 'next';
@@ -83,24 +84,27 @@ const page = async () => {
 
   
   return (
-    <div>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-        <section className="flex-1">
-            <div className="w-full max-w-6xl mx-auto  py-10 max-[640px]:pt-6! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 leading-tight w-fit mx-auto relative tracking-tight">Identifikohu
-                  <Video
-                      src='/login.mp4'
-                      className='size-10 absolute -top-7 -right-9 rotate-[30deg]'
-                  />
-                </h1>
-                <p className='text-gray-600 text-center max-[420px]:text-sm'>Bëhuni pjesë e <span className="text-indigo-600">ShfaqPakënaqesinë</span> për një ambient më të mirë dhe më të sigurtë për të gjithë shoqerinë</p>
-            </div>
-            <LoginForm />
-        </section>
-    </div>
+    <>
+      <div>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+          <section className="flex-1">
+              <div className="w-full max-w-6xl mx-auto  py-10 max-[640px]:pt-6! px-4 sm:px-6 lg:px-8 text-center shadow-lg rounded-b-2xl">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 leading-tight w-fit mx-auto relative tracking-tight">Identifikohu
+                    <Video
+                        src='/login.mp4'
+                        className='size-10 absolute -top-7 -right-9 rotate-[30deg]'
+                    />
+                  </h1>
+                  <p className='text-gray-600 text-center max-[420px]:text-sm'>Bëhuni pjesë e <span className="text-indigo-600">ShfaqPakënaqesinë</span> për një ambient më të mirë dhe më të sigurtë për të gjithë shoqerinë</p>
+              </div>
+              <LoginForm />
+          </section>
+      </div>
+      <GoogleAnalytics />
+    </>
   )
 }
 
