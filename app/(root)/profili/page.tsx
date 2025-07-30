@@ -24,10 +24,22 @@ export async function generateMetadata(): Promise<Metadata>{
                 description: 'Kyçuni për të parë profilin tuaj',
                 url: 'https://shfaqpakenaqesine.com/profili', // update accordingly
                 type: 'website',
+                images: {
+                    url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+                    width: 1200,  // Required for OG
+                    height: 630,  // Required for OG
+                    alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+                },
             },
                 twitter: {
                 card: 'summary',
                 title: 'Profili - ShfaqPakenaqësinë',
+                images: {
+                    url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+                    width: 1200,  // Required for OG
+                    height: 630,  // Required for OG
+                    alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+                },
                 description: 'Kyçuni për të parë profilin tuaj',
             },
         };
@@ -37,7 +49,30 @@ export async function generateMetadata(): Promise<Metadata>{
           robots: {
             index: false,
             follow: true
-          }
+          },
+          openGraph: {
+                title: `${session?.user.fullName} | ShfaqPakenaqësinë`,
+                description: 'Kyçuni për të parë profilin tuaj',
+                url: 'https://shfaqpakenaqesine.com/profili', // update accordingly
+                type: 'website',
+                images: {
+                    url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+                    width: 1200,  // Required for OG
+                    height: 630,  // Required for OG
+                    alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+                },
+            },
+                twitter: {
+                card: 'summary',
+                title: `${session?.user.fullName} | ShfaqPakenaqësinë`,
+                images: {
+                    url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+                    width: 1200,  // Required for OG
+                    height: 630,  // Required for OG
+                    alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+                },
+                description: 'Kyçuni për të parë profilin tuaj',
+            },
         }
     }
 }
