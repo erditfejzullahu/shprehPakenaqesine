@@ -1,5 +1,6 @@
 import { Companies } from '@/app/generated/prisma';
 import CompanyPage from '@/components/CompanyPage';
+import SocialShareButtons from '@/components/SocialShareButtons';
 import api from '@/lib/api';
 import prisma from '@/lib/prisma';
 import { CompanyPerIdInterface } from '@/types/types';
@@ -92,8 +93,7 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
         siteName: 'ShfaqPakenaqësinë',
         images: [
           {
-            url: `${process.env.NEXT_PUBLIC_BASE_URL}/${company.logoUrl}`,
-            secureUrl: company.logoUrl,
+            url: `${process.env.NEXT_PUBLIC_BASE_URL}/serve${company.logoUrl}`,
             alt: `${company.name} - ShfaqPakenaqësinë`
           }
         ],
@@ -104,7 +104,7 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
         card: 'summary_large_image',
         title: seoTitle,
         description: seoDescription,
-        images: [`${process.env.NEXT_PUBLIC_BASE_URL}/${company.logoUrl}`]
+        images: [`${process.env.NEXT_PUBLIC_BASE_URL}/serve${company.logoUrl}`]
       },
     }
   } catch (error) {
@@ -257,15 +257,19 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                     </div>
                   </div>
                 </div>
-              )}
+            )}
             </div>
 
             {/* Right Column - Complaints */}
             <CompanyPage companyData={data}/>
           </div>
+            <SocialShareButtons 
+              url={`${process.env.NEXT_PUBLIC_BASE_URL}/kompanite/${data.company.id}`}
+              title={`Eksperianca juaj mbi ${data.company.name}?`}
+              description={data.company.description || `Detajet rreth ${data.company.name}`}
+              />
         </div>
       </div>
-    // <CompanyPage />
   )
 }
 
