@@ -232,7 +232,7 @@ const CreateComplaintForm = () => {
     setPreviews: React.Dispatch<React.SetStateAction<{name: string, file: string}[]>>,
     currentPreviews: {name: string, file: string}[]
   ) => {
-    const updatedPreviews = currentPreviews.filter((_, i) => i !== index);
+    const updatedPreviews = currentPreviews?.filter((_, i) => i !== index);
     setPreviews(updatedPreviews);
     fieldOnChange(updatedPreviews.map((item) => item.file));
   }, []);
@@ -243,7 +243,7 @@ const CreateComplaintForm = () => {
     fieldOnChange: (value: string[]) => void
   ) => {
     setAttachmentPreviews(prev => {
-      const updatedPreviews = prev.filter((_, i) => i !== index);
+      const updatedPreviews = prev?.filter((_, i) => i !== index);
       console.log(updatedPreviews.map((item) => item.file))
       fieldOnChange(updatedPreviews.map((item) => item.file));
       return updatedPreviews;

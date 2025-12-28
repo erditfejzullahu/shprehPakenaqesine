@@ -181,7 +181,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
             const base64 = event.target?.result as string;
             newPreviews[index] = base64;
         
-            if (newPreviews.filter(Boolean).length === files.length) {
+            if (newPreviews?.filter(Boolean).length === files.length) {
               switch (type) {
                 case "attachments":
                   setAttachmentPreviews((prev) => [...prev, ...newPreviews]);

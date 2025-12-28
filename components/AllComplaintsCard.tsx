@@ -61,7 +61,7 @@ const AllComplaintsCard = () => {
     }, 500)
   ), []);
 
-  const complaints = data?.pages.flatMap((page) => page.complaints) || [];
+  const complaints = data?.pages?.flatMap((page) => page.complaints) || [];
   const totalCount = data?.pages[0]?.filteredOrNotFilteredCount || 0;
 
   const getCategoryLabel = (category: string) => {

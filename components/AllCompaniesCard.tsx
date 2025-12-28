@@ -56,7 +56,7 @@ const AllCompaniesCard = () => {
         }, 500)
     ), [])
 
-    const companies = data?.pages.flatMap((page) => page.companies) || []
+    const companies = data?.pages?.flatMap((page) => page.companies) || []
     const totalCount = data?.pages[0]?.filteredOrNotFilteredCount || 0;
     
     return (

@@ -282,7 +282,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
     setPreviews: React.Dispatch<React.SetStateAction<string[]>>,
     currentPreviews: string[]
   ) => {
-    const updatedPreviews = currentPreviews.filter((_, i) => i !== index);
+    const updatedPreviews = currentPreviews?.filter((_, i) => i !== index);
     setPreviews(updatedPreviews);
     fieldOnChange(updatedPreviews);
   }, [audioPreviews, videoPreviews]);
@@ -291,7 +291,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
     index: number,
     fieldOnChange: (value: string[]) => void
   ) => {
-    const updatedPreviews = attachmentPreviews.filter((_, i) => i !== index);
+    const updatedPreviews = attachmentPreviews?.filter((_, i) => i !== index);
     setAttachmentPreviews(updatedPreviews);
     fieldOnChange(updatedPreviews);
   }, [attachmentPreviews]);

@@ -70,7 +70,7 @@ const MyProfileData = ({session}: {session: Session}) => {
     
     // Apply search filter
     if (searchTerm) {
-      result = result.filter(complaint => 
+      result = result?.filter(complaint => 
         complaint.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (complaint.companyName && complaint.companyName.toLowerCase().includes(searchTerm.toLowerCase()))
       );
@@ -105,7 +105,7 @@ const MyProfileData = ({session}: {session: Session}) => {
     
     // Apply search filter
     if (searchTerm) {
-      result = result.filter(contribution => 
+      result = result?.filter(contribution => 
         contribution.complaintTitle.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }

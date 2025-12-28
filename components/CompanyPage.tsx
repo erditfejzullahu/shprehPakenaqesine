@@ -62,7 +62,7 @@ const CompanyPage = ({ companyData }: Props) => {
   };
 
   const totalComplaints = companyData.company.complaints.length;
-  const acceptedComplaints = companyData.company.complaints.filter(
+  const acceptedComplaints = companyData.company.complaints?.filter(
     (c) => c.status === "ACCEPTED"
   ).length;
   const totalUpVotes = companyData.company.complaints.reduce(

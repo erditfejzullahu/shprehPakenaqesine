@@ -101,7 +101,7 @@ const ContactForm = () => {
         index: number,
         fieldOnChange: (value: string[]) => void
       ) => {
-        const updatedPreviews = attachmentPreviews.filter((_, i) => i !== index);
+        const updatedPreviews = attachmentPreviews?.filter((_, i) => i !== index);
         setAttachmentPreviews(updatedPreviews);
         fieldOnChange(updatedPreviews);
       }, [attachmentPreviews]);

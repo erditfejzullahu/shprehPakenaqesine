@@ -1,5 +1,6 @@
 import { auth } from '@/auth'
 import CreateComplaintForm from '@/components/CreateComplaintForm'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 import Video from '@/components/Video'
 import { Metadata } from 'next'
 import Link from 'next/link'
@@ -96,6 +97,7 @@ const page = async () => {
     </div>
 
     <CreateComplaintForm />
+    <GoogleAnalytics />
     </>
   )
 }
