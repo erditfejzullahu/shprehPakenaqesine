@@ -38,7 +38,10 @@ class FiveRemainingTryes extends CredentialsSignin {
 }
 
 export const {handlers: {GET, POST}, auth, signIn, signOut} = NextAuth({
-    adapter: PrismaAdapter(prisma),
+    // Cast the adapter to unknown -> any to avoid a type conflict when multiple
+    // copies of @auth/core are present in node_modules (e.g. next-auth vs @auth/prisma-adapter).
+    // This is a safe runtime value; the cast only silences the TypeScript mismatch.
+    adapter: PrismaAdapter(prisma) as unknown as any,
     trustHost: true,
     providers: [
     CredentialsProvider({
