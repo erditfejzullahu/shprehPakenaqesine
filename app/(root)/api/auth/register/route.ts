@@ -6,7 +6,7 @@ import * as bcrypt from "bcrypt"
 import DOMPurify from 'isomorphic-dompurify' // Client+server side sanitization
 import validator from "validator"
 import { rateLimit } from "@/lib/redis";
-import { addHours, addMinutes } from "date-fns";
+import { addHours } from "date-fns";
 import { sendUserVerificationEmail, signCookieValue } from "@/lib/emails/sendEmailVerification";
 import { cookies } from "next/headers";
 
@@ -71,7 +71,7 @@ export const POST = async (req: NextRequest) => {
         }
 
         const verificationToken = crypto.randomUUID().toString()
-        const verificationTokenExpires = addMinutes(new Date(), 1) // 1 dit
+        const verificationTokenExpires = addHours(new Date(), 24)
 
         const hashedPassword = await bcrypt.hash(validatedData.password, 10)
         const newUser = await prisma.users.create({

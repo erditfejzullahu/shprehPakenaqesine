@@ -14,7 +14,7 @@ export const GET = async (req: NextRequest, {params}: {params: Promise<{token: s
 
         //ratelimiter
         const rateLimitKey = `rate_limit:verify:${user?.id}:${ipAddress}`;
-        const ratelimiter = await rateLimit(rateLimitKey, 10, 24 * 60 * 60 * 1000)
+        const ratelimiter = await rateLimit(rateLimitKey, 10, 24 * 60 * 60)
         if(!ratelimiter.allowed){
             (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
                 error: true,

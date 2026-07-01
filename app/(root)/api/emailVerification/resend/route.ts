@@ -18,7 +18,7 @@ export const GET = async (req: NextRequest) => {
     const userAgent = req.headers.get('user-agent') || null
     
     const rateLimitKey = `rate_limit:resend:${cookieParsed.email}:${ipAddress}`;
-    const ratelimiter = await rateLimit(rateLimitKey, 10, 24 * 60 * 60 * 1000); //24 * 60 * 60 * 1000 ni dit
+    const ratelimiter = await rateLimit(rateLimitKey, 10, 24 * 60 * 60);
     if(!ratelimiter.allowed){
         (await cookies()).set('email-verification', signCookieValue(JSON.stringify({
             error: true,
@@ -40,7 +40,7 @@ export const GET = async (req: NextRequest) => {
         ((await cookies()).delete('email-verification'))
 
         const verificationToken = crypto.randomUUID().toString()
-        const verificationTokenExpires = addHours(new Date(), 24).toISOString() // 1 dit
+        const verificationTokenExpires = addHours(new Date(), 24)
 
         await prisma.users.update({
             where: {id: user.id},
