@@ -98,24 +98,12 @@ export interface ComplantPerIdInterface {
 }
 
 declare module '@/services/fileUploadService' {
-    import { UploadResult } from '@/services/fileUploadService';
-    
-    export type EntityType = 
-    'complaints/attachments' 
-    | 'complaints/audiosAttached' 
-    | 'complaints/videosAttached' 
-    | 'companys/images'
-    | 'companys/logo' 
-    | 'users' 
-    | 'reports/attachments'
-    | 'reports/audiosAttached' 
-    | 'reports/videosAttached'
-    | 'contactUs';
+    import type { UploadResult } from '@/services/fileUploadService';
     
     interface IFileUploadService {
       uploadFile(
         base64Data: string,
-        entityType: EntityType,
+        entityType: import('@/services/fileUploadService').FileUploadFolder,
         entityId: string
       ): Promise<UploadResult>;
       

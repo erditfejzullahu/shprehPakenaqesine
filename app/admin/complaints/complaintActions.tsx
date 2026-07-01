@@ -1,5 +1,5 @@
 "use client"
-import { createComplaintsSchema } from '@/lib/schemas/createComplaintsSchema'
+import { createComplaintFormSchema } from '@/lib/schemas/createComplaintsSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -20,7 +20,8 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
-import { cn, imageUrlToBase64 } from '@/lib/utils'
+import { cn, getAssetUrl } from '@/lib/utils'
+import { uploadFilesToBlob } from '@/lib/blobUpload'
 import {
   Dialog,
   DialogContent,
@@ -33,7 +34,7 @@ import { ExtendedComplaint } from '@/types/admin'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import Link from 'next/link'
 
-type ComplaintsType = z.infer<typeof createComplaintsSchema> 
+type ComplaintsType = z.infer<typeof createComplaintFormSchema>
 
 const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
     if(!complaint) return null;
@@ -52,6 +53,9 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
   const [videoProgress, setVideoProgress] = useState<number | null>(null)
   const [attachmentProgress, setAttachmentProgress] = useState<number | null>(null)
   const [audioProgress, setAudioProgress] = useState<number | null>(null)
+  const [existingAttachments, setExistingAttachments] = useState<string[]>(complaint.attachments ?? [])
+  const [existingAudios, setExistingAudios] = useState<string[]>(complaint.audiosAttached ?? [])
+  const [existingVideos, setExistingVideos] = useState<string[]>(complaint.videosAttached ?? [])
 
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ['companiesForm'],
@@ -63,16 +67,13 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
     staleTime: 1000 * 60 * 5
   })  
 
-  const {control, handleSubmit, setValue, reset, formState: {errors, isSubmitting}} = useForm<ComplaintsType>({
-    resolver: zodResolver(createComplaintsSchema),
+  const {control, handleSubmit, setValue, getValues, reset, formState: {errors, isSubmitting}} = useForm<ComplaintsType>({
+    resolver: zodResolver(createComplaintFormSchema),
     defaultValues: useMemo(() => ({
       companyId: complaint.companyId,
       title: complaint.title,
       description: complaint.description,
       category: complaint.category,
-      attachments: complaint.attachments,
-      audiosAttached: complaint.audiosAttached,
-      videosAttached: complaint.videosAttached,
       municipality: complaint.municipality
     }), [complaint]),
     mode: "onChange"
@@ -96,40 +97,16 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
     if(complaint.companyId){        
         setValue("companyId", complaint.companyId)
     }
-      if(complaint.attachments && complaint.attachments.length > 0){
-        let attachments: string[] = []
-        for(const attach of complaint.attachments){
-            imageUrlToBase64(`/serve${attach}`)
-                .then(base64 => attachments.push(base64))
-                .catch(console.error)
-        }
-        setValue("attachments", attachments)
-        setAttachmentPreviews(attachments)
-      }
-    
-      if(complaint.audiosAttached && complaint.audiosAttached.length > 0){
-        let audAttachments: string[] = []
-        for(const attach of complaint.audiosAttached){
-            imageUrlToBase64(`/serve${attach}`)
-                .then(base64 => audAttachments.push(base64))
-                .catch(console.error)
-        }
-        setValue("audiosAttached", audAttachments)
-        setAudioPreviews(audAttachments)
-      }
-      
-      if(complaint.videosAttached && complaint.videosAttached.length > 0){
-        let vidAttachments: string[] = []
-        for(const attach of complaint.videosAttached){
-            imageUrlToBase64(`/serve${attach}`)
-                .then(base64 => vidAttachments.push(base64))
-                .catch(console.error)
-        }
-        setValue("videosAttached", vidAttachments)
-        setVideoPreviews(vidAttachments)
-      }
-  }, [complaint.videosAttached, complaint.companyId, complaint.audiosAttached, complaint.attachments])
-  
+    if(complaint.attachments && complaint.attachments.length > 0){
+        setAttachmentPreviews(complaint.attachments.map(getAssetUrl))
+    }
+    if(complaint.audiosAttached && complaint.audiosAttached.length > 0){
+        setAudioPreviews(complaint.audiosAttached.map(getAssetUrl))
+    }
+    if(complaint.videosAttached && complaint.videosAttached.length > 0){
+        setVideoPreviews(complaint.videosAttached.map(getAssetUrl))
+    }
+  }, [complaint.videosAttached, complaint.companyId, complaint.audiosAttached, complaint.attachments, setValue])
 
   const onSubmit = useCallback(async (data: ComplaintsType) => {
     try {
@@ -138,9 +115,9 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
         title: data.title,
         description: data.description,
         category: data.category,
-        attachments: data.attachments,
-        audiosAttached: data.audiosAttached,
-        videosAttached: data.videosAttached,
+        attachments: existingAttachments,
+        audiosAttached: existingAudios,
+        videosAttached: existingVideos,
         municipality: data.municipality
       })
       if(response.data.success){
@@ -155,7 +132,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
     } catch (error: any) {
       toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni perseri.")
     }
-  }, [reset, complaint.title, complaint.id, router])
+  }, [reset, complaint.title, complaint.id, router, existingAttachments, existingAudios, existingVideos])
 
   const handleDeleteComplaint = useCallback(async () => {
     try {
@@ -170,131 +147,89 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
     }
   }, [complaint.id, router, complaint.title])
 
-  const handleFileChange = useCallback((
+  const handleFileChange = useCallback(async (
     event: React.ChangeEvent<HTMLInputElement>,
-    fieldOnChange: (value: string[]) => void
   ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
-    const newPreviews: string[] = [];
-    const fileReaders: FileReader[] = [];
-    let filesRead = 0;
     setAttachmentProgress(0)
     let fakeProgress = 0;
-  
     const interval = setInterval(() => {
       fakeProgress += 5;
       setAttachmentProgress(Math.min(fakeProgress, 95))
     }, 50);
 
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      fileReaders.push(reader);
+    try {
+      const urls = await uploadFilesToBlob(Array.from(files), "complaints/attachments", complaint.id);
+      setExistingAttachments(prev => {
+        const updated = [...prev, ...urls];
+        setAttachmentPreviews(updated.map(getAssetUrl));
+        return updated;
+      });
+    } catch {
+      toast.error("Ngarkimi i skedarëve dështoi");
+    } finally {
+      clearInterval(interval);
+      setAttachmentProgress(null);
+    }
+  }, [complaint.id]);
 
-      reader.onloadend = () => {
-        filesRead++;
-        if (reader.result) {
-          newPreviews.push(reader.result as string);
-        }
-        
-        if (filesRead === files.length) {
-          clearInterval(interval);
-          const updatedPreviews = [...attachmentPreviews, ...newPreviews];
-          setAttachmentPreviews(updatedPreviews);
-          fieldOnChange(updatedPreviews);
-          setAttachmentProgress(null)
-        }
-      };
-      
-      reader.readAsDataURL(file);
-    });
-  }, []);
-
-  const handleMediaChange = useCallback((
+  const handleMediaChange = useCallback(async (
     event: React.ChangeEvent<HTMLInputElement>,
-    fieldOnChange: (value: string[]) => void,
     setPreviews: React.Dispatch<React.SetStateAction<string[]>>,
-    currentPreviews: string[],
-    acceptType: string
+    acceptType: "audio" | "video",
+    folder: "complaints/audiosAttached" | "complaints/videosAttached",
+    setExisting: React.Dispatch<React.SetStateAction<string[]>>,
   ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
-    const newPreviews: string[] = [];
-    const fileReaders: FileReader[] = [];
-    let filesRead = 0;
-
     let fakeProgress = 0;
-
     const interval = setInterval(() => {
       fakeProgress += 5;
-      setVideoProgress(Math.min(fakeProgress, 95))
+      if (acceptType === "video") setVideoProgress(Math.min(fakeProgress, 95));
+      if (acceptType === "audio") setAudioProgress(Math.min(fakeProgress, 95));
     }, 100);
 
-    switch (acceptType) {
-      case "audio":
-        setAudioProgress(0)
-        break;
-      case "video":
-        setVideoProgress(0)
-        break;
+    if (acceptType === "audio") setAudioProgress(0);
+    if (acceptType === "video") setVideoProgress(0);
+
+    try {
+      const urls = await uploadFilesToBlob(Array.from(files), folder, complaint.id);
+      setExisting(prev => {
+        const updated = [...prev, ...urls];
+        setPreviews(updated.map(getAssetUrl));
+        return updated;
+      });
+    } catch {
+      toast.error("Ngarkimi i skedarëve dështoi");
+    } finally {
+      clearInterval(interval);
+      if (acceptType === "video") setVideoProgress(null);
+      if (acceptType === "audio") setAudioProgress(null);
     }
-
-    Array.from(files).forEach((file) => {
-      if (!file.type.includes(acceptType)) {
-        console.warn(`Skipped ${file.name} - not a ${acceptType} file`);
-        return;
-      }
-
-      const reader = new FileReader();
-      fileReaders.push(reader);
-
-      reader.onloadend = () => {
-        filesRead++;
-        if (reader.result) {
-          newPreviews.push(reader.result as string);
-        }
-
-        if (filesRead === newPreviews.length) {
-          clearInterval(interval);
-          switch (acceptType) {
-            case "video":
-              setVideoProgress(null)
-              break;
-            case "audio":
-              setAudioProgress(null)
-              break;
-          }
-          const updatedPreviews = [...currentPreviews, ...newPreviews];
-          setPreviews(updatedPreviews);
-          fieldOnChange(updatedPreviews);
-        }
-      };
-
-      reader.readAsDataURL(file);
-    });
-  }, []);
+  }, [complaint.id]);
 
   const removeMedia = useCallback((
     index: number,
-    fieldOnChange: (value: string[]) => void,
     setPreviews: React.Dispatch<React.SetStateAction<string[]>>,
-    currentPreviews: string[]
+    setExisting: React.Dispatch<React.SetStateAction<string[]>>,
   ) => {
-    const updatedPreviews = currentPreviews?.filter((_, i) => i !== index);
-    setPreviews(updatedPreviews);
-    fieldOnChange(updatedPreviews);
-  }, [audioPreviews, videoPreviews]);
+    setExisting(prev => {
+      const updated = prev.filter((_, i) => i !== index);
+      setPreviews(updated.map(getAssetUrl));
+      return updated;
+    });
+  }, []);
 
-  const removeImage = useCallback((
-    index: number,
-    fieldOnChange: (value: string[]) => void
-  ) => {
-    const updatedPreviews = attachmentPreviews?.filter((_, i) => i !== index);
-    setAttachmentPreviews(updatedPreviews);
-    fieldOnChange(updatedPreviews);
-  }, [attachmentPreviews]);
+  const removeImage = useCallback((index: number) => {
+    setExistingAttachments(prev => {
+      const updated = prev.filter((_, i) => i !== index);
+      setAttachmentPreviews(updated.map(getAssetUrl));
+      return updated;
+    });
+  }, []);
 
 
   return (
@@ -549,10 +484,6 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
           
           <div className='mx-auto w-full'>
             <Label htmlFor='attachments' className="mb-1 flex items-center justify-center">Bashkengjitjet e Imazheve</Label>
-            <Controller 
-              control={control}
-              name="attachments"
-              render={({ field: { onChange } }) => (
                   <div className="space-y-2">
                   {attachmentPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
                     display: 'flex', 
@@ -567,11 +498,12 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                           width={100}
                           height={100}
                           className='h-44 w-full'
+                          unoptimized
                         />
                         <button 
                           type="button"
                           className='flex items-center justify-center'
-                          onClick={() => removeImage(index, onChange)}
+                          onClick={() => removeImage(index)}
                           style={{ 
                             position: 'absolute', 
                             top: -6, 
@@ -603,7 +535,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                         multiple 
                         className="hidden" 
                         accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e, onChange)}
+                        onChange={handleFileChange}
                       />
                     </label>
                   )}
@@ -611,19 +543,10 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                     <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${attachmentProgress}%`}} />
                   </div>}
                 </div>
-              )}
-            />
-            {errors.attachments && (
-              <p className="text-red-500 text-sm mt-1 text-center">{errors.attachments.message}</p>
-            )}
           </div>
           <div className="flex flex-row items-center justify-between gap-4">
             <div className='flex-1'>
               <Label htmlFor='audioInput' className='mb-1'>Ngarkoni Audio/Inqizime</Label>
-              <Controller 
-                control={control}
-                name="audiosAttached"
-                render={({ field: { onChange } }) => (
                   <div className="space-y-2">
                     {audioPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
                       display: 'flex', 
@@ -640,7 +563,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                           <button 
                             type="button"
                             className='flex items-center justify-center'
-                            onClick={() => removeMedia(index, onChange, setAudioPreviews, audioPreviews)}
+                            onClick={() => removeMedia(index, setAudioPreviews, setExistingAudios)}
                             style={{ 
                               position: 'absolute', 
                               top: -6, 
@@ -672,7 +595,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                           multiple 
                           className="hidden" 
                           accept="audio/*"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleMediaChange(e, onChange, setAudioPreviews, audioPreviews, 'audio')}
+                          onChange={(e) => handleMediaChange(e, setAudioPreviews, 'audio', 'complaints/audiosAttached', setExistingAudios)}
                         />
                       </label>
                     )}
@@ -680,19 +603,9 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                       <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${audioProgress}%`}} />
                     </div>}
                   </div>
-                )}
-              />
-              {errors.audiosAttached && (
-                <p className="text-red-500 text-sm mt-1">{errors.audiosAttached.message}</p>
-              )}
             </div>
             <div className="flex-1">
               <Label htmlFor='videoInput' className='mb-1'>Ngarkoni Video/Inqizime</Label>
-              <Controller 
-                control={control}
-                name="videosAttached"
-                render={({ field: { onChange } }) => (
-                  <>
                   <div className="space-y-2">
                     {videoPreviews.length > 0 ? ( <div className='shadow-lg p-4 mt-2' style={{ 
                       display: 'flex', 
@@ -709,7 +622,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                           <button 
                             type="button"
                             className='flex items-center justify-center'
-                            onClick={() => removeMedia(index, onChange, setVideoPreviews, videoPreviews)}
+                            onClick={() => removeMedia(index, setVideoPreviews, setExistingVideos)}
                             style={{ 
                               position: 'absolute', 
                               top: -6, 
@@ -741,7 +654,7 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                           multiple 
                           className="hidden" 
                           accept="video/*"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleMediaChange(e, onChange, setVideoPreviews, videoPreviews, 'video')}
+                          onChange={(e) => handleMediaChange(e, setVideoPreviews, 'video', 'complaints/videosAttached', setExistingVideos)}
                         />
                       </label>
                     )}
@@ -749,12 +662,6 @@ const CreateComplaintDialog = ({complaint}: {complaint: ExtendedComplaint}) => {
                       <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${videoProgress}%`}} />
                     </div>}
                   </div>
-                  </>
-                )}
-              />
-              {errors.videosAttached && (
-                <p className="text-red-500 text-sm mt-1">{errors.videosAttached.message}</p>
-              )}
             </div>
           </div>
           <div className="flex-1">

@@ -4,7 +4,9 @@ import React, { memo, useState } from 'react'
 import { GrAttachment } from "react-icons/gr";
 import { FaFileAudio } from "react-icons/fa6";
 import { FaFileVideo } from "react-icons/fa6";
+import { MdOutlinePending } from 'react-icons/md';
 import { ReusableHoverCard } from './ReusableHoverCard';
+import { getAssetUrl } from '@/lib/utils';
 import {
   Pagination,
   PaginationContent,
@@ -14,7 +16,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { MdOutlinePending } from 'react-icons/md';
 
 type ActiveTab = "details" | "contributions" | "discussion"
 
@@ -91,7 +92,7 @@ const ComplaintsPageTabs = ({complaintsData}: {complaintsData: ComplantPerIdInte
                                     <div className="flex-shrink-0">
                                         <img 
                                         className="h-10 w-10 rounded-full bg-gray-200" 
-                                        src={contribution.user.userProfileImage} 
+                                        src={getAssetUrl(contribution.user.userProfileImage)} 
                                         alt={`${contribution.user.fullName}'s avatar`}
                                         />
                                     </div>

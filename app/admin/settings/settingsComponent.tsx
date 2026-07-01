@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
@@ -9,19 +9,26 @@ import api from "@/lib/api";
 import { toast } from "sonner";
 import { Session } from "next-auth";
 import {z} from "zod"
-import { adminSchema } from "@/lib/schemas/adminSchema";
+import { adminFormSchema } from "@/lib/schemas/adminSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { FaImage } from "react-icons/fa";
-import { imageUrlToBase64 } from "@/lib/utils";
+import { getAssetUrl } from "@/lib/utils";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Gender } from "@/app/generated/prisma";
+import { uploadFileToBlob } from "@/lib/blobUpload";
 
-type SettingsSchemaType = z.infer<typeof adminSchema>
+type SettingsFormType = z.infer<typeof adminFormSchema>
 
 const SettingsComponent = ({session}: {session: Session}) => {
   const {update} = useSession();
+  const [profileFile, setProfileFile] = useState<File | null>(null);
+  const [existingProfileUrl, setExistingProfileUrl] = useState<string | null>(session.user.userProfileImage);
+  const [previewImage, setPreviewImage] = useState<string | null>(
+    session.user.userProfileImage ? getAssetUrl(session.user.userProfileImage) : null
+  );
+
   const {
     register,
     handleSubmit,
@@ -30,14 +37,13 @@ const SettingsComponent = ({session}: {session: Session}) => {
     watch,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<SettingsSchemaType>({
-    resolver: zodResolver(adminSchema),
+  } = useForm<SettingsFormType>({
+    resolver: zodResolver(adminFormSchema),
     defaultValues: {
       username: session.user.username,
       email: session.user.email,
       fullName: session.user.fullName,
       gender: session.user.gender,
-      userProfileImage: session.user.userProfileImage,
       password: "",
       confirmPassword: "",
       changePassword: false,
@@ -45,27 +51,36 @@ const SettingsComponent = ({session}: {session: Session}) => {
   });
 
   useEffect(() => {
-    if(session.user.userProfileImage){
-      imageUrlToBase64(`/serve${session.user.userProfileImage}`)
-          .then(base64 => setValue("userProfileImage", base64))
-          .catch(console.error)
-    }
-  }, [session])
+    reset({
+      username: session.user.username,
+      email: session.user.email,
+      fullName: session.user.fullName,
+      gender: session.user.gender,
+      password: "",
+      confirmPassword: "",
+      changePassword: false,
+    });
+    setProfileFile(null);
+    setExistingProfileUrl(session.user.userProfileImage);
+    setPreviewImage(session.user.userProfileImage ? getAssetUrl(session.user.userProfileImage) : null);
+  }, [session, reset]);
 
-  const [previewImage, setPreviewImage] = useState<string | null>(session.user.userProfileImage)
-
-  const onSubmit = async (data: SettingsSchemaType) => {
+  const onSubmit = async (data: SettingsFormType) => {
     try {
-      const response = await api.patch("/api/admin/settings", {
+      const payload: Record<string, unknown> = {
         username: data.username,
         email: data.email,
         fullName: data.fullName,
         changePassword: data.changePassword,
         gender: data.gender,
-        userProfileImage: data.userProfileImage,
         password: data.password ? data.password : undefined,
         confirmPassword: data.confirmPassword ? data.confirmPassword : undefined
-      });
+      };
+      if (profileFile) {
+        payload.userProfileImageUrl = await uploadFileToBlob(profileFile, "users", session.user.id);
+      }
+
+      const response = await api.patch("/api/admin/settings", payload);
       if(response.data.success){
         toast.success("Sapo rifreskuat me sukses llogarine tuaj!");
         await update({
@@ -78,7 +93,7 @@ const SettingsComponent = ({session}: {session: Session}) => {
       }
     } catch (err: any) {
       console.error(err);
-      toast.error(err.response.data.message || "Dicka shkoi gabim!");
+      toast.error(err.response?.data?.message || err.message || "Dicka shkoi gabim!");
     }
   };
 
@@ -148,15 +163,11 @@ const SettingsComponent = ({session}: {session: Session}) => {
                 />
             </div>
             )}
-            <Controller
-            control={control}
-            name="userProfileImage"
-            render={({ field }) => (
-                <div>
-                    <div onClick={() => document.getElementById("userProfile")?.click()} className="border-2 cursor-pointer rounded-md border-dotted bg-gray-100 flex items-center justify-center gap-2 p-4 w-full flex-col">
-                        <FaImage size={24}/>
-                        <p>Zgjidhni nje imazh per foto te profilit</p>
-                    </div>
+            <div>
+                <div onClick={() => document.getElementById("userProfile")?.click()} className="border-2 cursor-pointer rounded-md border-dotted bg-gray-100 flex items-center justify-center gap-2 p-4 w-full flex-col">
+                    <FaImage size={24}/>
+                    <p>Zgjidhni nje imazh per foto te profilit</p>
+                </div>
                 <Input
                     id="userProfile"
                     type="file"
@@ -165,28 +176,21 @@ const SettingsComponent = ({session}: {session: Session}) => {
                     onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                        // Validate file size (e.g., 2MB max)
                         if (file.size > 2 * 1024 * 1024) {
-                        // Handle error (you can set an error in your form state)
+                        toast.error("Imazhi duhet te jete me i vogel se 2MB");
                         return;
                         }
 
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                        const base64String = event.target?.result as string;
-                        field.onChange(base64String); // Update form value
-                        setPreviewImage(base64String); // Update preview
-                        };
-                        reader.readAsDataURL(file);
+                        if (profileFile && previewImage?.startsWith('blob:')) {
+                          URL.revokeObjectURL(previewImage);
+                        }
+                        setProfileFile(file);
+                        setPreviewImage(URL.createObjectURL(file));
+                        setExistingProfileUrl(null);
                     }
                     }}
                 />
-                {errors.userProfileImage && (
-                    <p className="text-sm text-red-500 mt-1">{errors.userProfileImage.message}</p>
-                )}
-                </div>
-            )}
-            />
+            </div>
         </div>
         <div>
             <div className="flex items-center gap-3">

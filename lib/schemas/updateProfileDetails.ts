@@ -1,4 +1,5 @@
 import {z} from "zod"
+import { blobUrlSchema } from "./blobUrl"
 
 export const updateProfileSchema = z.object({
         fullName: z.string().min(3, "Emri i plotë duhet të përmbajë të paktën 3 karaktere"),
@@ -6,12 +7,8 @@ export const updateProfileSchema = z.object({
         username: z.string().min(3, "Emri i përdoruesit duhet të përmbajë të paktën 3 karaktere"),
         gender: z.enum(["MASHKULL", "FEMER", "TJETER", "PA_GJINI"]),
         changePassword: z.boolean(),
-        password: z.string().optional().nullable(), // Base field is optional
-        userProfileImage: z.string()
-        .regex(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/, {
-            message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG, WEBP ose GIF)"
-        })
-        .optional().nullable(),
+        password: z.string().optional().nullable(),
+        userProfileImageUrl: blobUrlSchema.optional().nullable(),
         confirmPassword: z.string().optional().nullable(),
     })
     .refine((data) => {
@@ -56,3 +53,5 @@ export const updateProfileSchema = z.object({
         message: "Fjalëkalimet nuk përputhen",
         path: ["confirmPassword"],
 })
+
+export const updateProfileFormSchema = updateProfileSchema.omit({ userProfileImageUrl: true });

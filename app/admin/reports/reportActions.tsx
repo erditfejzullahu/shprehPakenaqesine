@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,40 +33,66 @@ import Lightbox from 'yet-another-react-lightbox'
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails'
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
+import { reportFormSchema } from '@/lib/schemas/reportsSchema'
+import { uploadEvidenceFiles } from '@/lib/blobUpload'
 
-const reportEditSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  category: z.enum(ReportsCategory),
-  attachments: z.array(z.string()),
-  audioAttachments: z.array(z.string()),
-  videoAttachments: z.array(z.string())
-})
+const reportEditFormSchema = reportFormSchema.omit({ email: true })
 
-type ReportEditFormValues = z.infer<typeof reportEditSchema>
+type ReportEditFormValues = z.infer<typeof reportEditFormSchema>
+
+type FilePreview = { file: File; previewUrl: string }
+
+type AttachmentItem =
+  | { kind: 'url'; url: string }
+  | { kind: 'file'; file: File; previewUrl: string }
 
 const ReportActions = ({report}: {report: ExtendedReport}) => {
   const router = useRouter();
   const [open, setOpen] = useState(false)
-  const [imagePreviews, setImagePreviews] = useState<string[]>(report.attachments)
-  const [audioPreviews, setAudioPreviews] = useState<string[]>(report.audioAttachments)
-  const [videoPreviews, setVideoPreviews] = useState<string[]>(report.videoAttachments)
+  const [imageItems, setImageItems] = useState<AttachmentItem[]>(
+    report.attachments.map((url) => ({ kind: 'url', url }))
+  )
+  const [audioItems, setAudioItems] = useState<AttachmentItem[]>(
+    report.audioAttachments.map((url) => ({ kind: 'url', url }))
+  )
+  const [videoItems, setVideoItems] = useState<AttachmentItem[]>(
+    report.videoAttachments.map((url) => ({ kind: 'url', url }))
+  )
   const [isDeletting, setIsDeletting] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
   const [lighboxIndex, setLighboxIndex] = useState(0)
   const [openLightBox, setOpenLightBox] = useState(false)
 
-  const { control, handleSubmit, formState: { errors, isSubmitting }, setValue } = useForm<ReportEditFormValues>({
-    resolver: zodResolver(reportEditSchema),
+  const { control, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<ReportEditFormValues>({
+    resolver: zodResolver(reportEditFormSchema),
     defaultValues: {
       title: report.title,
       description: report.description,
       category: report.category,
-      attachments: report.attachments,
-      audioAttachments: report.audioAttachments,
-      videoAttachments: report.videoAttachments
     }
   })
+
+  useEffect(() => {
+    if (open) {
+      reset({
+        title: report.title,
+        description: report.description,
+        category: report.category,
+      })
+      setImageItems(report.attachments.map((url) => ({ kind: 'url', url })))
+      setAudioItems(report.audioAttachments.map((url) => ({ kind: 'url', url })))
+      setVideoItems(report.videoAttachments.map((url) => ({ kind: 'url', url })))
+    }
+  }, [open, report, reset])
+
+  useEffect(() => {
+    return () => {
+      [...imageItems, ...audioItems, ...videoItems].forEach((item) => {
+        if (item.kind === 'file') URL.revokeObjectURL(item.previewUrl)
+      })
+    }
+  }, [])
 
   const handleDeleteReport = useCallback(async () => {
     setIsDeletting(true)
@@ -78,63 +104,74 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
       }
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.message || "Dicka shkoi gabim")
+      toast.error(error.response?.data?.message || "Dicka shkoi gabim")
     } finally {
       setIsDeletting(false)
     }
   }, [report.id, router, report.complaint.title, report.title])
 
-  const handleFileUpload = (
+  const addFiles = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: 'attachments' | 'audioAttachments' | 'videoAttachments',
-    setPreviews: React.Dispatch<React.SetStateAction<string[]>>
+    setItems: React.Dispatch<React.SetStateAction<AttachmentItem[]>>,
+    acceptType?: string
   ) => {
     const files = e.target.files
     if (!files) return
 
-    const newPreviews: string[] = []
-    const fileReaders: FileReader[] = []
-    let filesRead = 0
+    const newItems: AttachmentItem[] = Array.from(files)
+      .filter((file) => !acceptType || file.type.includes(acceptType))
+      .map((file) => ({
+        kind: 'file' as const,
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }))
 
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader()
-      fileReaders.push(reader)
+    setItems((prev) => [...prev, ...newItems])
+    e.target.value = ""
+  }
 
-      reader.onload = (event) => {
-        filesRead++
-        if (event.target?.result) {
-          newPreviews.push(event.target.result as string)
-        }
-
-        if (filesRead === files.length) {
-          const updatedPreviews = [...(field === 'attachments' ? imagePreviews : 
-                                    field === 'audioAttachments' ? audioPreviews : 
-                                    videoPreviews), ...newPreviews]
-          setPreviews(updatedPreviews)
-          setValue(field, updatedPreviews)
-        }
-      }
-
-      reader.readAsDataURL(file)
+  const removeItem = (
+    index: number,
+    setItems: React.Dispatch<React.SetStateAction<AttachmentItem[]>>
+  ) => {
+    setItems((prev) => {
+      const removed = prev[index]
+      if (removed?.kind === 'file') URL.revokeObjectURL(removed.previewUrl)
+      return prev.filter((_, i) => i !== index)
     })
   }
 
-  const removeAttachment = (
-    index: number,
-    field: 'attachments' | 'audioAttachments' | 'videoAttachments',
-    setPreviews: React.Dispatch<React.SetStateAction<string[]>>
-  ) => {
-    const updatedPreviews = [...(field === 'attachments' ? imagePreviews : 
-                              field === 'audioAttachments' ? audioPreviews : 
-                              videoPreviews)]
-    updatedPreviews.splice(index, 1)
-    setPreviews(updatedPreviews)
-    setValue(field, updatedPreviews)
-  }
+  const getPreviewSrc = (item: AttachmentItem) =>
+    item.kind === 'url' ? item.url : item.previewUrl
+
+  const imagePreviews = imageItems.map(getPreviewSrc)
 
   const onSubmit = async (data: ReportEditFormValues) => {
     try {
-      const response = await api.patch(`/api/reports/${report.id}`, data)
+      setIsUploading(true)
+
+      const newAttachmentFiles = imageItems.filter((i): i is FilePreview & { kind: 'file' } => i.kind === 'file').map((i) => i.file)
+      const newAudioFiles = audioItems.filter((i): i is FilePreview & { kind: 'file' } => i.kind === 'file').map((i) => i.file)
+      const newVideoFiles = videoItems.filter((i): i is FilePreview & { kind: 'file' } => i.kind === 'file').map((i) => i.file)
+
+      const uploaded = await uploadEvidenceFiles(
+        report.id,
+        newAttachmentFiles,
+        newAudioFiles,
+        newVideoFiles,
+        "reports"
+      )
+
+      const existingAttachments = imageItems.filter((i): i is { kind: 'url'; url: string } => i.kind === 'url').map((i) => i.url)
+      const existingAudios = audioItems.filter((i): i is { kind: 'url'; url: string } => i.kind === 'url').map((i) => i.url)
+      const existingVideos = videoItems.filter((i): i is { kind: 'url'; url: string } => i.kind === 'url').map((i) => i.url)
+
+      const response = await api.patch(`/api/reports/${report.id}`, {
+        ...data,
+        attachments: [...existingAttachments, ...uploaded.attachments],
+        audioAttachments: [...existingAudios, ...uploaded.audiosAttached],
+        videoAttachments: [...existingVideos, ...uploaded.videosAttached],
+      })
       if (response.data.success) {
         toast.success('Raporti u perditesua me sukses!')
         router.refresh()
@@ -142,8 +179,12 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
       }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Dicka shkoi gabim!")
-    } 
+    } finally {
+      setIsUploading(false)
+    }
   }
+
+  const isBusy = isSubmitting || isUploading
 
   return (
     <>
@@ -176,9 +217,8 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
               Bej ndryshimet e nevojshme per raportin ne lidhje me ankesen: {report.complaint.title}
             </DialogDescription>
           </DialogHeader>
-          
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Complaint Info (readonly) */}
             <div className="p-4 border rounded-lg">
               <h4 className="font-medium mb-2">Informacione mbi ankesen:</h4>
               <p><span className="font-semibold">Titulli:</span> {report.complaint.title}</p>
@@ -187,7 +227,6 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
               )}
             </div>
 
-            {/* Title */}
             <div className="space-y-2">
               <Label htmlFor="title">Titulli i Raportit</Label>
               <Controller
@@ -202,17 +241,16 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
               )}
             </div>
 
-            {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Pershkrimi</Label>
               <Controller
                 name="description"
                 control={control}
                 render={({ field }) => (
-                  <Textarea 
-                    id="description" 
-                    {...field} 
-                    placeholder="Pershkruani ne detaje arsyen e raportimit..." 
+                  <Textarea
+                    id="description"
+                    {...field}
+                    placeholder="Pershkruani ne detaje arsyen e raportimit..."
                     rows={5}
                   />
                 )}
@@ -222,7 +260,6 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
               )}
             </div>
 
-            {/* Category */}
             <div className="space-y-2">
               <Label>Kategoria</Label>
               <Controller
@@ -236,7 +273,7 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
                     <SelectContent>
                       {Object.values(ReportsCategory).map((category) => (
                         <SelectItem key={category} value={category}>
-                          {category.split('_').map(word => 
+                          {category.split('_').map(word =>
                             word.charAt(0) + word.slice(1).toLowerCase()
                           ).join(' ')}
                         </SelectItem>
@@ -250,26 +287,25 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
               )}
             </div>
 
-            {/* Attachments */}
             <div className="space-y-4">
-              {/* Images */}
               <div className="space-y-2">
                 <Label>Imazhet</Label>
-                {imagePreviews.length > 0 && (
+                {imageItems.length > 0 && (
                   <div className="grid grid-cols-3 gap-2">
-                    {imagePreviews.map((preview, index) => (
+                    {imageItems.map((item, index) => (
                       <div key={index} className="relative group">
                         <Image
-                          src={preview}
+                          src={getPreviewSrc(item)}
                           alt={`Preview ${index}`}
                           width={200}
                           height={200}
+                          unoptimized={item.kind === 'file'}
                           className="rounded-md cursor-pointer object-cover h-32 w-full"
                           onClick={() => {setLighboxIndex(index); setOpenLightBox(true); document.body.style.pointerEvents = "all";}}
                         />
                         <button
                           type="button"
-                          onClick={() => removeAttachment(index, 'attachments', setImagePreviews)}
+                          onClick={() => removeItem(index, setImageItems)}
                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X className="h-4 w-4" />
@@ -288,24 +324,21 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
                     multiple
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'attachments', setImagePreviews)}
+                    onChange={(e) => addFiles(e, setImageItems)}
                   />
                 </label>
               </div>
 
-                
-
-              {/* Audio */}
               <div className="space-y-2">
                 <Label>Audio</Label>
-                {audioPreviews.length > 0 && (
+                {audioItems.length > 0 && (
                   <div className="space-y-2">
-                    {audioPreviews.map((preview, index) => (
+                    {audioItems.map((item, index) => (
                       <div key={index} className="relative group">
-                        <audio controls src={preview} className="w-full" />
+                        <audio controls src={getPreviewSrc(item)} className="w-full" />
                         <button
                           type="button"
-                          onClick={() => removeAttachment(index, 'audioAttachments', setAudioPreviews)}
+                          onClick={() => removeItem(index, setAudioItems)}
                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X className="h-4 w-4" />
@@ -324,22 +357,21 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
                     multiple
                     accept="audio/*"
                     className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'audioAttachments', setAudioPreviews)}
+                    onChange={(e) => addFiles(e, setAudioItems, "audio")}
                   />
                 </label>
               </div>
 
-              {/* Videos */}
               <div className="space-y-2">
                 <Label>Video</Label>
-                {videoPreviews.length > 0 && (
+                {videoItems.length > 0 && (
                   <div className="space-y-2">
-                    {videoPreviews.map((preview, index) => (
+                    {videoItems.map((item, index) => (
                       <div key={index} className="relative group">
-                        <video controls src={preview} className="w-full rounded-md" />
+                        <video controls src={getPreviewSrc(item)} className="w-full rounded-md" />
                         <button
                           type="button"
-                          onClick={() => removeAttachment(index, 'videoAttachments', setVideoPreviews)}
+                          onClick={() => removeItem(index, setVideoItems)}
                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X className="h-4 w-4" />
@@ -358,22 +390,22 @@ const ReportActions = ({report}: {report: ExtendedReport}) => {
                     multiple
                     accept="video/*"
                     className="hidden"
-                    onChange={(e) => handleFileUpload(e, 'videoAttachments', setVideoPreviews)}
+                    onChange={(e) => addFiles(e, setVideoItems, "video")}
                   />
                 </label>
               </div>
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => setOpen(false)}
               >
                 Anulo
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Duke ruajtur..." : "Ruaj ndryshimet"}
+              <Button type="submit" disabled={isBusy}>
+                {isBusy ? "Duke ruajtur..." : "Ruaj ndryshimet"}
               </Button>
               <Button disabled={isDeletting} variant={"destructive"}>{isDeletting ? "Duke fshire..." : "Fshij"}</Button>
             </div>

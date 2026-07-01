@@ -12,6 +12,7 @@ import { MdThumbDownAlt } from "react-icons/md";
 import CTAButton from "./CTAButton";
 import { CiImageOff } from "react-icons/ci";
 import { toast } from "sonner";
+import { getAssetUrl } from "@/lib/utils";
 
 const CompanyCard = ({
   id,
@@ -40,7 +41,7 @@ const CompanyCard = ({
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-md overflow-hidden border border-gray-200">
             <Image
-              src={`/serve${logoUrl}`}
+              src={getAssetUrl(logoUrl)}
               width={64}
               height={64}
               alt={name}
@@ -132,7 +133,7 @@ const CompanyCard = ({
             {images.slice(0, 3).map((img, index) => (
               <div key={index} className="flex-shrink-0">
                 <Image
-                  src={`/serve${img}`}
+                  src={getAssetUrl(img)}
                   width={120}
                   height={80}
                   unoptimized

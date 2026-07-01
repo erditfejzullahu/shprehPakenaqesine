@@ -6,6 +6,27 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function getAssetUrl(storedUrl: string | null | undefined): string {
+  if (!storedUrl) return '';
+  if (storedUrl.startsWith('http://') || storedUrl.startsWith('https://')) {
+    return storedUrl;
+  }
+  if (storedUrl.startsWith('/uploads')) {
+    return `/serve${storedUrl}`;
+  }
+  return `/serve/${storedUrl}`;
+}
+
+export function getAbsoluteAssetUrl(storedUrl: string | null | undefined): string {
+  const url = getAssetUrl(storedUrl);
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  const base = process.env.NEXT_PUBLIC_BASE_URL || '';
+  return `${base}${url}`;
+}
+
 export function copyToClipboard(text: string) {
   if(navigator.clipboard){
     navigator.clipboard.writeText(text)
@@ -20,7 +41,6 @@ export function copyToClipboard(text: string) {
   toast.success('Artikulli u kopjuar me sukses')
 }
 
-
 export async function imageUrlToBase64(imageUrl: string): Promise<string> {
   const response = await fetch(imageUrl);
   if (!response.ok) {
@@ -29,8 +49,6 @@ export async function imageUrlToBase64(imageUrl: string): Promise<string> {
 
   const arrayBuffer = await response.arrayBuffer();
   const base64 = Buffer.from(arrayBuffer).toString('base64');
-
-  // Get the MIME type (e.g., image/jpeg)
   const contentType = response.headers.get('content-type') || 'image/jpeg';
 
   return `data:${contentType};base64,${base64}`;

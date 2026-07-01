@@ -10,6 +10,7 @@ import { ColumnResizeMode, createColumnHelper, FilterFn, flexRender, getCoreRowM
 import { rankItem } from '@tanstack/match-sorter-utils'
 import { ReusableHoverCard } from '../ReusableHoverCard'
 import Image from 'next/image'
+import { getAssetUrl } from '@/lib/utils'
 import { Badge } from '../ui/badge'
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
@@ -89,7 +90,7 @@ const AdminUserLogs = () => {
                 <div className='flex flex-col items-center gap-2'>
                     <div>
                         <Image 
-                            src={`/serve${info.row.original.user.userProfileImage}`}
+                            src={getAssetUrl(info.row.original.user.userProfileImage)}
                             className='size-12 rounded-full'
                             alt={info.row.original.user.fullName}
                             width={42}

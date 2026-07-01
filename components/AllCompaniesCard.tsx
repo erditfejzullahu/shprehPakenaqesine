@@ -27,7 +27,8 @@ import api from "@/lib/api";
 import { LoadingSpinner } from "./LoadingComponents";
 import { FaArrowRight, FaChevronDown } from "react-icons/fa";
 import CTAButton from "./CTAButton";
-import debounce from "lodash/debounce"
+import debounce from "lodash/debounce";
+import { getAssetUrl } from "@/lib/utils";
 import Link from "next/link";
 
 const AllCompaniesCard = () => {
@@ -208,7 +209,7 @@ const AllCompaniesCard = () => {
                                                 <TableCell className="font-medium">
                                                     <div className="flex items-center gap-3">
                                                         <img
-                                                            src={company.logoUrl}
+                                                            src={getAssetUrl(company.logoUrl)}
                                                             alt={company.name}
                                                             className="h-10 w-10 rounded-md object-cover"
                                                         />

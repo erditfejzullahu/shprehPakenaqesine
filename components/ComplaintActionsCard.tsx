@@ -2,7 +2,7 @@
 import api from '@/lib/api'
 import { ComplantPerIdInterface } from '@/types/types'
 import { Session } from 'next-auth'
-import React, { memo, useCallback, useMemo, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
 import { Controller, useForm } from 'react-hook-form'
@@ -15,89 +15,174 @@ import CTAButton from './CTAButton'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
-import { contributionsSchema } from '@/lib/schemas/contributionsSchema'
-import { reportsSchema } from '@/lib/schemas/reportsSchema'
+import { reportFormSchema } from '@/lib/schemas/reportsSchema'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import SocialShareButtons from './SocialShareButtons'
+import { uploadEvidenceFiles } from '@/lib/blobUpload'
 
-type ValidationSchema = z.infer<typeof contributionsSchema>;
-type ReportsValidationSchema = z.infer<typeof reportsSchema>;
+type ReportFormType = z.infer<typeof reportFormSchema>
+
+type FilePreview = { file: File; previewUrl: string }
+
+const contributeFormSchema = z.object({})
+type ContributeFormType = z.infer<typeof contributeFormSchema>
 
 const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: ComplantPerIdInterface, session: Session | null}) => {
-  // if(!session) return null;
     const router = useRouter();
     const {update} = useSession();
     const [isUpvoting, setIsUpvoting] = useState(false)
     const [upvoteCount, setUpvoteCount] = useState(complaintsData.complaint.upVotes)
     const [hasUpvoted, setHasUpvoted] = useState(complaintsData.complaint.hasVoted)
 
-    const [attachmentPreviews, setAttachmentPreviews] = useState<string[]>([]);
-    const [audioPreviews, setAudioPreviews] = useState<string[]>([])
-    const [videoPreviews, setVideoPreviews] = useState<string[]>([])
+    const [contributeAttachmentFiles, setContributeAttachmentFiles] = useState<FilePreview[]>([])
+    const [contributeAudioFiles, setContributeAudioFiles] = useState<FilePreview[]>([])
+    const [contributeVideoFiles, setContributeVideoFiles] = useState<FilePreview[]>([])
 
-    const [videoProgress, setVideoProgress] = useState<number | null>(null)
-    const [attachmentProgress, setAttachmentProgress] = useState<number | null>(null)
-    const [audioProgress, setAudioProgress] = useState<number | null>(null)
+    const [reportAttachmentFiles, setReportAttachmentFiles] = useState<FilePreview[]>([])
+    const [reportAudioFiles, setReportAudioFiles] = useState<FilePreview[]>([])
+    const [reportVideoFiles, setReportVideoFiles] = useState<FilePreview[]>([])
+
+    const [isContributeUploading, setIsContributeUploading] = useState(false)
+    const [isReportUploading, setIsReportUploading] = useState(false)
 
     const [reportsDialog, setReportsDialog] = useState(false)
     const [contributeDialog, setContributeDialog] = useState(false)
 
-    const {control: contributeControl, setValue, getValues, handleSubmit: contributeHandleSubmit, reset: contributeReset, formState: {errors: contributeErrors, isSubmitting: contributeIsSubmitting}} = useForm<ValidationSchema>({
-      resolver: zodResolver(contributionsSchema),
-      defaultValues: useMemo(() => ({
-        attachments: [],
-        audiosAttached: [],
-        videosAttached: []
-      }), [])
+    const { handleSubmit: contributeHandleSubmit, reset: contributeReset, formState: { isSubmitting: contributeIsSubmitting } } = useForm<ContributeFormType>({
+      resolver: zodResolver(contributeFormSchema),
+      defaultValues: useMemo(() => ({}), [])
     })
 
-    const {control: reportControl, handleSubmit: reportHandleSubmit, setValue: reportSetValue, getValues: reportGetValues, reset: reportReset, formState: {errors: reportErrors, isSubmitting: reportIsSubmitting}} = useForm<ReportsValidationSchema>({
-      resolver: zodResolver(reportsSchema),
+    const {control: reportControl, handleSubmit: reportHandleSubmit, reset: reportReset, formState: {errors: reportErrors, isSubmitting: reportIsSubmitting}} = useForm<ReportFormType>({
+      resolver: zodResolver(reportFormSchema),
       defaultValues: useMemo(() => ({
         title: "",
         description: "",
-        attachments: [],
         category: "GJUHE_URREJTJE",
         email: "",
-        audiosAttached: [],
-        videosAttached: []
       }), [])
     })
 
-    const reportsOnSubmit = useCallback(async (data: ReportsValidationSchema) => {      
+    const revokePreviews = useCallback((previews: FilePreview[]) => {
+      previews.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+    }, [])
+
+    const clearContributeFiles = useCallback(() => {
+      revokePreviews([...contributeAttachmentFiles, ...contributeAudioFiles, ...contributeVideoFiles]);
+      setContributeAttachmentFiles([]);
+      setContributeAudioFiles([]);
+      setContributeVideoFiles([]);
+    }, [contributeAttachmentFiles, contributeAudioFiles, contributeVideoFiles, revokePreviews])
+
+    const clearReportFiles = useCallback(() => {
+      revokePreviews([...reportAttachmentFiles, ...reportAudioFiles, ...reportVideoFiles]);
+      setReportAttachmentFiles([]);
+      setReportAudioFiles([]);
+      setReportVideoFiles([]);
+    }, [reportAttachmentFiles, reportAudioFiles, reportVideoFiles, revokePreviews])
+
+    useEffect(() => {
+      return () => {
+        revokePreviews([
+          ...contributeAttachmentFiles,
+          ...contributeAudioFiles,
+          ...contributeVideoFiles,
+          ...reportAttachmentFiles,
+          ...reportAudioFiles,
+          ...reportVideoFiles,
+        ]);
+      };
+    }, [])
+
+    const addFiles = useCallback((
+      e: React.ChangeEvent<HTMLInputElement>,
+      setFiles: React.Dispatch<React.SetStateAction<FilePreview[]>>,
+      acceptType?: string
+    ) => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      const newPreviews = Array.from(files)
+        .filter((file) => !acceptType || file.type.includes(acceptType))
+        .map((file) => ({
+          file,
+          previewUrl: URL.createObjectURL(file),
+        }));
+
+      setFiles((prev) => [...prev, ...newPreviews]);
+      e.target.value = "";
+    }, []);
+
+    const removeFile = useCallback((
+      index: number,
+      setFiles: React.Dispatch<React.SetStateAction<FilePreview[]>>
+    ) => {
+      setFiles((prev) => {
+        const removed = prev[index];
+        if (removed) URL.revokeObjectURL(removed.previewUrl);
+        return prev.filter((_, i) => i !== index);
+      });
+    }, []);
+
+    const reportsOnSubmit = useCallback(async (data: ReportFormType) => {
       try {
+        setIsReportUploading(true)
+        const entityId = crypto.randomUUID()
+        const { attachments, audiosAttached, videosAttached } = await uploadEvidenceFiles(
+          entityId,
+          reportAttachmentFiles.map((p) => p.file),
+          reportAudioFiles.map((p) => p.file),
+          reportVideoFiles.map((p) => p.file),
+          "reports"
+        )
+
         const response = await api.post(`/api/createReport`, {
-          title: data.title,
-          description: data.description,
-          attachments: data.attachments,
-          audiosAttached: data.audiosAttached,
-          videosAttached: data.videosAttached,
+          ...data,
+          attachments,
+          audiosAttached,
+          videosAttached,
           complaintId: complaintsData.complaint.id,
-          category: data.category,
-          email: data.email
         })
         if(response.data.success){
           toast.success(`Sapo keni krijuar raportimin me sukses! Do te njoftoheni vazhdimisht per cdo ndryshim ne lidhje me kete raportim.`)
           setReportsDialog(false)
           reportReset()
-          setAttachmentPreviews([])
-          setAudioPreviews([])
-          setVideoPreviews([])
+          clearReportFiles()
         }
       } catch (error: any) {
         console.error(error)
-        toast.error(error.response.data.message || "Dicka shkoi gabim")
+        toast.error(error.response?.data?.message || "Dicka shkoi gabim")
+      } finally {
+        setIsReportUploading(false)
       }
-    }, [reportReset])
+    }, [reportAttachmentFiles, reportAudioFiles, reportVideoFiles, complaintsData.complaint.id, reportReset, clearReportFiles])
 
-    const contributeOnSubmit = useCallback(async (data: ValidationSchema) => {
+    const contributeOnSubmit = useCallback(async () => {
+      if (
+        contributeAttachmentFiles.length === 0 &&
+        contributeAudioFiles.length === 0 &&
+        contributeVideoFiles.length === 0
+      ) {
+        toast.error("Duhet të paktën një evidence nga rubrikat e paraqitura!")
+        return
+      }
+
       try {
+        setIsContributeUploading(true)
+        const entityId = crypto.randomUUID()
+        const { attachments, audiosAttached, videosAttached } = await uploadEvidenceFiles(
+          entityId,
+          contributeAttachmentFiles.map((p) => p.file),
+          contributeAudioFiles.map((p) => p.file),
+          contributeVideoFiles.map((p) => p.file)
+        )
+
         const response = await api.post(`/api/createContribution`, {
           complaintId: complaintsData.complaint.id,
-          attachments: data.attachments,
-          audiosAttached: data.audiosAttached,
-          videosAttached: data.videosAttached
+          attachments,
+          audiosAttached,
+          videosAttached,
         })
         if(response.data.success){
           toast.success(`Aplikimi per kontribuim ne kete ankese/raport shkoi me sukses. Do njoftoheni kur te behet validimi i evidences tuaj.`)
@@ -106,155 +191,23 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
           }
           setContributeDialog(false)
           contributeReset()
-          setAttachmentPreviews([])
-          setAudioPreviews([])
-          setVideoPreviews([])
+          clearContributeFiles()
           router.refresh();
         }
       } catch (error: any) {
         console.error(error)
-        toast.error(error.response.data.message || "Dicka shkoi gabim")
+        toast.error(error.response?.data?.message || "Dicka shkoi gabim")
+      } finally {
+        setIsContributeUploading(false)
       }
-    }, [contributeReset, router])
-
-    const removeItems = (index: number, type: "attachments" | "audiosAttached" | "videosAttached") => {
-      switch (type) {
-        case "attachments":
-          const updatedAttachments = [...attachmentPreviews];
-          updatedAttachments.splice(index, 1);
-          setAttachmentPreviews(updatedAttachments);
-          setValue("attachments", updatedAttachments);
-          break;
-        case "audiosAttached":
-          const updatedAudios = [...audioPreviews];
-          updatedAudios.splice(index, 1);
-          setAudioPreviews(updatedAudios);
-          setValue("audiosAttached", updatedAudios);
-          break;
-        case "videosAttached":
-          const updatedVideos = [...videoPreviews];
-          updatedVideos.splice(index, 1);
-          setVideoPreviews(updatedVideos);
-          setValue("videosAttached", updatedVideos);
-          break;
-        default:
-          return
-      }
-    };
-
-    const handleAttachmentUploads = (
-      e: React.ChangeEvent<HTMLInputElement>,
-      type: "attachments" | "audiosAttached" | "videosAttached"
-    ) => {
-      const files = e.target.files;
-      if (files && files.length > 0) {
-        const newPreviews: string[] = [];
-        const readers: FileReader[] = [];
-    
-        // Init fake progress: one per file
-        switch (type) {
-          case "attachments":
-            setAttachmentProgress(0)
-            break;
-          case "audiosAttached":
-            setAudioProgress(0)
-            break;
-          case "videosAttached":
-            setVideoProgress(0)
-            break;
-        }
-    
-        Array.from(files).forEach((file, index) => {
-          const reader = new FileReader();
-          readers.push(reader);
-    
-          let fakeProgress = 0;
-    
-          // Simulate: tick every 50ms
-          const interval = setInterval(() => {
-            fakeProgress += 5;
-            setVideoProgress(Math.min(fakeProgress, 95))
-          }, 50);
-    
-          reader.onload = (event) => {
-            
-            const base64 = event.target?.result as string;
-            newPreviews[index] = base64;
-        
-            if (newPreviews?.filter(Boolean).length === files.length) {
-              switch (type) {
-                case "attachments":
-                  setAttachmentPreviews((prev) => [...prev, ...newPreviews]);
-
-                  contributeDialog ?
-                  setValue("attachments", [
-                    ...(getValues("attachments") || []),
-                    ...newPreviews,
-                  ]) : 
-                  reportSetValue("attachments", [
-                    ...(reportGetValues("attachments") || []),
-                    ...newPreviews
-                  ]);
-                  break;
-                case "audiosAttached":
-                  setAudioPreviews((prev) => [...prev, ...newPreviews]);
-
-                  contributeDialog ?
-                  setValue("audiosAttached", [
-                    ...(getValues("audiosAttached") || []),
-                    ...newPreviews,
-                  ]) : 
-                  reportSetValue("audiosAttached", [
-                    ...(reportGetValues("audiosAttached") || []),
-                    ...newPreviews
-                  ]);
-
-                  break;
-                case "videosAttached":
-                  setVideoPreviews((prev) => [...prev, ...newPreviews]);
-
-                  contributeDialog ?
-                  setValue("videosAttached", [
-                    ...(getValues("videosAttached") || []),
-                    ...newPreviews,
-                  ]) : 
-                  reportSetValue("videosAttached", [
-                    ...(reportGetValues("videosAttached") || []),
-                    ...newPreviews
-                  ]);
-                  
-                  break;
-              }
-            }
-          };
-
-          reader.onloadend = () => {
-            clearInterval(interval);
-            switch (type) {
-              case "attachments":
-                setAttachmentProgress(null)
-                break;
-              case "audiosAttached":
-                setAudioProgress(null)
-                break;
-              case "videosAttached":
-                setVideoProgress(null)
-                break;
-            }
-          }
-    
-          reader.readAsDataURL(file);
-        });
-      }
-    };
-    
+    }, [contributeAttachmentFiles, contributeAudioFiles, contributeVideoFiles, complaintsData.complaint.id, session, update, contributeReset, clearContributeFiles, router])
 
     const handleUpvote = useCallback(async () => {
         if (!session) {
           toast.error('Ju duhet të jeni të kycur për votim të ankesës/raportimit!', {action: {label: "Kycuni", onClick: () => router.push('/kycuni')}})
           return;
         }
-        
+
         setIsUpvoting(true);
         try {
           const response = await api.post(`/api/complaintVotes/`, {complaintId: complaintsData.complaint.id, userId: session.user.id})
@@ -274,9 +227,10 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
         } finally {
           setIsUpvoting(false);
         }
-      }, [router]);
+      }, [router, session, complaintsData.complaint.id]);
 
-      
+    const contributeBusy = contributeIsSubmitting || isContributeUploading
+    const reportBusy = reportIsSubmitting || isReportUploading
 
   return (
     <>
@@ -308,13 +262,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
           </button>
           <Dialog open={contributeDialog} onOpenChange={() => {
             reportReset();
-            setAttachmentPreviews([]);
-            setAudioPreviews([]);
-            setVideoPreviews([]);
-            setAudioProgress(null)
-            setVideoProgress(null)
-            setAttachmentProgress(null)
+            clearReportFiles();
             setContributeDialog(!contributeDialog)
+            if (contributeDialog) clearContributeFiles();
           }}>
             <form onSubmit={contributeHandleSubmit(contributeOnSubmit)}>
               {session ? (
@@ -330,7 +280,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                   </button>
                 </DialogTrigger>
               ) : (
-                <button 
+                <button
                     onClick={() => toast.error('Ju duhet te jeni te kycur per shtim te kontribimit!', {action: {label: "Kycuni", onClick: () => router.push('/kycuni')}})}
                     type="button"
                     className="w-full cursor-pointer flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mb-3"
@@ -350,165 +300,129 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 </DialogHeader>
                 <div className='flex flex-col gap-4  relative'>
                   <div>
-                    <Label htmlFor='attachments' className='mb-2'>Ngarkoni imazhe/dokumente</Label>
-                    <Controller 
-                      control={contributeControl}
-                      name="attachments"
-                      render={({field}) => (
-                        <div className="space-y-4">
-                          <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
-                            <div className="flex flex-col items-center justify-center">
-                              <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                              <p className="text-sm text-center px-1 text-muted-foreground">
-                                Klikoni për të ngarkuar dokumente/imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                              </p>
+                    <Label htmlFor='contribute-attachments' className='mb-2'>Ngarkoni imazhe/dokumente</Label>
+                    <div className="space-y-4">
+                      <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
+                        <div className="flex flex-col items-center justify-center">
+                          <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
+                          <p className="text-sm text-center px-1 text-muted-foreground">
+                            Klikoni për të ngarkuar dokumente/imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                          </p>
+                        </div>
+                        <input
+                          id='contribute-attachments'
+                          type="file"
+                          className="hidden"
+                          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                          multiple
+                          onChange={(e) => addFiles(e, setContributeAttachmentFiles)}
+                        />
+                      </label>
+
+                      {contributeAttachmentFiles.length > 0 && (
+                        <div className="flex flex-nowrap overflow-x-auto gap-4">
+                          {contributeAttachmentFiles.map((preview, index) => (
+                            <div key={index} className="relative group flex-shrink-0">
+                              <img
+                                src={preview.previewUrl}
+                                alt={`Preview ${index + 1}`}
+                                className="h-44 min-w-full object-cover rounded-md"
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="absolute -right-0 h-6 -top-0 rounded-full bg-destructive/90 hover:bg-destructive text-white"
+                                onClick={() => removeFile(index, setContributeAttachmentFiles)}
+                              >
+                                <X className="h-4 w-4 " />
+                              </Button>
                             </div>
-                            <input 
-                              id='attachments'
-                              type="file" 
-                              className="hidden" 
-                              accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                              multiple
-                              onChange={(e) => handleAttachmentUploads(e, "attachments")}
-                            />
-                          </label>
-                          {typeof attachmentProgress === "number" && attachmentProgress > 0 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
-                            <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${attachmentProgress}%`}} />
-                          </div>}
-                          
-                          {attachmentPreviews.length > 0 && (
-                            <div className="flex flex-nowrap overflow-x-auto gap-4">
-                              {attachmentPreviews.map((preview, index) => (
-                                <div key={index} className="relative group flex-shrink-0">
-                                  <img 
-                                    src={preview} 
-                                    alt={`Preview ${index + 1}`} 
-                                    className="h-44 min-w-full object-cover rounded-md"
-                                    />
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="absolute -right-0 h-6 -top-0 rounded-full bg-destructive/90 hover:bg-destructive text-white"
-                                    onClick={() => removeItems(index, "attachments")}
-                                    >
-                                    <X className="h-4 w-4 " />
-                                  </Button>
-                                </div>
-                              ))}
-                              </div>
-                          )}
+                          ))}
                         </div>
                       )}
-                    />
-                    {contributeErrors.attachments && (
-                      <p className="text-red-500 text-sm mt-1">{contributeErrors.attachments.message}</p>
-                    )}
+                    </div>
                   </div>
                   <div>
-                    <Label htmlFor='audiosAttached' className='mb-2'>Ngarkoni audio/zërime</Label>
-                    <Controller 
-                      control={contributeControl}
-                      name="audiosAttached"
-                      render={({field}) => (
-                        <div className="space-y-4">
-                          <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
-                            <div className="flex flex-col items-center justify-center">
-                              <AudioLinesIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                              <p className="text-sm text-center px-1 text-muted-foreground">
-                                Klikoni për të ngarkuar audio/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                              </p>
+                    <Label htmlFor='contribute-audios' className='mb-2'>Ngarkoni audio/zërime</Label>
+                    <div className="space-y-4">
+                      <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
+                        <div className="flex flex-col items-center justify-center">
+                          <AudioLinesIcon className="h-8 w-8 text-muted-foreground mb-2" />
+                          <p className="text-sm text-center px-1 text-muted-foreground">
+                            Klikoni për të ngarkuar audio/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                          </p>
+                        </div>
+                        <input
+                          id='contribute-audios'
+                          type="file"
+                          className="hidden"
+                          accept="audio/*"
+                          multiple
+                          onChange={(e) => addFiles(e, setContributeAudioFiles, "audio")}
+                        />
+                      </label>
+                      {contributeAudioFiles.length > 0 && (
+                        <div className="flex flex-nowrap overflow-x-auto gap-4">
+                          {contributeAudioFiles.map((preview, index) => (
+                            <div key={index} className="relative group flex-shrink-0">
+                              <audio controls src={preview.previewUrl} className="min-w-full h-44" />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="absolute -right-0 h-6 -top-0 rounded-full bg-destructive/90 hover:bg-destructive text-white"
+                                onClick={() => removeFile(index, setContributeAudioFiles)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
                             </div>
-                            <input 
-                              id='audiosAttached'
-                              type="file" 
-                              className="hidden" 
-                              accept="audio/*"
-                              multiple
-                              onChange={(e) => handleAttachmentUploads(e, "audiosAttached")}
-                            />
-                          </label>
-                          {typeof audioProgress === "number" && audioProgress > 0 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
-                            <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${audioProgress}%`}} />
-                          </div>}
-                          {audioPreviews.length > 0 && (
-                            <div className="flex flex-nowrap overflow-x-auto gap-4">
-                              {audioPreviews.map((preview, index) => (
-                                <div key={index} className="relative group flex-shrink-0">
-                                  <audio controls src={preview} className="min-w-full h-44" />
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="absolute -right-0 h-6 -top-0 rounded-full bg-destructive/90 hover:bg-destructive text-white"
-                                    onClick={() => removeItems(index, "audiosAttached")}
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                          ))}
                         </div>
                       )}
-                    />
-                    {contributeErrors.audiosAttached && (
-                      <p className="text-red-500 text-sm mt-1">{contributeErrors.audiosAttached.message}</p>
-                    )}
+                    </div>
                   </div>
                   <div>
-                    <Label htmlFor='videosAttached' className='mb-2'>Ngarkoni video/zërime</Label>
-                    <Controller 
-                      control={contributeControl}
-                      name="videosAttached"
-                      render={({field}) => (
-                        <div className="space-y-4">
-                          <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
-                            <div className="flex flex-col items-center justify-center">
-                              <Video className="h-8 w-8 text-muted-foreground mb-2" />
-                              <p className="text-sm text-center px-1 text-muted-foreground">
-                                Klikoni për të ngarkuar video/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                              </p>
+                    <Label htmlFor='contribute-videos' className='mb-2'>Ngarkoni video/zërime</Label>
+                    <div className="space-y-4">
+                      <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
+                        <div className="flex flex-col items-center justify-center">
+                          <Video className="h-8 w-8 text-muted-foreground mb-2" />
+                          <p className="text-sm text-center px-1 text-muted-foreground">
+                            Klikoni për të ngarkuar video/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                          </p>
+                        </div>
+                        <input
+                          id='contribute-videos'
+                          type="file"
+                          className="hidden"
+                          accept="video/*"
+                          multiple
+                          onChange={(e) => addFiles(e, setContributeVideoFiles, "video")}
+                        />
+                      </label>
+                      {contributeVideoFiles.length > 0 && (
+                        <div className="flex flex-nowrap overflow-x-auto gap-4">
+                          {contributeVideoFiles.map((preview, index) => (
+                            <div key={index} className="relative group flex-shrink-0">
+                              <video controls className="min-w-full h-44 rounded" src={preview.previewUrl} />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="absolute -right-0 -top-0 h-6 rounded-full bg-destructive/90 hover:bg-destructive text-white"
+                                onClick={() => removeFile(index, setContributeVideoFiles)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
                             </div>
-                            <input 
-                              id='videosAttached'
-                              type="file" 
-                              className="hidden" 
-                              accept="video/*"
-                              multiple
-                              onChange={(e) => handleAttachmentUploads(e, "videosAttached")}
-                            />
-                          </label>
-                          {typeof videoProgress === "number" && videoProgress > 0 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
-                            <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${videoProgress}%`}} />
-                          </div>}
-                          {videoPreviews.length > 0 && (
-                            <div className="flex flex-nowrap overflow-x-auto gap-4">
-                              {videoPreviews.map((preview, index) => (
-                                <div key={index} className="relative group flex-shrink-0">
-                                  <video controls className="min-w-full h-44 rounded" src={preview} />
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="absolute -right-0 -top-0 h-6 rounded-full bg-destructive/90 hover:bg-destructive text-white"
-                                    onClick={() => removeItems(index, "videosAttached")}
-                                    >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                          ))}
                         </div>
                       )}
-                    />
-                    {contributeErrors.videosAttached && (
-                      <p className="text-red-500 text-sm mt-1">{contributeErrors.videosAttached.message}</p>
-                    )}
+                    </div>
                   </div>
                   <div>
-                    <CTAButton type='button' onClick={contributeHandleSubmit(contributeOnSubmit)} isLoading={contributeIsSubmitting} text={`${contributeIsSubmitting ? "Duke shtuar..." : "Shto kontribim"}`} primary classNames='w-full'/>
+                    <CTAButton type='submit' isLoading={contributeBusy} text={`${contributeBusy ? "Duke shtuar..." : "Shto kontribim"}`} primary classNames='w-full'/>
                   </div>
                 </div>
               </DialogContent>
@@ -516,13 +430,9 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
           </Dialog>
           <Dialog open={reportsDialog} onOpenChange={() => {
             reportReset();
-            setAttachmentPreviews([]);
-            setAudioPreviews([]);
-            setVideoPreviews([]);
-            setAudioProgress(null)
-            setVideoProgress(null)
-            setAttachmentProgress(null)
+            clearContributeFiles();
             setReportsDialog(!reportsDialog)
+            if (reportsDialog) clearReportFiles();
           }}>
             <form onSubmit={reportHandleSubmit(reportsOnSubmit)}>
               <DialogTrigger asChild>
@@ -544,7 +454,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                   <div className='flex flex-col gap-4  relative'>
                       <div>
                         <Label className='mb-1' htmlFor='title'>Titulli raportimit</Label>
-                        <Controller 
+                        <Controller
                           control={reportControl}
                           name="title"
                           render={({field}) => (
@@ -557,7 +467,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                       </div>
                       <div>
                         <Label className='mb-1' htmlFor='description'>Detajet e raportimit</Label>
-                        <Controller 
+                        <Controller
                           control={reportControl}
                           name="description"
                           render={({field}) => (
@@ -570,12 +480,11 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                       </div>
                       <div>
                         <Label className='mb-1' htmlFor='reportEmail'>Email</Label>
-                        <Controller 
+                        <Controller
                           control={reportControl}
                           name="email"
                           render={({field}) => (
                             <Input placeholder='user@shembull.com' id='reportEmail' {...field}/>
-                            
                           )}
                         />
                         {reportErrors.email && (
@@ -584,7 +493,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                       </div>
                       <div>
                         <Label className='mb-1' htmlFor='category'>Kategoria</Label>
-                        <Controller 
+                        <Controller
                           control={reportControl}
                           name="category"
                           render={({field}) => (
@@ -613,165 +522,129 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                         )}
                       </div>
                       <div>
-                      <Label htmlFor='attachments' className='mb-2'>Ngarkoni imazhe/dokumente</Label>
-                      <Controller 
-                        control={contributeControl}
-                        name="attachments"
-                        render={({field}) => (
-                          <div className="space-y-4">
-                            <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
-                              <div className="flex flex-col items-center justify-center">
-                                <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                                <p className="text-sm text-center px-1 text-muted-foreground">
-                                  Klikoni për të ngarkuar dokumente/imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                                </p>
+                      <Label htmlFor='report-attachments' className='mb-2'>Ngarkoni imazhe/dokumente</Label>
+                      <div className="space-y-4">
+                        <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
+                          <div className="flex flex-col items-center justify-center">
+                            <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
+                            <p className="text-sm text-center px-1 text-muted-foreground">
+                              Klikoni për të ngarkuar dokumente/imazhe <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                            </p>
+                          </div>
+                          <input
+                            id='report-attachments'
+                            type="file"
+                            className="hidden"
+                            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+                            multiple
+                            onChange={(e) => addFiles(e, setReportAttachmentFiles)}
+                          />
+                        </label>
+
+                        {reportAttachmentFiles.length > 0 && (
+                          <div className="flex flex-nowrap overflow-x-scroll gap-4">
+                            {reportAttachmentFiles.map((preview, index) => (
+                              <div key={index} className="relative group flex-shrink-0">
+                                <img
+                                  src={preview.previewUrl}
+                                  alt={`Preview ${index + 1}`}
+                                  className="h-44 min-w-full object-cover rounded-md"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="absolute -right-0 h-6 -top-0 rounded-full bg-destructive/90 hover:bg-destructive text-white"
+                                  onClick={() => removeFile(index, setReportAttachmentFiles)}
+                                >
+                                  <X className="h-4 w-4 " />
+                                </Button>
                               </div>
-                              <input 
-                                id='attachments'
-                                type="file" 
-                                className="hidden" 
-                                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
-                                multiple
-                                onChange={(e) => handleAttachmentUploads(e, "attachments")}
-                              />
-                            </label>
-                            {typeof attachmentProgress === "number" && attachmentProgress > 0 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
-                              <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${attachmentProgress}%`}} />
-                            </div>}
-                            
-                            {attachmentPreviews.length > 0 && (
-                              <div className="flex flex-nowrap overflow-x-scroll gap-4">
-                                {attachmentPreviews.map((preview, index) => (
-                                  <div key={index} className="relative group flex-shrink-0">
-                                    <img 
-                                      src={preview} 
-                                      alt={`Preview ${index + 1}`} 
-                                      className="h-44 min-w-full object-cover rounded-md"
-                                      />
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
-                                      className="absolute -right-0 h-6 -top-0 rounded-full bg-destructive/90 hover:bg-destructive text-white"
-                                      onClick={() => removeItems(index, "attachments")}
-                                      >
-                                      <X className="h-4 w-4 " />
-                                    </Button>
-                                  </div>
-                                ))}
-                                </div>
-                            )}
+                            ))}
                           </div>
                         )}
-                        />
-                        {reportErrors.attachments && (
-                          <p className="text-red-500 text-sm mt-1">{reportErrors.attachments.message}</p>
-                        )}
+                      </div>
                       </div>
                       <div>
-                        <Label htmlFor='audiosAttached' className='mb-2'>Ngarkoni audio/zërime</Label>
-                        <Controller 
-                          control={contributeControl}
-                          name="audiosAttached"
-                          render={({field}) => (
-                            <div className="space-y-4">
-                              <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
-                                <div className="flex flex-col items-center justify-center">
-                                  <AudioLinesIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                                  <p className="text-sm text-center px-1 text-muted-foreground">
-                                    Klikoni për të ngarkuar audio/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                                  </p>
+                        <Label htmlFor='report-audios' className='mb-2'>Ngarkoni audio/zërime</Label>
+                        <div className="space-y-4">
+                          <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
+                            <div className="flex flex-col items-center justify-center">
+                              <AudioLinesIcon className="h-8 w-8 text-muted-foreground mb-2" />
+                              <p className="text-sm text-center px-1 text-muted-foreground">
+                                Klikoni për të ngarkuar audio/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                              </p>
+                            </div>
+                            <input
+                              id='report-audios'
+                              type="file"
+                              className="hidden"
+                              accept="audio/*"
+                              multiple
+                              onChange={(e) => addFiles(e, setReportAudioFiles, "audio")}
+                            />
+                          </label>
+                          {reportAudioFiles.length > 0 && (
+                            <div className="flex flex-nowrap overflow-x-scroll gap-4">
+                              {reportAudioFiles.map((preview, index) => (
+                                <div key={index} className="relative group flex-shrink-0">
+                                  <audio controls src={preview.previewUrl} className="min-w-full h-44" />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute -right-0 h-6 -top-0 rounded-full bg-destructive/90 hover:bg-destructive text-white"
+                                    onClick={() => removeFile(index, setReportAudioFiles)}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
                                 </div>
-                                <input 
-                                  id='audiosAttached'
-                                  type="file" 
-                                  className="hidden" 
-                                  accept="audio/*"
-                                  multiple
-                                  onChange={(e) => handleAttachmentUploads(e, "audiosAttached")}
-                                />
-                              </label>
-                              {typeof audioProgress === "number" && audioProgress > 0 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
-                                <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${audioProgress}%`}} />
-                              </div>}
-                              {audioPreviews.length > 0 && (
-                                <div className="flex flex-nowrap overflow-x-scroll gap-4">
-                                  {audioPreviews.map((preview, index) => (
-                                    <div key={index} className="relative group flex-shrink-0">
-                                      <audio controls src={preview} className="min-w-full h-44" />
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        className="absolute -right-0 h-6 -top-0 rounded-full bg-destructive/90 hover:bg-destructive text-white"
-                                        onClick={() => removeItems(index, "audiosAttached")}
-                                      >
-                                        <X className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
+                              ))}
                             </div>
                           )}
-                        />
-                        {reportErrors.audiosAttached && (
-                          <p className="text-red-500 text-sm mt-1">{reportErrors.audiosAttached.message}</p>
-                        )}
+                        </div>
                       </div>
                       <div>
-                        <Label htmlFor='videosAttached' className='mb-2'>Ngarkoni video/zërime</Label>
-                        <Controller 
-                          control={contributeControl}
-                          name="videosAttached"
-                          render={({field}) => (
-                            <div className="space-y-4">
-                              <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
-                                <div className="flex flex-col items-center justify-center">
-                                  <Video className="h-8 w-8 text-muted-foreground mb-2" />
-                                  <p className="text-sm text-center px-1 text-muted-foreground">
-                                    Klikoni për të ngarkuar video/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                                  </p>
+                        <Label htmlFor='report-videos' className='mb-2'>Ngarkoni video/zërime</Label>
+                        <div className="space-y-4">
+                          <label className="flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors py-8">
+                            <div className="flex flex-col items-center justify-center">
+                              <Video className="h-8 w-8 text-muted-foreground mb-2" />
+                              <p className="text-sm text-center px-1 text-muted-foreground">
+                                Klikoni për të ngarkuar video/inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                              </p>
+                            </div>
+                            <input
+                              id='report-videos'
+                              type="file"
+                              className="hidden"
+                              accept="video/*"
+                              multiple
+                              onChange={(e) => addFiles(e, setReportVideoFiles, "video")}
+                            />
+                          </label>
+                          {reportVideoFiles.length > 0 && (
+                            <div className="flex flex-nowrap overflow-x-scroll gap-4">
+                              {reportVideoFiles.map((preview, index) => (
+                                <div key={index} className="relative group flex-shrink-0">
+                                  <video controls className="min-w-full h-44 rounded" src={preview.previewUrl} />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute -right-0 -top-0 h-6 rounded-full bg-destructive/90 hover:bg-destructive text-white"
+                                    onClick={() => removeFile(index, setReportVideoFiles)}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
                                 </div>
-                                <input 
-                                  id='videosAttached'
-                                  type="file" 
-                                  className="hidden" 
-                                  accept="video/*"
-                                  multiple
-                                  onChange={(e) => handleAttachmentUploads(e, "videosAttached")}
-                                />
-                              </label>
-                              {typeof videoProgress === "number" && videoProgress > 0 && <div className='w-full bg-gray-200 rounded-full overflow-hidden'>
-                                <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${videoProgress}%`}} />
-                              </div>}
-                              {videoPreviews.length > 0 && (
-                                <div className="flex flex-nowrap overflow-x-scroll gap-4">
-                                  {videoPreviews.map((preview, index) => (
-                                    <div key={index} className="relative group flex-shrink-0">
-                                      <video controls className="min-w-full h-44 rounded" src={preview} />
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        className="absolute -right-0 -top-0 h-6 rounded-full bg-destructive/90 hover:bg-destructive text-white"
-                                        onClick={() => removeItems(index, "videosAttached")}
-                                        >
-                                        <X className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
+                              ))}
                             </div>
                           )}
-                        />
-                        {reportErrors.videosAttached && (
-                          <p className="text-red-500 text-sm mt-1">{reportErrors.videosAttached.message}</p>
-                        )}
+                        </div>
                       </div>
                       <div>
-                        <CTAButton type='button' onClick={reportHandleSubmit(reportsOnSubmit)} isLoading={reportIsSubmitting} text={`${reportIsSubmitting ? "Duke krijuar raportimin..." : "Krijo raportim"}`} classNames='w-full' primary/>
+                        <CTAButton type='submit' isLoading={reportBusy} text={`${reportBusy ? "Duke krijuar raportimin..." : "Krijo raportim"}`} classNames='w-full' primary/>
                       </div>
                   </div>
               </DialogContent>
@@ -779,7 +652,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
           </Dialog>
       </div>
     </div>
-      <SocialShareButtons 
+      <SocialShareButtons
         url={`${process.env.NEXT_PUBLIC_BASE_URL}/ankesat/${complaintsData.complaint.id}`}
         title={complaintsData.complaint.title}
         description={complaintsData.complaint.description}

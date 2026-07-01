@@ -9,7 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, MoreVerticalIcon } from 'lucide-react'
+import { MoreHorizontal, MoreVerticalIcon, Trash2, Download, Copy } from 'lucide-react'
 import { useState, useMemo, useCallback } from 'react'
 import {
   Dialog,
@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Image from 'next/image'
 import Link from 'next/link'
-import { MoreVertical, Download, Trash2, Copy } from 'lucide-react'
+import { getAssetUrl } from '@/lib/utils'
 import Lightbox from 'yet-another-react-lightbox'
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails'
 import "yet-another-react-lightbox/styles.css"
@@ -204,7 +204,7 @@ const ContributionActions = ({ contribution }: {contribution: ExtendedContributi
             <div className="flex items-center gap-3">
                 <div className="relative w-10 h-10 rounded-full overflow-hidden">
                 <Image
-                    src={`/serve${contribution.user.userProfileImage}`}
+                    src={getAssetUrl(contribution.user.userProfileImage)}
                     alt={contribution.user.fullName}
                     fill
                     className="object-cover"
@@ -227,7 +227,7 @@ const ContributionActions = ({ contribution }: {contribution: ExtendedContributi
                 <div className="relative">
                 <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
                     <Image
-                    src={`/serve${images[currentImageIndex]}`}
+                    src={getAssetUrl(images[currentImageIndex])}
                     alt={`Attachment ${currentImageIndex + 1}`}
                     fill
                     className="object-contain cursor-pointer"

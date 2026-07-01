@@ -9,6 +9,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
+import { getAssetUrl, getAbsoluteAssetUrl } from '@/lib/utils';
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -94,7 +95,7 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
         siteName: 'ShfaqPakenaqësinë',
         images: [
           {
-            url: `${process.env.NEXT_PUBLIC_BASE_URL}/serve${company.logoUrl}`,
+            url: getAbsoluteAssetUrl(company.logoUrl),
             alt: `${company.name} - ShfaqPakenaqësinë`
           }
         ],
@@ -105,7 +106,7 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
         card: 'summary_large_image',
         title: seoTitle,
         description: seoDescription,
-        images: [`${process.env.NEXT_PUBLIC_BASE_URL}/serve${company.logoUrl}`]
+        images: [getAbsoluteAssetUrl(company.logoUrl)]
       },
     }
   } catch (error) {
@@ -150,7 +151,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
               </Link>
               <div className="flex flex-row max-[400px]:flex-col items-start gap-4 max-[400px]:gap-2">
                 <Image
-                  src={`/serve${data.company.logoUrl}`} 
+                  src={getAssetUrl(data.company.logoUrl)} 
                   alt={`${data.company.name} logo`} 
                   unoptimized
                   width={64}
@@ -242,7 +243,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                         {data.company.images.length > 0 ? data.company.images.map((image, index) => (
                           <div key={index} className="aspect-square bg-gray-100 shadow-md overflow-hidden">
                             <Image 
-                              src={`/serve${image}`} 
+                              src={getAssetUrl(image)} 
                               alt={`Imazhi kompanise ${index + 1}`}
                               className="w-full h-full object-cover"
                               quality={60}

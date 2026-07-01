@@ -1,5 +1,6 @@
 import { Category, ComplaintStatus, Municipality } from "@/app/generated/prisma"
 import {z} from "zod"
+import { blobUrlArraySchema } from "./blobUrl"
 
 export const createComplaintsSchema = z.object({
     companyId: z.uuid("ID e kompanisë duhet të jetë një UUID valid").optional().nullable(),
@@ -11,18 +12,13 @@ export const createComplaintsSchema = z.object({
         message: "Përshkrimi duhet të përmbajë të paktën 26 karaktere"
     }),
     category: z.enum(Category),
-    attachments: z.array(
-        z.string().regex(
-          /^data:(image\/(png|jpeg|jpg|gif|webp)|application\/(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document|vnd\.ms-excel|vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet|vnd\.ms-powerpoint|vnd\.openxmlformats-officedocument\.presentationml\.presentation));base64,/,
-          {
-            message: "Bashkëngjitjet duhet të jenë në formatin base64 dhe të jenë: imazhe (PNG, JPEG, JPG, GIF, WEBP), PDF, DOC, DOCX, XLS, XLSX, PPT ose PPTX"
-          }
-        )
-      ).optional(),
-    audiosAttached: z.array(z.string().regex(/^data:audio\/(mp3|wav|ogg|mpeg);base64,/, {
-        message: "Audiot e bashkëngjitura duhet të jenë në formatin base64 (MP3, WAV, MPEG ose OGG)"
-    })).optional(),
-    videosAttached: z.array(z.string().regex(/^data:video\/(mp4|webm|ogg);base64,/, {
-        message: "Videot e bashkëngjitura duhet të jenë në formatin base64 (MP4, WebM ose OGG)"
-    })).optional(),
+    attachments: blobUrlArraySchema.optional(),
+    audiosAttached: blobUrlArraySchema.optional(),
+    videosAttached: blobUrlArraySchema.optional(),
+});
+
+export const createComplaintFormSchema = createComplaintsSchema.omit({
+    attachments: true,
+    audiosAttached: true,
+    videosAttached: true,
 });

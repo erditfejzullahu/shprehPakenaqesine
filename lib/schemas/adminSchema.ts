@@ -1,14 +1,13 @@
 import { Gender } from "@/app/generated/prisma"
 import { z } from "zod"
+import { blobUrlSchema } from "./blobUrl"
 
 export const adminSchema = z.object({
     username: z.string().min(3, "Duhen te pakten 3 karaktere"),
     email: z.string().email("Duhet nje email i vlefshem"),
     fullName: z.string().min(3, "Duhen te pakten 3 karaktere"),
     gender: z.enum(Gender),
-    userProfileImage: z.string().regex(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/, {
-        message: "Bashkëngjitjet duhet të jenë imazhe në formatin base64 (PNG, JPEG, JPG, WEBP ose GIF)"
-    }),
+    userProfileImageUrl: blobUrlSchema.optional().nullable(),
     changePassword: z.boolean(),
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
@@ -69,3 +68,5 @@ export const adminSchema = z.object({
         path: ["confirmPassword"]
     }
 );
+
+export const adminFormSchema = adminSchema.omit({ userProfileImageUrl: true });

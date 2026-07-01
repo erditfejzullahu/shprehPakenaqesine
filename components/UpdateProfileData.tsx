@@ -15,24 +15,26 @@ import { useSession } from 'next-auth/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import api from '@/lib/api'
 import { toast } from 'sonner'
-import { updateProfileSchema } from '@/lib/schemas/updateProfileDetails'
+import { updateProfileFormSchema } from '@/lib/schemas/updateProfileDetails'
+import { uploadFileToBlob } from '@/lib/blobUpload'
 
-type ValidationSchema = z.infer<typeof updateProfileSchema>
+type ValidationSchema = z.infer<typeof updateProfileFormSchema>
 
 const UpdateProfileData = ({session}: {session: Session | null}) => {
     if(!session) return null;
 
     const {update} = useSession();
-    const [imageProfilePreview, setImageProfilePreview] = useState<string | null>(null)
+    const [profileImageFile, setProfileImageFile] = useState<File | null>(null)
+    const [imageProfilePreview, setImageProfilePreview] = useState<string | null>(session.user.userProfileImage ?? null)
+    const [isUploading, setIsUploading] = useState(false)
 
-    const {control, reset, watch, handleSubmit, formState: {errors, isSubmitting}, setValue} = useForm<ValidationSchema>({
-      resolver: zodResolver(updateProfileSchema),
+    const {control, reset, watch, handleSubmit, formState: {errors, isSubmitting}} = useForm<ValidationSchema>({
+      resolver: zodResolver(updateProfileFormSchema),
       defaultValues: useMemo(() => ({
           fullName: "",
           email: "",
           gender: "MASHKULL",
           username: "",
-          userProfileImage: null,
           password: null,
           confirmPassword: null,
           changePassword: false
@@ -41,58 +43,78 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
     })
 
     const removeLogo = useCallback(() => {
+        if (profileImageFile && imageProfilePreview?.startsWith("blob:")) {
+          URL.revokeObjectURL(imageProfilePreview);
+        }
+        setProfileImageFile(null);
         setImageProfilePreview(null);
-        setValue("userProfileImage", "");
-    }, [imageProfilePreview, setValue]);
+    }, [profileImageFile, imageProfilePreview]);
 
     const handleLogoUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const base64 = event.target?.result as string;
-            setImageProfilePreview(base64);
-            setValue("userProfileImage", base64);
-        };
-        reader.readAsDataURL(file);
+          if (profileImageFile && imageProfilePreview?.startsWith("blob:")) {
+            URL.revokeObjectURL(imageProfilePreview);
+          }
+          setProfileImageFile(file);
+          setImageProfilePreview(URL.createObjectURL(file));
         }
-    }, [imageProfilePreview, setValue]);
-
+        e.target.value = "";
+    }, [profileImageFile, imageProfilePreview]);
 
     const password = watch("password");
     const changePassword = watch("changePassword")
-    
-      useEffect(() => {
-        if(session){
-          reset({
-            fullName: session.user.fullName,
-            email: session.user.email,
-            gender: session.user.gender,
-            username: session.user.username,
-            password: "",
-            confirmPassword: ""
-          })
-        }
-      }, [session])
 
-      const onSubmit = useCallback(async (data: ValidationSchema) => {          
+    useEffect(() => {
+      if(session){
+        reset({
+          fullName: session.user.fullName,
+          email: session.user.email,
+          gender: session.user.gender,
+          username: session.user.username,
+          password: "",
+          confirmPassword: ""
+        })
+        if (!profileImageFile) {
+          setImageProfilePreview(session.user.userProfileImage ?? null);
+        }
+      }
+    }, [session, reset, profileImageFile])
+
+    const onSubmit = useCallback(async (data: ValidationSchema) => {
         try {
-            const response = await api.patch(`/api/auth/updateUserDetails`, data)
+            setIsUploading(true)
+            let userProfileImageUrl: string | null | undefined = session.user.userProfileImage;
+            if (profileImageFile) {
+              userProfileImageUrl = await uploadFileToBlob(profileImageFile, "users", session.user.id);
+            } else if (imageProfilePreview === null) {
+              userProfileImageUrl = null;
+            }
+
+            const response = await api.patch(`/api/auth/updateUserDetails`, {
+              ...data,
+              userProfileImageUrl,
+            })
             if(response.data.success){
               toast.success('Sapo ndryshuat te dhenat tua me sukses!');
+              setProfileImageFile(null);
               await update ({
                 email: data.email,
                 gender: data.gender,
                 fullName: data.fullName,
                 username: data.username,
-                userProfileImage: response.data.profilePic || session.user.userProfileImage 
+                userProfileImage: response.data.profilePic || session.user.userProfileImage
               })
             }
           } catch (error: any) {
             console.error(error);
-            toast.error(error.response.data.message || "Dicka shkoi gabim!")
+            toast.error(error.response?.data?.message || "Dicka shkoi gabim!")
+          } finally {
+            setIsUploading(false)
           }
-        }, [reset])
+        }, [session, profileImageFile, imageProfilePreview, update])
+
+    const isBusy = isSubmitting || isUploading
 
   return (
         <div className="p-6">
@@ -103,14 +125,13 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                 <Label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
                   Emri i plote
                 </Label>
-                <Controller 
+                <Controller
                   control={control}
                   name="fullName"
                   render={({field}) => (
                     <Input
                       type="text"
                       id="fullName"
-                      // defaultValue={session.user.fullName}
                       {...field}
                       className="shadow-sm"
                     />
@@ -125,7 +146,7 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                 <Label htmlFor="gender" className="block text-sm font-medium text-gray-700">
                   Gjinia
                 </Label>
-                <Controller 
+                <Controller
                   control={control}
                   name="gender"
                   render={({field}) => (
@@ -153,7 +174,7 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                 <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email
                 </Label>
-                <Controller 
+                <Controller
                   control={control}
                   name="email"
                   render={({field}) => (
@@ -161,7 +182,6 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                       type="email"
                       id="email"
                       {...field}
-                      // defaultValue={session.user.email}
                       className="shadow-sm"
                     />
                   )}
@@ -174,7 +194,7 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                 <Label htmlFor="username" className="block text-sm font-medium text-gray-700">
                   Emri i perdoruesit(Nofka)
                 </Label>
-                <Controller 
+                <Controller
                   control={control}
                   name="username"
                   render={({field}) => (
@@ -182,7 +202,6 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                       type="username"
                       id="username"
                       {...field}
-                      // defaultValue={session.user.username}
                       className="shadow-sm"
                     />
                   )}
@@ -193,7 +212,7 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
               </div>
             </div>
 
-            <Controller 
+            <Controller
                 control={control}
                 name="changePassword"
                 render={({field}) => (
@@ -209,7 +228,7 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                 <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Fjalekalimi
                 </Label>
-                <Controller 
+                <Controller
                   control={control}
                   name="password"
                   render={({field}) => (
@@ -231,7 +250,7 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
                 <Label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                   Konfirmo Fjalekalimin
                 </Label>
-                <Controller 
+                <Controller
                   control={control}
                   name="confirmPassword"
                   render={({field}) => (
@@ -252,59 +271,54 @@ const UpdateProfileData = ({session}: {session: Session | null}) => {
             </div>}
 
             <div>
-              <Controller 
-                control={control}
-                name="userProfileImage"
-                render={({field}) => (
-                  <div className="space-y-2">
-                  {imageProfilePreview ? (
-                    <div className="relative group w-fit">
-                      <Image 
-                        width={200}
-                        height={200}
-                        src={imageProfilePreview} 
-                        alt="Logo preview" 
-                        className="h-32 w-32 object-contain border rounded-md"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute cursor-pointer -right-2 -top-2 rounded-full bg-destructive/90 hover:bg-destructive text-white"
-                        onClick={removeLogo}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
+              <div className="space-y-2">
+                {imageProfilePreview ? (
+                  <div className="relative group w-fit">
+                    <Image
+                      width={200}
+                      height={200}
+                      src={imageProfilePreview}
+                      alt="Logo preview"
+                      unoptimized={imageProfilePreview.startsWith("blob:")}
+                      className="h-32 w-32 object-contain border rounded-md"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute cursor-pointer -right-2 -top-2 rounded-full bg-destructive/90 hover:bg-destructive text-white"
+                      onClick={removeLogo}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                      <p className="text-sm px-1 text-center text-muted-foreground">
+                        Klikoni për të ngarkuar foton e profilit
+                      </p>
                     </div>
-                  ) : (
-                    <Label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                        <p className="text-sm px-1 text-center text-muted-foreground">
-                          Klikoni për të ngarkuar foton e profilit
-                        </p>
-                      </div>
-                      <Input 
-                        type="file" 
-                        className="hidden" 
-                        accept="image/*"
-                        onChange={handleLogoUpload}
-                      />
-                    </Label>
-                  )}
-                </div>
+                    <Input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                    />
+                  </Label>
                 )}
-              />
+              </div>
             </div>
 
             <div className="pt-2">
               <CTAButton
-                isLoading={isSubmitting}
+                isLoading={isBusy}
                 onClick={handleSubmit(onSubmit)}
                 type="submit"
                 primary
                 classNames='max-[550px]:w-full'
-                text={`${isSubmitting ? "Duke ruajtur ndryshimet..." : "Ruaj ndryshimet"}`}
+                text={`${isBusy ? "Duke ruajtur ndryshimet..." : "Ruaj ndryshimet"}`}
               />
             </div>
           </form>

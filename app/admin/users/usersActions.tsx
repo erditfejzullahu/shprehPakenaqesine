@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import api from '@/lib/api'
 import { ExtendedUser } from '@/types/admin'
-import { MoreHorizontal, ImagePlus, X } from 'lucide-react'
+import { MoreHorizontal, ImagePlus } from 'lucide-react'
 import Link from 'next/link'
 import React, { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -23,40 +23,42 @@ import { Gender } from '@/app/generated/prisma'
 import Image from 'next/image'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
-import { userEditSchema } from '@/lib/schemas/userEditSchema'
-import { imageUrlToBase64 } from '@/lib/utils'
+import { userEditFormSchema } from '@/lib/schemas/userEditSchema'
+import { getAssetUrl } from '@/lib/utils'
+import { uploadFileToBlob } from '@/lib/blobUpload'
 
-
-
-type UserEditFormValues = z.infer<typeof userEditSchema>
+type UserEditFormValues = z.infer<typeof userEditFormSchema>
 
 const UsersActions = ({users}: {users: ExtendedUser}) => {
     const router = useRouter();
     const [open, setOpen] = useState(false)
-    const [imagePreview, setImagePreview] = useState(users.userProfileImage)
+    const [profileFile, setProfileFile] = useState<File | null>(null)
+    const [imagePreview, setImagePreview] = useState(getAssetUrl(users.userProfileImage))
+    const [existingProfileUrl, setExistingProfileUrl] = useState<string | null>(users.userProfileImage)
 
-    const { control, handleSubmit, setValue, getValues, formState: { errors, isSubmitting }, reset } = useForm<UserEditFormValues>({
-      resolver: zodResolver(userEditSchema),
-      defaultValues: {
+    const defaultValues = {
         username: users.username,
         email: users.email,
         fullName: users.fullName,
         gender: users.gender,
         anonimity: users.anonimity,
-        userProfileImage: users.userProfileImage,
         acceptedUser: users.acceptedUser,
         email_verified: users.email_verified
-      }
+    };
+
+    const { control, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<UserEditFormValues>({
+      resolver: zodResolver(userEditFormSchema),
+      defaultValues
     })
 
-    if(open && users){
-        if(users.userProfileImage){        
-          imageUrlToBase64(`/serve${users.userProfileImage}`)
-              .then(base64 => {setValue("userProfileImage", base64); console.log(base64, ' fotooo??')})
-              .catch(console.error);
+    useEffect(() => {
+        if (open) {
+            reset(defaultValues);
+            setProfileFile(null);
+            setImagePreview(getAssetUrl(users.userProfileImage));
+            setExistingProfileUrl(users.userProfileImage);
         }
-    }
-    
+    }, [open, users, reset]);
 
     const handleDeleteUser = useCallback(async () => {
         try {
@@ -72,24 +74,26 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
         }
     }, [users.id, router])
 
-    const handleImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) => {
+    const handleImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]
       if (!file) return
 
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const imageUrl = event.target.result as string
-          setImagePreview(imageUrl)
-          onChange(imageUrl)
-        }
+      if (profileFile && imagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(imagePreview);
       }
-      reader.readAsDataURL(file)
-    }, [])
+      setProfileFile(file);
+      setImagePreview(URL.createObjectURL(file));
+      setExistingProfileUrl(null);
+    }, [profileFile, imagePreview])
 
     const onSubmit = useCallback(async (data: UserEditFormValues) => {        
       try {
-        const response = await api.patch(`/api/admin/users/${users.id}`, data)
+        const payload: Record<string, unknown> = { ...data };
+        if (profileFile) {
+            payload.userProfileImageUrl = await uploadFileToBlob(profileFile, "users", users.id);
+        }
+
+        const response = await api.patch(`/api/admin/users/${users.id}`, payload)
 
         if(response.data.success) {
           toast.success('Te dhenat e perdoruesit u perditesuan me sukses!')
@@ -97,9 +101,9 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
           setOpen(false)
         }
       } catch (error: any) {
-        toast.error(error.response?.data?.message || "Dicka shkoi gabim!")
+        toast.error(error.response?.data?.message || error.message || "Dicka shkoi gabim!")
       }
-    }, [users.id, router, reset])
+    }, [users.id, router, profileFile])
 
   return (
     <>
@@ -124,7 +128,7 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
             </DropdownMenuContent>
         </DropdownMenu>
 
-        <Dialog open={open} onOpenChange={() => {setOpen(false); reset()}}>
+        <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) { setOpen(false); reset(); } }}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edito te dhenat e perdoruesit</DialogTitle>
@@ -133,7 +137,6 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-              {/* Profile Image */}
               <div className="flex flex-col items-center gap-4">
                 <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200">
                   <Image
@@ -143,32 +146,18 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
                     className="object-cover"
                   />
                 </div>
-                <Controller
-                  name="userProfileImage"
-                  control={control}
-                  render={({ field: { onChange } }) => (
-                    <>
-                      <label className="flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md cursor-pointer">
-                        <ImagePlus className="mr-2 h-4 w-4" />
-                        Ndrysho foton
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleImageChange(e, onChange)}
-                        />
-                      </label>
-                    </>
-                  )}
-                />
-                {errors.userProfileImage && (
-                  <p className="col-span-4 text-right text-sm text-red-500">
-                    {errors.userProfileImage.message}
-                  </p>
-                )}
+                <label className="flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md cursor-pointer">
+                  <ImagePlus className="mr-2 h-4 w-4" />
+                  Ndrysho foton
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageChange}
+                  />
+                </label>
               </div>
 
-              {/* Username */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="username" className="text-right">
                   Username
@@ -191,7 +180,6 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
                 )}
               </div>
 
-              {/* Email */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="email" className="text-right">
                   Email
@@ -215,7 +203,6 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
                 )}
               </div>
 
-              {/* Full Name */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="fullName" className="text-right">
                   Emri i plote
@@ -238,7 +225,6 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
                 )}
               </div>
 
-              {/* Gender */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="gender" className="text-right">
                   Gjinia
@@ -263,7 +249,6 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
                 />
               </div>
 
-              {/* Checkboxes */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">
                   Opsione
@@ -314,7 +299,6 @@ const UsersActions = ({users}: {users: ExtendedUser}) => {
                 </div>
               </div>
 
-              {/* Stats */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="complaints" className="text-right">
                   Ankesat

@@ -18,20 +18,56 @@ import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useForm, Controller } from 'react-hook-form'
 import {z} from "zod"
-import { createCompanySchema } from '@/lib/schemas/createCompanySchema'
+import { createCompanyFormSchema } from '@/lib/schemas/createCompanySchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import Image from 'next/image'
-import { cn, imageUrlToBase64 } from '@/lib/utils'
+import { getAssetUrl } from '@/lib/utils'
+import { uploadFileToBlob, uploadFilesToBlob } from '@/lib/blobUpload'
 
-type CompanySchemaType = z.infer<typeof createCompanySchema>;
+type CompanyFormType = z.infer<typeof createCompanyFormSchema>;
 
 const CompanyActions = ({company}: {company: Companies}) => {
     const [openDialog, setOpenDialog] = useState(false)
-    const [logoPreview, setLogoPreview] = useState<string | null>(company.logoUrl)
-    const [imagePreviews, setImagePreviews] = useState<string[]>(company.images || [])
+    const [logoFile, setLogoFile] = useState<File | null>(null)
+    const [logoPreview, setLogoPreview] = useState<string | null>(company.logoUrl ? getAssetUrl(company.logoUrl) : null)
+    const [existingLogoUrl, setExistingLogoUrl] = useState<string | null>(company.logoUrl)
+    const [existingImageUrls, setExistingImageUrls] = useState<string[]>(company.images || [])
+    const [newImageFiles, setNewImageFiles] = useState<File[]>([])
+    const [newImagePreviews, setNewImagePreviews] = useState<string[]>([])
+    const [logoError, setLogoError] = useState<string | null>(null)
     const router = useRouter();
+
+    const defaultValues = useMemo(() => ({
+        name: company.name,
+        description: company.description || "",
+        address: company.address,
+        website: company.website,
+        email: company.email,
+        phone: company.phone || "",
+        industry: company.industry,
+        foundedYear: company.foundedYear
+    }), [company]);
+
+    const {control, reset, handleSubmit, formState: {errors, isSubmitting}} = useForm<CompanyFormType>({
+        resolver: zodResolver(createCompanyFormSchema),
+        defaultValues,
+        mode: "onChange"
+    })
+
+    useEffect(() => {
+        if (openDialog) {
+            reset(defaultValues);
+            setLogoFile(null);
+            setLogoPreview(company.logoUrl ? getAssetUrl(company.logoUrl) : null);
+            setExistingLogoUrl(company.logoUrl);
+            setExistingImageUrls(company.images || []);
+            setNewImageFiles([]);
+            setNewImagePreviews([]);
+            setLogoError(null);
+        }
+    }, [openDialog, company, defaultValues, reset]);
 
     const handleRemoveCompany = useCallback(async () => {
         try {
@@ -44,51 +80,32 @@ const CompanyActions = ({company}: {company: Companies}) => {
             console.error(error)
             toast.error(error.response.data.message || "Dicka shkoi gabim!")
         }
-    }, [company.id, router])
+    }, [company.id, company.name, router])
 
-
-    const {control, reset, setValue, getValues, handleSubmit, formState: {errors, isSubmitting}} = useForm<CompanySchemaType>({
-        resolver: zodResolver(createCompanySchema),
-        defaultValues: useMemo(() => ({
-            name: company.name,
-            description: "",
-            logoAttachment: company.logoUrl,
-            address: company.address,
-            website: company.website,
-            email: company.email,
-            phone: "",
-            imageAttachments: company.images,
-            industry: company.industry,
-            foundedYear: company.foundedYear
-        }), [company]),
-        mode: "onChange"
-    })
-
-    useEffect(() => {
-      setValue("description", company.description || "")
-      setValue("phone", company.phone || "")
-    }, [company])
-    
-
-    if(company.logoUrl){
-        imageUrlToBase64(`/serve${company.logoUrl}`)
-            .then(base64 => setValue("logoAttachment", base64))
-            .catch(console.error)
-    }
-
-    if(company.images.length > 0){
-        let attachmentImages: string[] = []
-        for(const image of company.images){
-            imageUrlToBase64(`/serve${image}`)
-                .then(base64 => attachmentImages.push(base64))
-                .catch(console.error)
+    const onSubmit = async (data: CompanyFormType) => {
+        if (!logoFile && !existingLogoUrl) {
+            setLogoError("Logo e kompanisë është e detyrueshme");
+            return;
         }
-        setValue("imageAttachments", attachmentImages)
-    }
+        setLogoError(null);
 
-    const onSubmit = async (data: CompanySchemaType) => {
         try {
-            const response = await api.patch(`/api/admin/companies/${company.id}`, data)
+            let logoUrl = existingLogoUrl!;
+            if (logoFile) {
+                logoUrl = await uploadFileToBlob(logoFile, "companys/logo", company.id);
+            }
+
+            const uploadedNewImages = newImageFiles.length > 0
+                ? await uploadFilesToBlob(newImageFiles, "companys/images", company.id)
+                : [];
+
+            const imageUrls = [...existingImageUrls, ...uploadedNewImages];
+
+            const response = await api.patch(`/api/admin/companies/${company.id}`, {
+                ...data,
+                logoUrl,
+                imageUrls,
+            })
             if(response.data.success){
                 toast.success(`Kompania ${company.name} u perditesua me sukses`)
                 setOpenDialog(false)
@@ -96,58 +113,53 @@ const CompanyActions = ({company}: {company: Companies}) => {
             }
         } catch (error: any) {
             console.error(error);
-            toast.error(error.response.data.message || "Dicka shkoi gabim!")
+            toast.error(error.response?.data?.message || error.message || "Dicka shkoi gabim!")
         }
     }
 
     const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const base64 = event.target?.result as string;
-                setLogoPreview(base64);
-                setValue('logoAttachment', base64);
-            };
-            reader.readAsDataURL(file);
+            if (logoPreview && logoFile) URL.revokeObjectURL(logoPreview);
+            setLogoFile(file);
+            setLogoPreview(URL.createObjectURL(file));
+            setExistingLogoUrl(null);
+            setLogoError(null);
         }
     };
 
     const handleImageUploads = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files && files.length > 0) {
-            const newPreviews: string[] = [];
-            const readers: FileReader[] = [];
-
-            Array.from(files).forEach((file) => {
-                const reader = new FileReader();
-                readers.push(reader);
-                
-                reader.onload = (event) => {
-                    const base64 = event.target?.result as string;
-                    newPreviews.push(base64);
-                    
-                    if (newPreviews.length === files.length) {
-                        setImagePreviews(prev => [...prev, ...newPreviews]);
-                        setValue('imageAttachments', [...getValues("imageAttachments") || [], ...newPreviews]);
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
+            const added = Array.from(files);
+            setNewImageFiles(prev => [...prev, ...added]);
+            setNewImagePreviews(prev => [...prev, ...added.map(f => URL.createObjectURL(f))]);
         }
     };
 
     const removeLogo = () => {
+        if (logoFile && logoPreview) URL.revokeObjectURL(logoPreview);
+        setLogoFile(null);
         setLogoPreview(null);
-        setValue('logoAttachment', "");
+        setExistingLogoUrl(null);
     };
 
     const removeImage = (index: number) => {
-        const updatedPreviews = [...imagePreviews];
-        updatedPreviews.splice(index, 1);
-        setImagePreviews(updatedPreviews);
-        setValue('imageAttachments', updatedPreviews);
+        const existingCount = existingImageUrls.length;
+        if (index < existingCount) {
+            setExistingImageUrls(prev => prev.filter((_, i) => i !== index));
+        } else {
+            const newIndex = index - existingCount;
+            URL.revokeObjectURL(newImagePreviews[newIndex]);
+            setNewImageFiles(prev => prev.filter((_, i) => i !== newIndex));
+            setNewImagePreviews(prev => prev.filter((_, i) => i !== newIndex));
+        }
     };
+
+    const imagePreviews = [
+        ...existingImageUrls.map(url => getAssetUrl(url)),
+        ...newImagePreviews,
+    ];
 
   return (
     <>
@@ -172,7 +184,7 @@ const CompanyActions = ({company}: {company: Companies}) => {
         </DropdownMenuContent>
     </DropdownMenu>
 
-    <Dialog open={openDialog} onOpenChange={() => {setOpenDialog(false); reset();}}>
+    <Dialog open={openDialog} onOpenChange={(open) => { if (!open) { setOpenDialog(false); reset(); } }}>
         <DialogContent className="max-w-4xl! max-h-[90vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>Ndrysho te dhenat e kompanise</DialogTitle>
@@ -181,7 +193,6 @@ const CompanyActions = ({company}: {company: Companies}) => {
             
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="flex flex-col gap-4">
-                    {/* Company Name */}
                     <div className="max-w-xl mx-auto w-full">
                         <Controller
                             control={control}
@@ -202,7 +213,6 @@ const CompanyActions = ({company}: {company: Companies}) => {
                         />
                     </div>
 
-                    {/* Logo Attachment */}
                     <div className="space-y-2">
                         <label>Logo e Kompanisë</label>
                         <div className="space-y-2">
@@ -242,14 +252,13 @@ const CompanyActions = ({company}: {company: Companies}) => {
                                 </label>
                             )}
                         </div>
-                        {errors.logoAttachment && (
-                            <p className="text-sm font-medium text-destructive">{errors.logoAttachment.message}</p>
+                        {logoError && (
+                            <p className="text-sm font-medium text-destructive">{logoError}</p>
                         )}
                     </div>
 
                     <div className="flex flex-row gap-2">
                         <div className="flex-1 space-y-2">
-                            {/* Industry */}
                             <Controller
                                 control={control}
                                 name="industry"
@@ -265,7 +274,6 @@ const CompanyActions = ({company}: {company: Companies}) => {
                             />
                         </div>
                         <div className="flex-1 space-y-2">
-                            {/* Address */}
                             <Controller
                                 control={control}
                                 name="address"
@@ -282,7 +290,6 @@ const CompanyActions = ({company}: {company: Companies}) => {
                         </div>
                     </div>
 
-                    {/* Description */}
                     <div className="space-y-2">
                         <Controller
                             control={control}
@@ -303,7 +310,6 @@ const CompanyActions = ({company}: {company: Companies}) => {
                         />
                     </div>
 
-                    {/* Image Attachments */}
                     <div className="space-y-2">
                         <label>Imazhe të Kompanisë</label>
                         <div className="space-y-4">
@@ -346,14 +352,10 @@ const CompanyActions = ({company}: {company: Companies}) => {
                                 </div>
                             )}
                         </div>
-                        {errors.imageAttachments && (
-                            <p className="text-sm font-medium text-destructive">{errors.imageAttachments.message}</p>
-                        )}
                     </div>
 
                     <div className="flex flex-row gap-2">
                         <div className="flex-1 space-y-2">
-                            {/* Phone */}
                             <Controller
                                 control={control}
                                 name="phone"
@@ -377,7 +379,6 @@ const CompanyActions = ({company}: {company: Companies}) => {
                             />
                         </div>
                         <div className="flex-1 space-y-2">
-                            {/* Email */}
                             <Controller
                                 control={control}
                                 name="email"
@@ -404,7 +405,6 @@ const CompanyActions = ({company}: {company: Companies}) => {
 
                     <div className="flex flex-row gap-2">
                         <div className="flex-1 space-y-2">
-                            {/* Website */}
                             <Controller
                                 control={control}
                                 name="website"
@@ -428,7 +428,6 @@ const CompanyActions = ({company}: {company: Companies}) => {
                             />
                         </div>
                         <div className="flex-1 space-y-2">
-                            {/* Founded Year */}
                             <Controller
                                 control={control}
                                 name="foundedYear"
@@ -452,7 +451,6 @@ const CompanyActions = ({company}: {company: Companies}) => {
                     </div>
                 </div>
 
-                {/* Form Actions */}
                 <div className="flex justify-center gap-4 flex-wrap">
                     <Button
                         className='cursor-pointer'

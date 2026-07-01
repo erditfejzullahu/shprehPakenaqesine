@@ -3,8 +3,6 @@ import prisma from "@/lib/prisma";
 import { runWithPrismaContext } from "@/lib/prisma-context";
 import { rateLimit } from "@/lib/redis";
 import { contributionsSchema } from "@/lib/schemas/contributionsSchema";
-import { fileUploadService } from "@/services/fileUploadService";
-import { UploadResult } from "@/types/types";
 import { NextRequest, NextResponse } from "next/server";
 import {z} from "zod"
 
@@ -57,51 +55,15 @@ export const POST = async (req: NextRequest) => {
             userAgent
         }
 
-        let attachments: string[] = []
-        let audioAttachments: string[] = []
-        let videoAttachments: string[] = []
-
-        if(validatedSchema.attachments && validatedSchema.attachments.length > 0){
-            for(const element of validatedSchema.attachments){
-                const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/attachments", body.complaintId)
-                if(!result.success){
-                    throw new Error("Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve")
-                }
-                attachments.push(result.url)
-            }
-        }
-
-        if(validatedSchema.audiosAttached && validatedSchema.audiosAttached.length > 0){
-            for(const element of validatedSchema.audiosAttached){
-                const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/audiosAttached", body.complaintId)
-                if(!result.success){
-                    throw new Error("Dicka shkoi gabim ne ngarkim te audiove/inqizimeve")
-                }
-                audioAttachments.push(result.url)
-            }
-        }
-
-        if(validatedSchema.videosAttached && validatedSchema.videosAttached.length > 0){
-            for(const element of validatedSchema.videosAttached){
-                const result: UploadResult = await fileUploadService.uploadFile(element, "complaints/videosAttached", body.complaintId)
-                if(!result.success){
-                    throw new Error("Dicka shkoi gabim ne ngarkim te videove/inqizimeve")
-                }
-                videoAttachments.push(result.url)
-            }
-        }
-
         await runWithPrismaContext(ctx, async () => {
             await prisma.$transaction(async(prisma) => {
-                
-    
                 await prisma.contributions.create({
                     data: {
                         complaintId: body.complaintId,
                         userId: session.user.id,
-                        attachments,
-                        audiosAttached: audioAttachments,
-                        videosAttached: videoAttachments,
+                        attachments: validatedSchema.attachments ?? [],
+                        audiosAttached: validatedSchema.audiosAttached ?? [],
+                        videosAttached: validatedSchema.videosAttached ?? [],
                         contributionValidated: false
                     }
                 })
@@ -112,13 +74,6 @@ export const POST = async (req: NextRequest) => {
 
     } catch (error: any) {
         console.error(error)
-        if(error.message === "Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve"){
-            return NextResponse.json({success: false, message: error.message}, {status: 500})
-        }else if (error.message === "Dicka shkoi gabim ne ngarkim te audiove/inqizimeve"){
-            return NextResponse.json({success: false, message: error.message}, {status: 500})
-        }else if(error.message === "Dicka shkoi gabim ne ngarkim te videove/inqizimeve"){
-            return NextResponse.json({success: false, message: error.message}, {status: 500})
-        }
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})
     }
 }

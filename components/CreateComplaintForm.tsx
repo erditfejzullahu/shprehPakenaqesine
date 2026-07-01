@@ -1,19 +1,19 @@
 "use client"
-import { createComplaintsSchema } from '@/lib/schemas/createComplaintsSchema'
+import { createComplaintFormSchema } from '@/lib/schemas/createComplaintsSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {z} from "zod"
 import { Label } from './ui/label'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Category, Companies, Municipality } from '@/app/generated/prisma'
 import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/api'
 import { Input } from './ui/input'
-import { FileUp, Image as ImageLucide, AudioLines, Video, Check, Upload, ChevronsUpDown } from 'lucide-react'
+import { Upload, Check, ChevronsUpDown } from 'lucide-react'
 import { Textarea } from './ui/textarea'
 import CTAButton from './CTAButton'
-import { ImagePlus, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Checkbox } from './ui/checkbox'
@@ -22,29 +22,27 @@ import Image from 'next/image'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command'
 import { cn } from '@/lib/utils'
-// import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { GrDocument } from 'react-icons/gr'
+import { uploadEvidenceFiles } from '@/lib/blobUpload'
 
-type ComplaintsType = z.infer<typeof createComplaintsSchema> 
+type ComplaintFormType = z.infer<typeof createComplaintFormSchema>
+
+type FilePreview = { name: string; file: File; previewUrl: string }
 
 const CreateComplaintForm = () => {
   const {update, data: session} = useSession();
   if(!session) return null;
   const router = useRouter();
-  const [attachmentPreviews, setAttachmentPreviews] = useState<{name: string, file: string}[]>([])
-  const [audioPreviews, setAudioPreviews] = useState<{name: string, file: string}[]>([]);
-  const [videoPreviews, setVideoPreviews] = useState<{name: string, file: string}[]>([]);
+  const [attachmentFiles, setAttachmentFiles] = useState<FilePreview[]>([])
+  const [audioFiles, setAudioFiles] = useState<FilePreview[]>([]);
+  const [videoFiles, setVideoFiles] = useState<FilePreview[]>([]);
 
   const [openCompaniesCombobox, setOpenCompaniesCombobox] = useState(false)
   const [openCategories, setOpenCategories] = useState(false)
   const [openMunicipality, setOpenMunicipality] = useState(false)
 
   const [comunalComplaint, setComunalComplaint] = useState(false)
-  const [videoProgress, setVideoProgress] = useState<number | null>(null)
-  const [attachmentProgress, setAttachmentProgress] = useState<number | null>(null)
-  const [audioProgress, setAudioProgress] = useState<number | null>(null)
-
   const [isUploading, setIsUploading] = useState(false)
 
   const {data, isLoading, isError, refetch} = useQuery({
@@ -55,18 +53,15 @@ const CreateComplaintForm = () => {
     },
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5
-  })  
+  })
 
-  const {control, handleSubmit, setValue, reset, formState: {errors, isSubmitting}} = useForm<ComplaintsType>({
-    resolver: zodResolver(createComplaintsSchema),
+  const {control, handleSubmit, setValue, formState: {errors, isSubmitting}} = useForm<ComplaintFormType>({
+    resolver: zodResolver(createComplaintFormSchema),
     defaultValues: useMemo(() => ({
       companyId: null,
       title: "",
       description: "",
       category: "FAVORIZIMI",
-      attachments: [],
-      audiosAttached: [],
-      videosAttached: [],
       municipality: "PRISHTINE"
     }), []),
     mode: "onChange"
@@ -82,23 +77,76 @@ const CreateComplaintForm = () => {
     if(comunalComplaint){
       setValue("companyId", null)
     }
-  }, [comunalComplaint])
-  
+  }, [comunalComplaint, setValue])
 
-  const onSubmit = useCallback(async (data: ComplaintsType) => {
+  useEffect(() => {
+    return () => {
+      [...attachmentFiles, ...audioFiles, ...videoFiles].forEach((p) =>
+        URL.revokeObjectURL(p.previewUrl)
+      );
+    };
+  }, [])
+
+  const addFiles = useCallback((
+    event: React.ChangeEvent<HTMLInputElement>,
+    setFiles: React.Dispatch<React.SetStateAction<FilePreview[]>>,
+    acceptType?: string
+  ) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const newPreviews = Array.from(files)
+      .filter((file) => !acceptType || file.type.includes(acceptType))
+      .map((file) => ({
+        name: file.name,
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }));
+
+    setFiles((prev) => [...prev, ...newPreviews]);
+    event.target.value = "";
+  }, []);
+
+  const removeFile = useCallback((
+    index: number,
+    setFiles: React.Dispatch<React.SetStateAction<FilePreview[]>>
+  ) => {
+    setFiles((prev) => {
+      const removed = prev[index];
+      if (removed) URL.revokeObjectURL(removed.previewUrl);
+      return prev.filter((_, i) => i !== index);
+    });
+  }, []);
+
+  const clearAllPreviews = useCallback(() => {
+    [...attachmentFiles, ...audioFiles, ...videoFiles].forEach((p) =>
+      URL.revokeObjectURL(p.previewUrl)
+    );
+    setAttachmentFiles([]);
+    setAudioFiles([]);
+    setVideoFiles([]);
+  }, [attachmentFiles, audioFiles, videoFiles]);
+
+  const onSubmit = useCallback(async (data: ComplaintFormType) => {
     try {
+      setIsUploading(true)
+      const entityId = crypto.randomUUID()
+      const { attachments, audiosAttached, videosAttached } = await uploadEvidenceFiles(
+        entityId,
+        attachmentFiles.map((p) => p.file),
+        audioFiles.map((p) => p.file),
+        videoFiles.map((p) => p.file)
+      )
+
       const response = await api.post(`/api/createComplaint`, {
-        companyId: data.companyId,
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        attachments: data.attachments,
-        audiosAttached: data.audiosAttached,
-        videosAttached: data.videosAttached,
-        municipality: data.municipality
+        ...data,
+        attachments,
+        audiosAttached,
+        videosAttached,
       })
       if(response.data.success){
         toast.success('Ju sapo keni krijuar ankese/raportim me sukses!')
+        clearAllPreviews()
         await update({
           complaints: session?.user.complaints + 1
         })
@@ -107,156 +155,20 @@ const CreateComplaintForm = () => {
         router.push(`/ankesat/${response.data.url}`)
       }
     } catch (error: any) {
-      toast.error(error.response.data.message || "Dicka shkoi gabim! Ju lutem provoni perseri.")
+      toast.error(error.response?.data?.message || "Dicka shkoi gabim! Ju lutem provoni perseri.")
+    } finally {
+      setIsUploading(false)
     }
-  }, [reset])
+  }, [attachmentFiles, audioFiles, videoFiles, clearAllPreviews, router, session, update])
 
-  
-  const handleFileChange = useCallback((
-    event: React.ChangeEvent<HTMLInputElement>,
-    fieldOnChange: (value: string[]) => void
-  ) => {
-    const files = event.target.files;
-        
-    if (!files || files.length === 0) return;
-
-    const newPreviews: {name: string, file: string}[] = [];
-    const fileReaders: FileReader[] = [];
-    let filesRead = 0;
-    setAttachmentProgress(0)
-    let fakeProgress = 0;
-  
-    // Simulate: tick every 50ms
-    const interval = setInterval(() => {
-      fakeProgress += 5;
-      setAttachmentProgress(Math.min(fakeProgress, 95))
-    }, 50);
-
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      fileReaders.push(reader);
-
-      reader.onloadend = () => {
-        filesRead++;
-        if (reader.result) {
-          newPreviews.push({name: file.name, file: reader.result as string});
-        }
-        
-        if (filesRead === files.length) {
-          clearInterval(interval);
-          const updatedPreviews = [...attachmentPreviews, ...newPreviews];
-          setAttachmentPreviews(updatedPreviews);
-          fieldOnChange(updatedPreviews.map((item) => item.file));
-          setAttachmentProgress(null)
-        }
-      };
-      
-      reader.readAsDataURL(file);
-
-    });
-  }, []);
-
-  const handleMediaChange = useCallback((
-    event: React.ChangeEvent<HTMLInputElement>,
-    fieldOnChange: (value: string[]) => void,
-    setPreviews: React.Dispatch<React.SetStateAction<{name: string, file: string}[]>>,
-    currentPreviews: {name: string, file: string}[],
-    acceptType: string
-  ) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-
-    const newPreviews: {name: string, file: string}[] = [];
-    const fileReaders: FileReader[] = [];
-    let filesRead = 0;
-
-    let fakeProgress = 0;
-
-    // Simulate: tick every 50ms
-    const interval = setInterval(() => {
-      fakeProgress += 5;
-      setVideoProgress(Math.min(fakeProgress, 95))
-    }, 100);
-
-    switch (acceptType) {
-      case "audio":
-        setAudioProgress(0)
-        break;
-      case "video":
-        setVideoProgress(0)
-        break;
-    }
-
-    Array.from(files).forEach((file) => {
-      // Validate file type
-      if (!file.type.includes(acceptType)) {
-        console.warn(`Skipped ${file.name} - not a ${acceptType} file`);
-        return;
-      }
-
-      const reader = new FileReader();
-      fileReaders.push(reader);
-
-      reader.onloadend = () => {
-        filesRead++;
-        if (reader.result) {
-          newPreviews.push({name: file.name, file: reader.result as string});
-        }
-
-        if (filesRead === newPreviews.length) {
-          clearInterval(interval);
-          switch (acceptType) {
-            case "video":
-              setVideoProgress(null)
-              break;
-            case "audio":
-              setAudioProgress(null)
-              break;
-          }
-          const updatedPreviews = [...currentPreviews, ...newPreviews];
-          setPreviews(updatedPreviews);
-          fieldOnChange(updatedPreviews.map((item) => item.file));
-        }
-      };
-
-      reader.readAsDataURL(file);
-
-      console.log(reader, ' readerrr');
-      
-    });
-  }, []);
-
-  const removeMedia = useCallback((
-    index: number,
-    fieldOnChange: (value: string[]) => void,
-    setPreviews: React.Dispatch<React.SetStateAction<{name: string, file: string}[]>>,
-    currentPreviews: {name: string, file: string}[]
-  ) => {
-    const updatedPreviews = currentPreviews?.filter((_, i) => i !== index);
-    setPreviews(updatedPreviews);
-    fieldOnChange(updatedPreviews.map((item) => item.file));
-  }, []);
-
-
-  const removeImage = useCallback((
-    index: number,
-    fieldOnChange: (value: string[]) => void
-  ) => {
-    setAttachmentPreviews(prev => {
-      const updatedPreviews = prev?.filter((_, i) => i !== index);
-      console.log(updatedPreviews.map((item) => item.file))
-      fieldOnChange(updatedPreviews.map((item) => item.file));
-      return updatedPreviews;
-    });
-  }, []);
-
+  const isBusy = isSubmitting || isUploading
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-6xl mx-auto flex flex-col gap-4 my-4 shadow-lg p-4">
       <div className='flex flex-row max-[575]:flex-col gap-2 max-[575]:gap-4 justify-between'>
         <div className='flex-1'>
           <Label htmlFor='title' className="mb-1">Titulli i ankesës/raportimit</Label>
-          <Controller 
+          <Controller
             control={control}
             name="title"
             render={({field}) => (
@@ -271,8 +183,8 @@ const CreateComplaintForm = () => {
           <Label htmlFor='komuna' className="mb-1">
             Zgjidhni komunën
           </Label>
-          
-          <Controller 
+
+          <Controller
             control={control}
             name="municipality"
             render={({field}) => (
@@ -294,7 +206,6 @@ const CreateComplaintForm = () => {
                     <CommandInput placeholder="Kërko komunën..." className="h-9" />
                     <CommandEmpty>Nuk u gjet asnjë komunë.</CommandEmpty>
                     <CommandGroup>
-                      {/* Replace with your actual municipalities data */}
                       {Object.values(Municipality).map((municipality) => (
                         <CommandItem
                           key={municipality}
@@ -319,7 +230,7 @@ const CreateComplaintForm = () => {
               </Popover>
             )}
           />
-          
+
           {errors.municipality && (
             <p className="text-red-500 text-sm mt-1">
               Ju lutem zgjidhni një komunë.
@@ -343,17 +254,17 @@ const CreateComplaintForm = () => {
               <Label htmlFor="changecomplaintType">Ankesë Komunale?</Label>
             </div>
           </div>
-          <Controller 
+          <Controller
             control={control}
             name='companyId'
             render={({field}) => (
               <Popover open={openCompaniesCombobox} onOpenChange={setOpenCompaniesCombobox}>
                 <PopoverTrigger disabled={comunalComplaint} asChild className='cursor-pointer w-full '>
-                  <Button 
-                    variant="outline" 
-                    role="combobox" 
+                  <Button
+                    variant="outline"
+                    role="combobox"
                     aria-expanded={openCompaniesCombobox}
-                    className="w-full justify-between font-normal" 
+                    className="w-full justify-between font-normal"
                   >
                     {field.value
                       ? data?.find((company) => company.id === field.value)?.name
@@ -429,7 +340,6 @@ const CreateComplaintForm = () => {
                     <CommandInput placeholder="Kerkoni arsyet..." />
                     <CommandEmpty>Nuk u gjet asnjë arsye.</CommandEmpty>
                     <CommandGroup>
-                      {/* <CommandLabel>Zgjidhni mes opsioneve me poshte</CommandLabel> */}
                       {Object.keys(Category).map((item) => (
                         <CommandItem
                           key={item}
@@ -462,7 +372,7 @@ const CreateComplaintForm = () => {
 
       <div>
         <Label htmlFor='description' className="mb-1">Pershkrimi i ankesës</Label>
-        <Controller 
+        <Controller
           control={control}
           name="description"
           render={({field}) => (
@@ -473,221 +383,184 @@ const CreateComplaintForm = () => {
           <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
         )}
       </div>
-          
-      
+
+
       <div className='mx-auto w-full'>
         <Label htmlFor='attachments' className="mb-1 flex items-center justify-center max-[800px]:justify-start">Bashkëngjitjet e Imazheve</Label>
-        <Controller 
-          control={control}
-          name="attachments"
-          render={({ field: { onChange } }) => (
-              <div className="space-y-2">
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-sm text-center px-1 text-muted-foreground">
-                      Klikoni për të ngarkuar Imazhe/Dokumente <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                    </p>
-                  </div>
-                  <Input 
-                    id='attachments'
-                    type="file"
-                    multiple 
-                    className="hidden" 
-                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                    onChange={(e) => handleFileChange(e, onChange)}
-                  />
-                </label>
-              {attachmentPreviews.length > 0 && <div className='shadow-lg p-4 mt-2 flex gap-3 overflow-x-auto w-full'>
-                {attachmentPreviews.map((preview, index) => (
-                  <div key={index} className='flex-shrink-0' style={{ position: 'relative' }}>
-                    {preview.file.includes('image') ? (
-                      <div className='flex flex-col items-center'>
-                        <Image
-                          src={preview.file} 
-                          alt={`preview ${index}`} 
-                          width={100}
-                          height={100}
-                          className='h-44 w-fit object-contain mx-auto'
-                        />
-                        <p className='text-sm text-gray-600 max-w-[120px] line-clamp-1'>{preview.name} asdadasdasdasdasdasdasdasdasdasd</p>
-                      </div>
-                    ) : (
-                      <div className='flex flex-col items-center'>
-                        <GrDocument className='w-fit h-44 p-1 border'/>
-                        <p className='text-sm text-gray-600 max-w-[100px] line-clamp-1'>{preview.name}</p>
-                      </div>
-                    )}
-                    <button 
-                      type="button"
-                      className='flex items-center justify-center'
-                      onClick={() => removeImage(index, onChange)}
-                      style={{ 
-                        position: 'absolute', 
-                        top: -6, 
-                        right: -6,
-                        background: 'red',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '50%',
-                        width: '20px',
-                        height: '20px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <X size={14}/>
-                    </button>
-                  </div>
-                  ))}
-                </div>}
-              {typeof attachmentProgress === "number" && attachmentProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
-                <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${attachmentProgress}%`}} />
-              </div>}
+        <div className="space-y-2">
+          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+              <p className="text-sm text-center px-1 text-muted-foreground">
+                Klikoni për të ngarkuar Imazhe/Dokumente <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+              </p>
             </div>
-          )}
-        />
-        {errors.attachments && (
-          <p className="text-red-500 text-sm mt-1 text-center">{errors.attachments.message}</p>
-        )}
+            <Input
+              id='attachments'
+              type="file"
+              multiple
+              className="hidden"
+              accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+              onChange={(e) => addFiles(e, setAttachmentFiles)}
+            />
+          </label>
+          {attachmentFiles.length > 0 && <div className='shadow-lg p-4 mt-2 flex gap-3 overflow-x-auto w-full'>
+            {attachmentFiles.map((preview, index) => (
+              <div key={index} className='flex-shrink-0' style={{ position: 'relative' }}>
+                {preview.file.type.startsWith('image/') ? (
+                  <div className='flex flex-col items-center'>
+                    <Image
+                      src={preview.previewUrl}
+                      alt={`preview ${index}`}
+                      width={100}
+                      height={100}
+                      unoptimized
+                      className='h-44 w-fit object-contain mx-auto'
+                    />
+                    <p className='text-sm text-gray-600 max-w-[120px] line-clamp-1'>{preview.name}</p>
+                  </div>
+                ) : (
+                  <div className='flex flex-col items-center'>
+                    <GrDocument className='w-fit h-44 p-1 border'/>
+                    <p className='text-sm text-gray-600 max-w-[100px] line-clamp-1'>{preview.name}</p>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className='flex items-center justify-center'
+                  onClick={() => removeFile(index, setAttachmentFiles)}
+                  style={{
+                    position: 'absolute',
+                    top: -6,
+                    right: -6,
+                    background: 'red',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <X size={14}/>
+                </button>
+              </div>
+            ))}
+          </div>}
+        </div>
       </div>
       <div className="flex flex-row items-center justify-between gap-4 max-[800px]:flex-col">
         <div className='flex-1 w-full'>
           <Label htmlFor='audioInput' className='mb-1'>Ngarkoni Audio/Inqizime</Label>
-          <Controller 
-            control={control}
-            name="audiosAttached"
-            render={({ field: { onChange } }) => (
-              <div className="space-y-2">
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-sm text-center px-1 text-muted-foreground">
-                      Klikoni për të ngarkuar Audio/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                    </p>
-                  </div>
-                  <Input 
-                    id='audioInput'
-                    type="file"
-                    multiple 
-                    className="hidden" 
-                    accept="audio/*"
-                    onChange={(e) => handleMediaChange(e, onChange, setAudioPreviews, audioPreviews, 'audio')}
-                  />
-                </label>
-                {audioPreviews.length > 0 && <div className='shadow-lg p-4 mt-2 overflow-x-auto w-full flex flex-row gap-3'>
-                  {audioPreviews.map((preview, index) => (
-                    <div key={index} style={{ position: 'relative' }} className='flex-shrink-0'>
-                      <div className='flex flex-col items-center'>
-                        <audio
-                          src={preview.file} 
-                          controls
-                          className='w-full h-44'
-                        />
-                        <p className='text-sm text-gray-600 max-w-[140px] line-clamp-1'>{preview.name}</p>
-                      </div>
-                      <button 
-                        type="button"
-                        className='flex items-center justify-center'
-                        onClick={() => removeMedia(index, onChange, setAudioPreviews, audioPreviews)}
-                        style={{ 
-                          position: 'absolute', 
-                          top: -6, 
-                          right: -6,
-                          background: 'red',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '50%',
-                          width: '20px',
-                          height: '20px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <X size={14}/>
-                      </button>
-                    </div>
-                    ))}
-                  </div>}
-                {typeof audioProgress === "number" && audioProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
-                  <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${audioProgress}%`}} />
-                </div>}
+          <div className="space-y-2">
+            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                <p className="text-sm text-center px-1 text-muted-foreground">
+                  Klikoni për të ngarkuar Audio/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                </p>
               </div>
-            )}
-          />
-          {errors.audiosAttached && (
-            <p className="text-red-500 text-sm mt-1">{errors.audiosAttached.message}</p>
-          )}
+              <Input
+                id='audioInput'
+                type="file"
+                multiple
+                className="hidden"
+                accept="audio/*"
+                onChange={(e) => addFiles(e, setAudioFiles, 'audio')}
+              />
+            </label>
+            {audioFiles.length > 0 && <div className='shadow-lg p-4 mt-2 overflow-x-auto w-full flex flex-row gap-3'>
+              {audioFiles.map((preview, index) => (
+                <div key={index} style={{ position: 'relative' }} className='flex-shrink-0'>
+                  <div className='flex flex-col items-center'>
+                    <audio
+                      src={preview.previewUrl}
+                      controls
+                      className='w-full h-44'
+                    />
+                    <p className='text-sm text-gray-600 max-w-[140px] line-clamp-1'>{preview.name}</p>
+                  </div>
+                  <button
+                    type="button"
+                    className='flex items-center justify-center'
+                    onClick={() => removeFile(index, setAudioFiles)}
+                    style={{
+                      position: 'absolute',
+                      top: -6,
+                      right: -6,
+                      background: 'red',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '20px',
+                      height: '20px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <X size={14}/>
+                  </button>
+                </div>
+              ))}
+            </div>}
+          </div>
         </div>
         <div className="flex-1 w-full">
           <Label htmlFor='videoInput' className='mb-1'>Ngarkoni Video/Inqizime</Label>
-          <Controller 
-            control={control}
-            name="videosAttached"
-            render={({ field: { onChange } }) => (
-              <>
-              <div className="space-y-2">
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                      <p className="text-sm text-center px-1 text-muted-foreground">
-                        Klikoni për të ngarkuar Video/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
-                      </p>
-                    </div>
-                    <Input 
-                      id='videoInput'
-                      type="file"
-                      multiple 
-                      className="hidden" 
-                      accept="video/*"
-                      onChange={(e) => handleMediaChange(e, onChange, setVideoPreviews, videoPreviews, 'video')}
-                    />
-                  </label>
-                {videoPreviews.length > 0 && <div className='shadow-lg p-4 mt-2 flex flex-row gap-3 w-full overflow-x-auto'>
-                  {videoPreviews.map((preview, index) => (
-                    <div key={index} style={{ position: 'relative' }} className='flex-shrink-0'>
-                      <div className='flex flex-col items-center'>
-                        <video
-                          src={preview.file} 
-                          controls
-                          className='w-full h-44'
-                        />
-                        <p className='text-sm text-gray-600 max-w-[140px] line-clamp-1'>{preview.name}</p>
-                      </div>
-                      <button 
-                        type="button"
-                        className='flex items-center justify-center'
-                        onClick={() => removeMedia(index, onChange, setVideoPreviews, videoPreviews)}
-                        style={{ 
-                          position: 'absolute', 
-                          top: -6, 
-                          right: -6,
-                          background: 'red',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '50%',
-                          width: '20px',
-                          height: '20px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <X size={14}/>
-                      </button>
-                    </div>
-                    ))}
-                  </div>}
-                {typeof videoProgress === "number" && videoProgress > 0 && <div className='mt-2 w-full bg-gray-200 rounded-full overflow-hidden'>
-                  <div className='h-1.5 bg-indigo-600 transition-all' style={{width: `${videoProgress}%`}} />
-                </div>}
+          <div className="space-y-2">
+            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md cursor-pointer hover:bg-accent/50 transition-colors">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                <p className="text-sm text-center px-1 text-muted-foreground">
+                  Klikoni për të ngarkuar Video/Inqizime <span className='text-indigo-600'>(Maksimum: 50MB)</span>
+                </p>
               </div>
-              </>
-            )}
-          />
-          {errors.videosAttached && (
-            <p className="text-red-500 text-sm mt-1">{errors.videosAttached.message}</p>
-          )}
+              <Input
+                id='videoInput'
+                type="file"
+                multiple
+                className="hidden"
+                accept="video/*"
+                onChange={(e) => addFiles(e, setVideoFiles, 'video')}
+              />
+            </label>
+            {videoFiles.length > 0 && <div className='shadow-lg p-4 mt-2 flex flex-row gap-3 w-full overflow-x-auto'>
+              {videoFiles.map((preview, index) => (
+                <div key={index} style={{ position: 'relative' }} className='flex-shrink-0'>
+                  <div className='flex flex-col items-center'>
+                    <video
+                      src={preview.previewUrl}
+                      controls
+                      className='w-full h-44'
+                    />
+                    <p className='text-sm text-gray-600 max-w-[140px] line-clamp-1'>{preview.name}</p>
+                  </div>
+                  <button
+                    type="button"
+                    className='flex items-center justify-center'
+                    onClick={() => removeFile(index, setVideoFiles)}
+                    style={{
+                      position: 'absolute',
+                      top: -6,
+                      right: -6,
+                      background: 'red',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '20px',
+                      height: '20px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <X size={14}/>
+                  </button>
+                </div>
+              ))}
+            </div>}
+          </div>
         </div>
       </div>
       <div className="flex-1">
-          <CTAButton type='submit' isLoading={isSubmitting} text={isSubmitting ? "Duke aplikuar..." : "Apliko per ankesen/raportimin"} classNames="flex-1 w-full mt-2" primary/>
+          <CTAButton type='submit' isLoading={isBusy} text={isBusy ? "Duke aplikuar..." : "Apliko per ankesen/raportimin"} classNames="flex-1 w-full mt-2" primary/>
       </div>
     </form>
   )

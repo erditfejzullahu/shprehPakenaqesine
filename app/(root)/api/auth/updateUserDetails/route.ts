@@ -6,8 +6,6 @@ import DOMPurify from "isomorphic-dompurify";
 import validator from "validator"
 import prisma from "@/lib/prisma";
 import * as bcrypt from "bcrypt"
-import { UploadResult } from "@/types/types";
-import { fileUploadService } from "@/services/fileUploadService";
 import { rateLimit } from "@/lib/redis";
 
 type ValidatedSchema = z.infer<typeof updateProfileSchema>
@@ -18,10 +16,9 @@ const sanitizeName = (name: string): string => {
     return DOMPurify.sanitize(
       validator.escape(
         name.trim()
-          .replace(/</g, '＜')  // Replace angle brackets
+          .replace(/</g, '＜')
           .replace(/>/g, '＞')
-          .replace(/\s+/g, ' ')  // Collapse multiple spaces
-          // Keep apostrophes and hyphens for names like O'Connor or Jean-Luc
+          .replace(/\s+/g, ' ')
       )
     );
   };
@@ -60,7 +57,7 @@ export const PATCH = async (req: NextRequest) => {
             username: DOMPurify.sanitize(validator.escape(body.username)),
             password: body.password,
             gender: body.gender,
-            userProfileImage: body.userProfileImage,
+            userProfileImageUrl: body.userProfileImageUrl,
             confirmPassword: body.confirmPassword,
             changePassword: body.changePassword
         }
@@ -76,17 +73,7 @@ export const PATCH = async (req: NextRequest) => {
             newPassword = await bcrypt.hash(validatedObj.password, 10)
         }
 
-        let newProfilePicture = user.userProfileImage;
-        if(validatedObj.userProfileImage){
-            try {
-                const result: UploadResult = await fileUploadService.uploadFile(validatedObj.userProfileImage, "users", "profile")
-                if(result.success){
-                    newProfilePicture = result.url
-                }
-            } catch (error) {
-                throw new Error("Ngarkimi i imazhit te profilit deshtoi! Ju lutem provoni perseri.")
-            }
-        }
+        const newProfilePicture = validatedObj.userProfileImageUrl ?? user.userProfileImage;
 
         await prisma.users.update({
             where: {id: session.user.id},
@@ -131,10 +118,6 @@ export const PATCH = async (req: NextRequest) => {
         return NextResponse.json({success: true, message: "Te dhenat u perditesuan me sukses", profilePic: newProfilePicture}, {status: 200, headers: ratelimiter.responseHeaders})
     } catch (error:any) {
         console.error(error)
-        if(error.message === "Ngarkimi i imazhit te profilit deshtoi! Ju lutem provoni perseri."){
-            return NextResponse.json({success: false, message: error.message}, {status: 500})
-        }else{
-            return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})
-        }
+        return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})
     }
 }

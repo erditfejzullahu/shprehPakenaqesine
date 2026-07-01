@@ -5,6 +5,7 @@ import { ExtendedUser } from "@/types/admin"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
+import { getAssetUrl } from "@/lib/utils"
 import UsersActions from "./usersActions"
 
 export const columns: ColumnDef<ExtendedUser>[] = [
@@ -16,7 +17,7 @@ export const columns: ColumnDef<ExtendedUser>[] = [
       return (
         <div className="flex items-center gap-3">
           <Image
-            src={user.userProfileImage}
+            src={getAssetUrl(user.userProfileImage)}
             alt={user.username}
             width={32}
             height={32}

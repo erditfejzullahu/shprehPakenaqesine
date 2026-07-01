@@ -3,8 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import {z} from "zod"
 import DOMPurify from "isomorphic-dompurify";
 import validator from "validator"
-import { UploadResult } from "@/types/types";
-import { fileUploadService } from "@/services/fileUploadService";
 import prisma from "@/lib/prisma";
 import { runWithPrismaContext } from "@/lib/prisma-context";
 import { rateLimit } from "@/lib/redis";
@@ -50,59 +48,16 @@ export const POST = async (req: NextRequest) => {
 
         await runWithPrismaContext(ctx, async () => {
             await prisma.$transaction(async (prisma) => {
-                const report = await prisma.reports.create({
+                await prisma.reports.create({
                     data: {
                         title: validateObj.title,
                         description: validateObj.description,
                         complaintId: body.complaintId,
                         category: validateObj.category,
-                        email: validateObj.email
-                    }
-                })
-                
-                let attachments: string[] = []
-                let audioAttachments: string[] = []
-                let videoAttachments: string[] = []
-        
-                if(validateObj.attachments && validateObj.attachments.length > 0){
-                    for(const element of validateObj.attachments){
-                        const result: UploadResult = await fileUploadService.uploadFile(element, "reports/attachments", report.id)
-                        console.log(result, '  result');
-                        if(!result.success){
-                            throw new Error("Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve")
-                        }
-                        attachments.push(result.url)
-                    }
-                }                
-        
-                if(validateObj.audiosAttached && validateObj.audiosAttached.length > 0){
-                    for(const element of validateObj.audiosAttached){
-                        const result: UploadResult = await fileUploadService.uploadFile(element, "reports/audiosAttached", report.id)
-                        
-                        
-                        if(!result.success){
-                            throw new Error("Dicka shkoi gabim ne ngarkim te audiove/inqizimeve")
-                        }
-                        audioAttachments.push(result.url)
-                    }
-                }
-        
-                if(validateObj.videosAttached && validateObj.videosAttached.length > 0){
-                    for(const element of validateObj.videosAttached){
-                        const result: UploadResult = await fileUploadService.uploadFile(element, "reports/videosAttached", report.id)
-                        if(!result.success){
-                            throw new Error("Dicka shkoi gabim ne ngarkim te videove/inqizimeve")
-                        }
-                        videoAttachments.push(result.url)
-                    }
-                }
-    
-                await prisma.reports.update({
-                    where: {id: report.id},
-                    data: {
-                        attachments,
-                        audioAttachments,
-                        videoAttachments
+                        email: validateObj.email,
+                        attachments: validateObj.attachments ?? [],
+                        audioAttachments: validateObj.audiosAttached ?? [],
+                        videoAttachments: validateObj.videosAttached ?? [],
                     }
                 })
             })
@@ -112,13 +67,6 @@ export const POST = async (req: NextRequest) => {
 
     } catch (error: any) {
         console.error(error)
-        if(error.message === "Dicka shkoi gabim ne ngarkim te dokumenteve/imazheve"){
-            return NextResponse.json({success: false, message: error.message}, {status: 500})
-        }else if(error.message === "Dicka shkoi gabim ne ngarkim te audiove/inqizimeve"){
-            return NextResponse.json({success: false, message: error.message}, {status: 500})
-        }else if(error.message === "Dicka shkoi gabim ne ngarkim te videove/inqizimeve"){
-            return NextResponse.json({success: false, message: error.message}, {status: 500})
-        }
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri!"}, {status: 500})
     }
 }

@@ -14,6 +14,7 @@ import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { Badge } from '@/components/ui/badge';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
+import { getAssetUrl } from '@/lib/utils';
 
 export const revalidate = 3600;
 export const dynamicParams = true
@@ -254,7 +255,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                         <div className={`grid ${(data.complaint.attachments.length + data.complaint.audiosAttached.length + data.complaint.videosAttached.length > 3) ? "grid-flow-col-dense  grid-rows-2" : "grid-flow-col-dense grid-rows-1"}  gap-3 min-w-full`}>
                           {/* Documents */}
                           {data.complaint.attachments.map((file, index) => (
-                            <Link href={`/serve${file}`} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100 w-full">
+                            <Link href={getAssetUrl(file)} aria-description='attachment' target='_blank' key={`attch-${index}`} className="shadow-md p-3 flex items-center cursor-pointer hover:bg-gray-100 w-full">
                               {file.includes('application/pdf') || 
                               file.includes('application/msword') || 
                               file.includes('vnd.openxmlformats-officedocument.wordprocessingml.document') || 
@@ -277,7 +278,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
 
                           {/* Videos */}
                           {data.complaint.videosAttached?.map((file, index) => (
-                            <Link href={`/serve${file}`} aria-description='attachment' target='_blank' key={`video-${index}`} className="shadow-md p-3 flex items-center">
+                            <Link href={getAssetUrl(file)} aria-description='attachment' target='_blank' key={`video-${index}`} className="shadow-md p-3 flex items-center">
                               <FaFileVideo className='text-gray-400 w-8 h-8 mr-2' />
                               <div className="truncate">
                                 <p className="text-sm font-medium text-gray-900 truncate">Video/Inqizime</p>
@@ -288,7 +289,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
 
                           {/* Audios */}
                           {data.complaint.audiosAttached?.map((file, index) => (
-                            <Link href={`/serve${file}`} aria-description='attachment' target='_blank' key={`audio-${index}`} className="shadow-md p-3 flex items-center">
+                            <Link href={getAssetUrl(file)} aria-description='attachment' target='_blank' key={`audio-${index}`} className="shadow-md p-3 flex items-center">
                               <FaFileAudio className='text-gray-400 w-8 h-8 mr-2' />
                               <div className="truncate">
                                 <p className="text-sm font-medium text-gray-900 truncate">Audio/Inqizime</p>
@@ -322,7 +323,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                   <h3 className="text-lg font-medium text-gray-900 mb-4">{data.complaint.company ? "Ndaj kompanisë" : "Ndaj komunës"}</h3>
                   <div className="flex items-center gap-4 mb-4">
                     <img 
-                      src={data.complaint.company ? `/serve${data.complaint.company.logoUrl}` : MUNICIPALITY_IMAGES.find(img => img.municipality === data.complaint.municipality)?.image} //data.complaint.municipaltiy 
+                      src={data.complaint.company ? getAssetUrl(data.complaint.company.logoUrl) : MUNICIPALITY_IMAGES.find(img => img.municipality === data.complaint.municipality)?.image}
                       alt={`${data.complaint.company ? data.complaint.company.name : data.complaint.municipality.replace("_", " ")} logo`} 
                       className="h-12 w-12 rounded-md object-contain"
                     />
@@ -367,7 +368,7 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                       width={100}
                       height={100}
                       unoptimized
-                      src={`/serve${data.complaint.user.userProfileImage}`} 
+                      src={getAssetUrl(data.complaint.user.userProfileImage)} 
                       alt={`${data.complaint.user.fullName}'s avatar`} 
                       className="h-12 w-12 rounded-full"
                     />

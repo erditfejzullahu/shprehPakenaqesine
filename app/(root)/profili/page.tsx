@@ -8,6 +8,7 @@ import ShowToasterInCaseFromPasswordReset from '@/components/ShotToasterInCaseFr
 import Video from '@/components/Video';
 import Image from 'next/image';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
+import { getAssetUrl } from '@/lib/utils';
 
 
 export async function generateMetadata(): Promise<Metadata>{
@@ -104,7 +105,7 @@ const page = async ({searchParams}: {searchParams: Promise<{redirected?: string}
                     <div className="relative">
                     <Image 
                         className="w-24 h-24 rounded-full border-4 border-indigo-100 object-cover" 
-                        src={`/serve${session.user.userProfileImage}`} 
+                        src={getAssetUrl(session.user.userProfileImage)} 
                         unoptimized
                         alt={`Imazhi i ${session.user.username}`}
                         width={96}
