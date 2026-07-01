@@ -275,7 +275,6 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
             setContributeDialog(!contributeDialog)
             if (contributeDialog) clearContributeFiles();
           }}>
-            <form onSubmit={contributeHandleSubmit(contributeOnSubmit)}>
               {session ? (
                 <DialogTrigger asChild>
                   <button
@@ -301,6 +300,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 </button>
               )}
               <DialogContent className='max-h-[90vh] !w-full !max-w-[700px] max-[750px]:max-w-[calc(100%-48px)]! px-4 overflow-y-scroll'>
+                <form onSubmit={contributeHandleSubmit(contributeOnSubmit)}>
                 <DialogHeader>
                   <DialogTitle>Kontriboni</DialogTitle>
                   <DialogDescription className='max-[420px]:text-sm'>
@@ -434,8 +434,8 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                     <CTAButton type='submit' isLoading={contributeBusy} text={`${contributeBusy ? "Duke shtuar..." : "Shto kontribim"}`} primary classNames='w-full'/>
                   </div>
                 </div>
+                </form>
               </DialogContent>
-            </form>
           </Dialog>
           <Dialog open={reportsDialog} onOpenChange={() => {
             reportReset();
@@ -443,7 +443,6 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
             setReportsDialog(!reportsDialog)
             if (reportsDialog) clearReportFiles();
           }}>
-            <form onSubmit={reportHandleSubmit(reportsOnSubmit)}>
               <DialogTrigger asChild>
                 <button
                   type="button"
@@ -456,6 +455,7 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                 </button>
               </DialogTrigger>
               <DialogContent className='max-h-[90vh] !w-full !max-w-[700px] max-[750px]:max-w-[calc(100%-48px)]! px-4 overflow-y-scroll'>
+                <form onSubmit={reportHandleSubmit(reportsOnSubmit)}>
                   <DialogHeader>
                     <DialogTitle>Krijo Raportim</DialogTitle>
                     <DialogDescription>Në rast se ankesa/raportimi nuk është valid, ju mund ta raportoni këtu duke shtuar detaje relevante në lidhje me ankesën/raportim.</DialogDescription>
@@ -656,8 +656,8 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
                         <CTAButton type='submit' isLoading={reportBusy} text={`${reportBusy ? "Duke krijuar raportimin..." : "Krijo raportim"}`} classNames='w-full' primary/>
                       </div>
                   </div>
+                </form>
               </DialogContent>
-            </form>
           </Dialog>
       </div>
     </div>
