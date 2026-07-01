@@ -1,9 +1,8 @@
 "use client";
 
-import { upload } from "@vercel/blob/client";
 import type { FileUploadFolder } from "@/services/fileUploadService";
 
-const HANDLE_UPLOAD_URL = "/api/blob/upload";
+const UPLOAD_FILE_URL = "/api/blob/uploadFile";
 
 export async function uploadFileToBlob(
   file: File,
@@ -11,11 +10,31 @@ export async function uploadFileToBlob(
   entityId: string
 ): Promise<string> {
   const pathname = `${folder}/${entityId}/${Date.now()}-${file.name}`;
-  const blob = await upload(pathname, file, {
-    access: "public",
-    handleUploadUrl: HANDLE_UPLOAD_URL,
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("pathname", pathname);
+
+  const response = await fetch(UPLOAD_FILE_URL, {
+    method: "POST",
+    body: formData,
+    credentials: "include",
   });
-  return blob.url;
+
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(
+      typeof payload.error === "string"
+        ? payload.error
+        : "Ngarkimi i skedarit dështoi."
+    );
+  }
+
+  if (typeof payload.url !== "string") {
+    throw new Error("Ngarkimi i skedarit dështoi.");
+  }
+
+  return payload.url;
 }
 
 export async function uploadFilesToBlob(
@@ -32,12 +51,24 @@ export async function uploadEvidenceFiles(
   attachmentFiles: File[],
   audioFiles: File[],
   videoFiles: File[],
-  folderPrefix: "complaints" | "reports" = "complaints"
+  folderPrefix: "complaints" | "contributions" | "reports" = "complaints"
 ) {
   const [attachments, audiosAttached, videosAttached] = await Promise.all([
-    uploadFilesToBlob(attachmentFiles, `${folderPrefix}/attachments` as FileUploadFolder, entityId),
-    uploadFilesToBlob(audioFiles, `${folderPrefix}/audiosAttached` as FileUploadFolder, entityId),
-    uploadFilesToBlob(videoFiles, `${folderPrefix}/videosAttached` as FileUploadFolder, entityId),
+    uploadFilesToBlob(
+      attachmentFiles,
+      `${folderPrefix}/attachments` as FileUploadFolder,
+      entityId
+    ),
+    uploadFilesToBlob(
+      audioFiles,
+      `${folderPrefix}/audiosAttached` as FileUploadFolder,
+      entityId
+    ),
+    uploadFilesToBlob(
+      videoFiles,
+      `${folderPrefix}/videosAttached` as FileUploadFolder,
+      entityId
+    ),
   ]);
   return { attachments, audiosAttached, videosAttached };
 }

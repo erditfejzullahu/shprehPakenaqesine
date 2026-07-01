@@ -7,6 +7,9 @@ export type FileUploadFolder =
     'complaints/attachments'
     | 'complaints/audiosAttached'
     | 'complaints/videosAttached'
+    | 'contributions/attachments'
+    | 'contributions/audiosAttached'
+    | 'contributions/videosAttached'
     | 'companys/images'
     | 'companys/logo'
     | 'users'
@@ -68,6 +71,9 @@ class FileUploadService {
         'complaints/attachments',
         'complaints/audiosAttached',
         'complaints/videosAttached',
+        'contributions/attachments',
+        'contributions/audiosAttached',
+        'contributions/videosAttached',
         'companys/images',
         'companys/logo',
         'users',

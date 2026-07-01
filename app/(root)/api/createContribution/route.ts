@@ -74,6 +74,12 @@ export const POST = async (req: NextRequest) => {
 
     } catch (error: any) {
         console.error(error)
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                { success: false, message: error.issues[0]?.message || "Të dhënat nuk janë valide." },
+                { status: 400 }
+            );
+        }
         return NextResponse.json({success: false, message: "Dicka shkoi gabim ne server! Ju lutem provoni perseri."}, {status: 500})
     }
 }

@@ -152,7 +152,11 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
         }
       } catch (error: any) {
         console.error(error)
-        toast.error(error.response?.data?.message || "Dicka shkoi gabim")
+        toast.error(
+          error?.message ||
+            error.response?.data?.message ||
+            "Dicka shkoi gabim"
+        )
       } finally {
         setIsReportUploading(false)
       }
@@ -175,7 +179,8 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
           entityId,
           contributeAttachmentFiles.map((p) => p.file),
           contributeAudioFiles.map((p) => p.file),
-          contributeVideoFiles.map((p) => p.file)
+          contributeVideoFiles.map((p) => p.file),
+          "contributions"
         )
 
         const response = await api.post(`/api/createContribution`, {
@@ -196,7 +201,11 @@ const ComplaintActionsCard = ({complaintsData, session}: {complaintsData: Compla
         }
       } catch (error: any) {
         console.error(error)
-        toast.error(error.response?.data?.message || "Dicka shkoi gabim")
+        toast.error(
+          error?.message ||
+            error.response?.data?.message ||
+            "Dicka shkoi gabim"
+        )
       } finally {
         setIsContributeUploading(false)
       }
