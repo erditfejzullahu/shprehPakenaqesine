@@ -2,76 +2,62 @@ import { Companies } from '@/app/generated/prisma';
 import CompanyPage from '@/components/CompanyPage';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import SocialShareButtons from '@/components/SocialShareButtons';
-import api from '@/lib/api';
-import prisma from '@/lib/prisma';
+import { getCompanyById } from '@/lib/companies/getCompanyById';
 import { CompanyPerIdInterface } from '@/types/types';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import React from 'react'
 import { getAssetUrl, getAbsoluteAssetUrl } from '@/lib/utils';
 
-export const revalidate = 3600
-export const dynamicParams = true
+export const dynamic = 'force-dynamic';
 
-export async function generateStaticParams() {
-  // const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/companies/ids`, {next: {revalidate: revalidate}, method: "GET"})
-  // if(!res.ok){
-  //   throw new Error("Error fetching ids")
-  // }
-  // const ids: {id: string}[] = await res.json()
-  const ids = await prisma.companies.findMany({
-    select: {
-      id: true
-    }
-  })
-  return ids.map((company) => ({
-    id: company.id
-  }))
+function fallbackMetadata(id: string): Metadata {
+  return {
+    title: 'Kompania - ShfaqPakenaqësinë',
+    description: 'Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.',
+    keywords: ['kompani', 'vlerësim', 'shqipëri', 'puna', 'shërbime', 'ankesa', 'raportime', 'kosovë', 'kosove', 'shqiperi'],
+    openGraph: {
+      title: 'Vlerëso Kompaninë - ShfaqPakenaqësinë',
+      description: 'Platforma për vlerësimin e kompanive në Kosovë në bazë të ankesave',
+      images: {
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+        width: 1200,
+        height: 630,
+        alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+      },
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Vlerëso Kompaninë - ShfaqPakenaqësinë",
+      description: "Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.",
+      images: {
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
+        width: 1200,
+        height: 630,
+        alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
+      },
+    },
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/kompanite/${id}`,
+    },
+  };
 }
 
 export async function generateMetadata({params}: {params: Promise<{id: string}>}): Promise<Metadata> {
   const {id} = await params;
+
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/company/${id}`, {next: {revalidate: 3600000}});
-    if(!response.ok){
-      return {
-        title: 'Kompania - ShfaqPakenaqësinë',
-        description: 'Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.',
-        keywords: ['kompani', 'vlerësim', 'shqipëri', 'puna', 'shërbime', 'ankesa', 'raportime', 'kosovë', 'kosove', 'shqiperi'],
-        openGraph: {
-          title: 'Vlerëso Kompaninë - ShfaqPakenaqësinë',
-          description: 'Platforma për vlerësimin e kompanive në Kosovë në bazë të ankesave',
-          images: {
-            url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
-            width: 1200,  // Required for OG
-            height: 630,  // Required for OG
-            alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
-          },
-        },
-        twitter: {
-          card: "summary_large_image",
-          title: "Vlerëso Kompaninë - ShfaqPakenaqësinë",
-          description: "Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.",
-          images: {
-            url: `${process.env.NEXT_PUBLIC_BASE_URL}/shfaqpakenaqesine-cover.png`,
-            width: 1200,  // Required for OG
-            height: 630,  // Required for OG
-            alt: "ShfaqPakenaqësinë - Zëri i Qytetarëve dhe Punonjësve"
-          },
-        },
-        alternates: {
-          canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/${id}`,
-        },
-      };
-    }
-    const {company}: CompanyPerIdInterface = await response.json();
-    
+    const data = await getCompanyById(id);
+    if (!data) return fallbackMetadata(id);
+
+    const { company }: CompanyPerIdInterface = data;
     const seoTitle = `${company.name} - Vlerësim i Kompanisë | ShfaqPakenaqësinë`
     const seoDescription = company.description
       ? `${company.description.substring(0,160)}`
       : `Vlerëso ${company.name} në platformën tone duke krijuar ankesa apo raportime. Shiko detajet, komentet dhe shprehu për përvojën tënde.`;
-  
+
     const keywords = [
       company.name?.toLowerCase(),
       'vleresim kompanie',
@@ -111,33 +97,21 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
     }
   } catch (error) {
     console.error('Gabim në marrjen e të dhënave:', error);
-    return {
-      title: 'Kompania - ShfaqPakenaqësinë',
-      description: 'Shqyrto dhe vlerëso kompaninë në platformën tonë në bazë të krijimit të ankesave apo raportimeve në lidhje me të. Lexo komente dhe shpreh përshtypjet të tua.',
-      keywords: ['kompani', 'vlerësim', 'shqipëri', 'puna', 'shërbime', 'ankesa', 'raportime', 'kosovë', 'kosove', 'shqiperi'],
-      openGraph: {
-        title: 'Vlerëso Kompaninë - ShfaqPakenaqësinë',
-        description: 'Platforma për vlerësimin e kompanive në Kosovë në bazë të ankesave',
-      },
-    };
+    return fallbackMetadata(id);
   }
-
 }
 
 const page = async ({params}: {params: Promise<{id: string}>}) => {    
     const {id} = await params;
-    
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/company/${id}`)
-    if(!response.ok){
-      throw new Error('Dicka shkoi gabim')
+    const data = await getCompanyById(id);
+
+    if (!data) {
+      notFound();
     }
-    const data: CompanyPerIdInterface = await response.json();
-    console.log(data.company.logoUrl, ' logoo');
-    
+
   return (
     <>
       <div className="min-h-screen bg-gray-50">
-          {/* Header */}
           <div className="bg-white shadow-sm max-[1152px]:shadow-none">
             <div className="w-full max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center shadow-lg">
               <Link 
@@ -166,12 +140,9 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
             </div>
           </div>
 
-          {/* Main Content */}
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 shadow-lg">
             <div className="flex flex-col lg:flex-row gap-8">
-              {/* Left Column - Company Info */}
             <div className="lg:w-1/3 space-y-6">
-                {/* Company Details Card */}
                 <div className="bg-white shadow-md overflow-hidden">
                   <div className="p-6">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Detajet e kompanisë</h3>
@@ -234,13 +205,12 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                   </div>
                 </div>
 
-                {/* Company Images */}
                 {data.company.images && data.company.images.length > 0 && (
                   <div className="bg-white shadow-md overflow-hidden">
                     <div className="p-6">
                       <h3 className="text-lg font-medium text-gray-900 mb-4">Imazhet e kompanisë</h3>
                       <div className="grid grid-cols-2 gap-3">
-                        {data.company.images.length > 0 ? data.company.images.map((image, index) => (
+                        {data.company.images.map((image, index) => (
                           <div key={index} className="aspect-square bg-gray-100 shadow-md overflow-hidden">
                             <Image 
                               src={getAssetUrl(image)} 
@@ -252,23 +222,18 @@ const page = async ({params}: {params: Promise<{id: string}>}) => {
                               height={200}
                             />
                           </div>
-                        )) : (
-                          <div>
-                            Nuk ka imazhe të kompanisë ende.
-                          </div>
-                        )}
+                        ))}
                       </div>
                     </div>
                   </div>
               )}
               </div>
 
-              {/* Right Column - Complaints */}
               <CompanyPage companyData={data}/>
             </div>
               <SocialShareButtons 
                 url={`${process.env.NEXT_PUBLIC_BASE_URL}/kompanite/${data.company.id}`}
-                title={`Eksperianca juaj mbi ${data.company.name}?`}
+                title={`Eksperienca juaj mbi ${data.company.name}?`}
                 description={data.company.description || `Detajet rreth ${data.company.name}`}
                 />
           </div>
